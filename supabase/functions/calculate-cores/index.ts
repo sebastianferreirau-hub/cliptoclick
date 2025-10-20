@@ -56,7 +56,7 @@ Ejemplo: "recetas ecuatorianas", "adaptación cultural", "fotografía urbana Mia
 
 Luego genera:
 - Plan de 7 días: 2 ideas por día con título, core_key asociado, hook_line_1 (primera línea "relatable"), beat_cut_timing (0.6/0.8/1.2), y native_text_idea
-- Caption patterns por plataforma (TikTok, Instagram, YouTube Shorts): estructura, hooks, CTAs
+- Patrones de caption por plataforma (TikTok, Instagram, YouTube Shorts): estructura, hooks, CTAs
 
 Devuelve JSON válido con esta estructura:
 {
@@ -124,7 +124,7 @@ Objetivo: ${goal}
 Tiempo disponible: ${timeCommitment}
 Formato preferido: ${preferredFormat}
 
-Identifica sus 3 Content Cores principales, genera plan 7 días y caption patterns.`;
+Identifica sus Content Cores principales, verticales de contenido, y genera plan de 7 días.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

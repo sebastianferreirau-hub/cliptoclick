@@ -87,7 +87,7 @@ const Dashboard = () => {
               Hola, {profile?.name || profile?.handle || 'Creator'}
             </h1>
             <p className="text-muted-foreground">
-              Tu dashboard de estrategia de contenido
+              Tu estrategia de contenido
             </p>
           </div>
           <Button variant="outline" onClick={handleSignOut} className="gap-2">

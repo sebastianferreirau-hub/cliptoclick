@@ -69,7 +69,7 @@ const Onboarding = () => {
     
     setLoading(true);
     try {
-      // Call AI to calculate content cores
+      // Calculate content cores
       const { data: aiData, error: aiError } = await supabase.functions.invoke('calculate-cores', {
         body: {
           testResponses: formData.test_responses,
@@ -91,7 +91,7 @@ const Onboarding = () => {
           lang: formData.lang,
           time_commitment: formData.time_commitment,
           goal_primary: formData.goal_primary,
-          content_cores: aiData.cores,
+          content_cores: aiData,
           ai_profile_summary: aiData.summary,
           onboarding_completed: true,
         })
@@ -99,7 +99,7 @@ const Onboarding = () => {
 
       if (profileError) throw profileError;
 
-      // Save AI run
+      // Save analysis
       await supabase.from('ai_runs').insert({
         user_id: userId,
         kind: 'profile',
