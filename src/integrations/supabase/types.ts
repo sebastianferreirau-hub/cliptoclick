@@ -14,16 +14,308 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      ai_runs: {
+        Row: {
+          created_at: string
+          id: string
+          input_json: Json | null
+          kind: string
+          output_json: Json | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          input_json?: Json | null
+          kind: string
+          output_json?: Json | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          input_json?: Json | null
+          kind?: string
+          output_json?: Json | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      analytics: {
+        Row: {
+          captured_at: string
+          comments: number | null
+          created_at: string
+          ctr: number | null
+          id: string
+          impressions: number | null
+          likes: number | null
+          platform: string
+          post_id: string
+          retention_3s: number | null
+          retention_50: number | null
+          saves: number | null
+          score: string | null
+          shares: number | null
+          user_id: string
+          views: number | null
+        }
+        Insert: {
+          captured_at?: string
+          comments?: number | null
+          created_at?: string
+          ctr?: number | null
+          id?: string
+          impressions?: number | null
+          likes?: number | null
+          platform: string
+          post_id: string
+          retention_3s?: number | null
+          retention_50?: number | null
+          saves?: number | null
+          score?: string | null
+          shares?: number | null
+          user_id: string
+          views?: number | null
+        }
+        Update: {
+          captured_at?: string
+          comments?: number | null
+          created_at?: string
+          ctr?: number | null
+          id?: string
+          impressions?: number | null
+          likes?: number | null
+          platform?: string
+          post_id?: string
+          retention_3s?: number | null
+          retention_50?: number | null
+          saves?: number | null
+          score?: string | null
+          shares?: number | null
+          user_id?: string
+          views?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assets: {
+        Row: {
+          captured_at: string | null
+          created_at: string
+          duration_sec: number | null
+          id: string
+          source: string | null
+          storage_url: string | null
+          tags: string[] | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          captured_at?: string | null
+          created_at?: string
+          duration_sec?: number | null
+          id?: string
+          source?: string | null
+          storage_url?: string | null
+          tags?: string[] | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          captured_at?: string | null
+          created_at?: string
+          duration_sec?: number | null
+          id?: string
+          source?: string | null
+          storage_url?: string | null
+          tags?: string[] | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      inspo: {
+        Row: {
+          created_at: string
+          id: string
+          idea: string | null
+          notes: string | null
+          rel_engagement: string | null
+          source_state: string | null
+          url: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          idea?: string | null
+          notes?: string | null
+          rel_engagement?: string | null
+          source_state?: string | null
+          url: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          idea?: string | null
+          notes?: string | null
+          rel_engagement?: string | null
+          source_state?: string | null
+          url?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      posts: {
+        Row: {
+          caption: string | null
+          core_key: string | null
+          cover_url: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          platforms: string[] | null
+          publish_at: string | null
+          sla_due: string | null
+          status: string
+          title: string
+          type: string
+          updated_at: string
+          user_id: string
+          version: string | null
+        }
+        Insert: {
+          caption?: string | null
+          core_key?: string | null
+          cover_url?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          platforms?: string[] | null
+          publish_at?: string | null
+          sla_due?: string | null
+          status?: string
+          title: string
+          type: string
+          updated_at?: string
+          user_id: string
+          version?: string | null
+        }
+        Update: {
+          caption?: string | null
+          core_key?: string | null
+          cover_url?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          platforms?: string[] | null
+          publish_at?: string | null
+          sla_due?: string | null
+          status?: string
+          title?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+          version?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          ai_profile_summary: string | null
+          content_cores: Json | null
+          country: string | null
+          created_at: string
+          email: string | null
+          goal_primary: string | null
+          handle: string | null
+          id: string
+          lang: string | null
+          name: string | null
+          onboarding_completed: boolean | null
+          raw_folder_link: string | null
+          time_commitment: string | null
+          updated_at: string
+        }
+        Insert: {
+          ai_profile_summary?: string | null
+          content_cores?: Json | null
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          goal_primary?: string | null
+          handle?: string | null
+          id: string
+          lang?: string | null
+          name?: string | null
+          onboarding_completed?: boolean | null
+          raw_folder_link?: string | null
+          time_commitment?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ai_profile_summary?: string | null
+          content_cores?: Json | null
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          goal_primary?: string | null
+          handle?: string | null
+          id?: string
+          lang?: string | null
+          name?: string | null
+          onboarding_completed?: boolean | null
+          raw_folder_link?: string | null
+          time_commitment?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "user" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +442,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["user", "admin"],
+    },
   },
 } as const
