@@ -7,13 +7,7 @@ import { Sparkles, BarChart3, Target, Zap } from "lucide-react";
 const Index = () => {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        navigate("/dashboard");
-      }
-    });
-  }, [navigate]);
+  // Removed auto-redirect to allow users to see the landing page
 
   return (
     <div className="min-h-screen relative overflow-hidden">
