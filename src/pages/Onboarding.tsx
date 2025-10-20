@@ -26,7 +26,15 @@ const Onboarding = () => {
     lang: "es",
     time_commitment: "",
     preferred_format: "",
-    test_responses: Array(12).fill(3),
+    test_responses: {
+      movie_title: "",
+      origin_location: "",
+      daily_life: "",
+      passions: "",
+      work: "",
+      future: "",
+      bio: "",
+    },
     goal_primary: "",
   });
 

@@ -6,7 +6,15 @@ const corsHeaders = {
 };
 
 interface RequestBody {
-  testResponses: number[];
+  testResponses: {
+    movie_title: string;
+    origin_location: string;
+    daily_life: string;
+    passions: string;
+    work: string;
+    future: string;
+    bio: string;
+  };
   goal: string;
   timeCommitment: string;
   preferredFormat: string;
@@ -25,21 +33,6 @@ Deno.serve(async (req) => {
       throw new Error("LOVABLE_API_KEY not configured");
     }
 
-    // Calculate dimensions from test responses
-    const dimensions = {
-      relatable: ((testResponses[0] + testResponses[4] + testResponses[10] + testResponses[11]) / 4 - 1) * 25,
-      talking_head: ((testResponses[1] + testResponses[3]) / 2 - 1) * 25,
-      broll_action: ((testResponses[2] + testResponses[8]) / 2 - 1) * 25,
-      how_to_teach: ((testResponses[3] + testResponses[7]) / 2 - 1) * 25,
-      humor_situational: ((testResponses[4] + testResponses[5]) / 2 - 1) * 25,
-      data_insights: ((testResponses[7] + testResponses[9]) / 2 - 1) * 25,
-    };
-
-    // Sort and get top 3
-    const sortedDims = Object.entries(dimensions)
-      .sort(([, a], [, b]) => b - a)
-      .slice(0, 3);
-
     const systemPrompt = `Eres un estratega de contenido experto. Filosofía From Clip to Click™: 
 - Relatable > Perfecto
 - Ritmo > Efectos  
@@ -47,17 +40,26 @@ Deno.serve(async (req) => {
 - Beat-Cut: 0.6s/0.8s/1.2s
 - Texto nativo in-app
 
-Con los 3 Content Cores detectados, genera:
-1. Para cada core: label descriptivo, description (2-3 líneas), y specific_tips (array de 3 tips prácticos)
-2. Plan de 7 días: 2 ideas por día con título, core_key asociado, hook_line_1 (primera línea "relatable"), beat_cut_timing (0.6/0.8/1.2), y native_text_idea
-3. Caption patterns por plataforma (TikTok, Instagram, YouTube Shorts): estructura, hooks, CTAs
+A partir de las respuestas autobiográficas del creador, identifica sus 3 Content Cores principales (verticales de contenido).
+Las verticales pueden incluir: origen/identidad cultural, vida cotidiana/familia, trabajo/oficio, hobbies/pasiones, aspiraciones, estilo de vida, etc.
+
+Para cada core detectado:
+1. Asigna un "key" descriptivo (ej: "latina_miami", "fotografia_creativa", "cocina_experimental")
+2. Un "label" atractivo (ej: "Latina en Miami", "Fotografía Creativa")
+3. Un "score" estimado 0-100 basado en qué tan presente está en sus respuestas
+4. Una "description" de 2-3 líneas
+5. "specific_tips" con 3 tips prácticos de cómo crear contenido sobre ese core
+
+Luego genera:
+- Plan de 7 días: 2 ideas por día con título, core_key asociado, hook_line_1 (primera línea "relatable"), beat_cut_timing (0.6/0.8/1.2), y native_text_idea
+- Caption patterns por plataforma (TikTok, Instagram, YouTube Shorts): estructura, hooks, CTAs
 
 Devuelve JSON válido con esta estructura:
 {
   "cores": [
     {
-      "key": "relatable",
-      "label": "Historias Auténticas",
+      "key": "latina_miami",
+      "label": "Latina en Miami",
       "score": 85,
       "description": "...",
       "specific_tips": ["tip1", "tip2", "tip3"]
@@ -69,7 +71,7 @@ Devuelve JSON válido con esta estructura:
       "ideas": [
         {
           "title": "...",
-          "core_key": "relatable",
+          "core_key": "latina_miami",
           "hook_line_1": "...",
           "beat_cut_timing": 0.8,
           "native_text_idea": "..."
@@ -82,16 +84,38 @@ Devuelve JSON válido con esta estructura:
     "instagram": { "structure": "...", "hooks": [...], "ctas": [...] },
     "youtube_shorts": { "structure": "...", "hooks": [...], "ctas": [...] }
   },
+  "verticals": ["vertical1", "vertical2", "vertical3", "vertical4", "vertical5"],
   "summary": "Resumen personalizado de 2-3 líneas sobre su perfil"
 }`;
 
-    const userPrompt = `Analiza este perfil:
-- Top 3 Content Cores: ${sortedDims.map(([k, v]) => `${k}: ${v.toFixed(0)}%`).join(", ")}
-- Objetivo: ${goal}
-- Tiempo: ${timeCommitment}
-- Formato: ${preferredFormat}
+    const userPrompt = `Analiza las respuestas autobiográficas de este creador:
 
-Genera el perfil completo con cores, plan 7 días y caption patterns.`;
+1. ¿Cómo te llamarías si tu historia fuera una película?
+${testResponses.movie_title}
+
+2. ¿De dónde eres y dónde estás viviendo ahora?
+${testResponses.origin_location}
+
+3. ¿Con quién o con qué vives que haga parte de tu día a día?
+${testResponses.daily_life}
+
+4. ¿Qué cosas te apasionan o te dan energía últimamente?
+${testResponses.passions}
+
+5. ¿A qué te dedicas o qué haces para pagar tus cuentas?
+${testResponses.work}
+
+6. ¿Qué te gustaría estar haciendo dentro de un año?
+${testResponses.future}
+
+7. Cuéntate en cuatro frases:
+${testResponses.bio}
+
+Objetivo: ${goal}
+Tiempo disponible: ${timeCommitment}
+Formato preferido: ${preferredFormat}
+
+Identifica sus 3 Content Cores principales, genera plan 7 días y caption patterns.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -117,13 +141,6 @@ Genera el perfil completo con cores, plan 7 días y caption patterns.`;
 
     const aiData = await response.json();
     const result = JSON.parse(aiData.choices[0].message.content);
-
-    // Add scores to cores
-    result.cores = sortedDims.map(([key, score], index) => ({
-      key,
-      score: Math.round(score),
-      ...(result.cores[index] || { label: key, description: "", specific_tips: [] }),
-    }));
 
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
