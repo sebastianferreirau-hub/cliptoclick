@@ -20,12 +20,13 @@ const Index = () => {
           </div>
 
           <h1 className="text-6xl md:text-7xl font-heading gradient-text mb-6 animate-fade-in">
-            Creator View
+            ClipCrafters
           </h1>
 
           <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed animate-fade-in">
-            Descubre tus <span className="text-primary font-semibold">3 Content Cores</span> con IA.
-            De contenido a estrategia, impulsado por datos reales.
+            <span className="text-primary font-semibold">From Clip to Click™</span>
+            <br />
+            Tu OS para shorts de alto impacto.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-12 animate-fade-in">
@@ -45,7 +46,7 @@ const Index = () => {
               </div>
               <h3 className="font-heading text-lg mb-2">Analytics 24h</h3>
               <p className="text-sm text-muted-foreground">
-                Decisiones inteligentes con tus métricas
+                Publica hoy, aprende mañana
               </p>
             </div>
 
@@ -53,9 +54,9 @@ const Index = () => {
               <div className="p-4 rounded-xl bg-success/20 w-fit mx-auto mb-4">
                 <Zap className="w-8 h-8 text-success" />
               </div>
-              <h3 className="font-heading text-lg mb-2">Plan IA 7 días</h3>
+              <h3 className="font-heading text-lg mb-2">Plan 7 días</h3>
               <p className="text-sm text-muted-foreground">
-                Ideas relatable listas para grabar
+                2 ideas diarias, listas para grabar
               </p>
             </div>
           </div>

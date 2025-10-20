@@ -7,9 +7,8 @@ interface StepFormatProps {
 }
 
 const options = [
-  { value: "short", label: "Cortos ≤12s", icon: Video, desc: "Máxima viralidad" },
-  { value: "long", label: "Largos ≥50s", icon: Film, desc: "Mayor retención" },
-  { value: "both", label: "Ambos", icon: Layers, desc: "Estrategia Barbell" },
+  { value: "short", label: "Shorts ≤12s (recomendado)", icon: Video, desc: "Máxima viralidad" },
+  { value: "both", label: "Shorts + Long — coming soon", icon: Layers, desc: "Próximamente", disabled: true },
 ];
 
 const StepFormat = ({ data, updateData }: StepFormatProps) => {
@@ -28,12 +27,14 @@ const StepFormat = ({ data, updateData }: StepFormatProps) => {
           return (
             <Card
               key={option.value}
-              className={`p-6 cursor-pointer transition-all ${
-                data.preferred_format === option.value
-                  ? "bg-primary/10 border-primary shadow-glow"
-                  : "hover:bg-secondary/50"
+              className={`p-6 transition-all ${
+                option.disabled 
+                  ? "opacity-60 cursor-not-allowed" 
+                  : data.preferred_format === option.value
+                  ? "bg-primary/10 border-primary shadow-glow cursor-pointer"
+                  : "hover:bg-secondary/50 cursor-pointer"
               }`}
-              onClick={() => updateData("preferred_format", option.value)}
+              onClick={() => !option.disabled && updateData("preferred_format", option.value)}
             >
               <div className="flex items-start gap-4">
                 <div className="p-3 rounded-xl bg-primary/20">

@@ -84,10 +84,10 @@ const Auth = () => {
           </div>
           <div>
             <CardTitle className="text-3xl font-heading gradient-text mb-2">
-              Creator View
+              ClipCrafters
             </CardTitle>
             <CardDescription className="text-base">
-              De contenido a estrategia, impulsado por IA
+              From Clip to Click™
             </CardDescription>
           </div>
         </CardHeader>

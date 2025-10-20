@@ -87,7 +87,7 @@ const Dashboard = () => {
               Hola, {profile?.name || profile?.handle || 'Creator'}
             </h1>
             <p className="text-muted-foreground">
-              Tu estrategia de contenido
+              Shorts primero. Velocidad &gt; Complejidad.
             </p>
           </div>
           <Button variant="outline" onClick={handleSignOut} className="gap-2">
@@ -253,24 +253,37 @@ const Dashboard = () => {
         </div>
 
         {/* Coming Soon */}
-        <Card className="glass-card border-accent/30">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-accent" />
-              Próximamente
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>· Pipeline Kanban visual (Idea → Editing → Published)</li>
-              <li>· Calendario de publicaciones con vista mensual</li>
-              <li>· 24h Review con decisiones IA (Empujar, Recortar, Kill)</li>
-              <li>· Import CSV de analytics de plataformas</li>
-              <li>· Sistema de inspiración con estado de material</li>
-              <li>· Plan IA 7 días con ideas relatable y beat-cut timing</li>
-            </ul>
-          </CardContent>
-        </Card>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="glass-card border-accent/30">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-accent" />
+                Próximamente
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li>· Pipeline Kanban visual (Idea → Editing → Published)</li>
+                <li>· Calendario de publicaciones con vista mensual</li>
+                <li>· 24h Review con decisiones (Empujar, Recortar, Kill)</li>
+                <li>· Import CSV de analytics de plataformas</li>
+                <li>· Sistema de inspiración con estado de material</li>
+              </ul>
+            </CardContent>
+          </Card>
+
+          <Card className="glass-card border-muted/30 opacity-60">
+            <CardHeader>
+              <CardTitle className="text-lg">Long videos workflow</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-heading gradient-text mb-2">Coming soon</div>
+              <p className="text-sm text-muted-foreground">
+                Enfoque actual: shorts de alto impacto. Long-form en desarrollo.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

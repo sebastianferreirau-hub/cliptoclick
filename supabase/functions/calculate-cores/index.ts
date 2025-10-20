@@ -31,12 +31,13 @@ Deno.serve(async (req) => {
       throw new Error("LOVABLE_API_KEY not configured");
     }
 
-    const systemPrompt = `Eres un estratega de contenido experto. Filosofía From Clip to Click™: 
+    const systemPrompt = `Eres un estratega de contenido para shorts (short-form video ≤15s). Filosofía From Clip to Click™: 
 - Relatable > Perfecto
 - Ritmo > Efectos  
 - Velocidad > Complejidad
 - Beat-Cut: 0.6s/0.8s/1.2s
 - Texto nativo in-app
+- MODO: shorts_first (long-form no aplica por ahora)
 
 A partir de las respuestas autobiográficas del creador, identifica de 3 a 5 Content Cores principales y luego extrae las verticales de contenido específicas.
 
@@ -55,8 +56,10 @@ Las verticales son temas más específicos derivados de los cores. Deben ser bus
 Ejemplo: "recetas ecuatorianas", "adaptación cultural", "fotografía urbana Miami", "comida latina fusión"
 
 Luego genera:
-- Plan de 7 días: 2 ideas por día con título, core_key asociado, hook_line_1 (primera línea "relatable"), beat_cut_timing (0.6/0.8/1.2), y native_text_idea
+- Plan de 7 días: EXACTAMENTE 2 ideas de shorts por día (14 total). Cada idea con título, core_key asociado, hook_line_1 (primera línea "relatable"), beat_cut_timing (0.6/0.8/1.2), y native_text_idea
 - Patrones de caption por plataforma (TikTok, Instagram, YouTube Shorts): estructura, hooks, CTAs
+
+IMPORTANTE: Solo shorts. Long-form no aplica.
 
 Devuelve JSON válido con esta estructura:
 {
@@ -94,10 +97,11 @@ Devuelve JSON válido con esta estructura:
     "instagram": { "structure": "...", "hooks": [...], "ctas": [...] },
     "youtube_shorts": { "structure": "...", "hooks": [...], "ctas": [...] }
   },
-  "summary": "Resumen personalizado de 2-3 líneas sobre su perfil"
+  "summary": "Resumen personalizado de 2-3 líneas sobre su perfil",
+  "mode": "shorts_first"
 }`;
 
-    const userPrompt = `Analiza las respuestas autobiográficas de este creador:
+    const userPrompt = `Analiza las respuestas autobiográficas de este creador para contenido de SHORTS (≤15s):
 
 1. ¿Cómo te llamarías si tu historia fuera una película?
 ${testResponses.movie_title}
