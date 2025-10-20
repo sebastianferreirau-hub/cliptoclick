@@ -38,15 +38,21 @@ Deno.serve(async (req) => {
 - Beat-Cut: 0.6s/0.8s/1.2s
 - Texto nativo in-app
 
-A partir de las respuestas autobiográficas del creador, identifica sus 3 Content Cores principales (verticales de contenido).
-Las verticales pueden incluir: origen/identidad cultural, vida cotidiana/familia, trabajo/oficio, hobbies/pasiones, aspiraciones, estilo de vida, etc.
+A partir de las respuestas autobiográficas del creador, identifica de 3 a 5 Content Cores principales y luego extrae las verticales de contenido específicas.
 
-Para cada core detectado:
-1. Asigna un "key" descriptivo (ej: "latina_miami", "fotografia_creativa", "cocina_experimental")
-2. Un "label" atractivo (ej: "Latina en Miami", "Fotografía Creativa")
+CORES (identidad principal del creador):
+Los cores son los pilares de identidad del creador. Deben ser simples, directos y con emoji.
+Ejemplo: "Ecuador/latina en USA 🇪🇨", "vida en Miami 🏙️", "trabajo cotidiano 🛍️", "fotografía/creatividad 📸", "cocina y viajes aspiracionales 🍝"
+
+Para cada core:
+1. Un "label" simple y directo con emoji (ej: "Ecuador/latina en USA 🇪🇨")
+2. Un "key" descriptivo para código (ej: "latina_usa", "vida_miami")
 3. Un "score" estimado 0-100 basado en qué tan presente está en sus respuestas
-4. Una "description" de 2-3 líneas
-5. "specific_tips" con 3 tips prácticos de cómo crear contenido sobre ese core
+4. Una "description" breve de 1-2 líneas
+
+VERTICALES DE CONTENIDO (temas específicos para crear):
+Las verticales son temas más específicos derivados de los cores. Deben ser buscables y accionables.
+Ejemplo: "recetas ecuatorianas", "adaptación cultural", "fotografía urbana Miami", "comida latina fusión"
 
 Luego genera:
 - Plan de 7 días: 2 ideas por día con título, core_key asociado, hook_line_1 (primera línea "relatable"), beat_cut_timing (0.6/0.8/1.2), y native_text_idea
@@ -56,12 +62,18 @@ Devuelve JSON válido con esta estructura:
 {
   "cores": [
     {
-      "key": "latina_miami",
-      "label": "Latina en Miami",
+      "key": "latina_usa",
+      "label": "Ecuador/latina en USA 🇪🇨",
       "score": 85,
-      "description": "...",
-      "specific_tips": ["tip1", "tip2", "tip3"]
+      "description": "Tu identidad cultural como ecuatoriana viviendo en Estados Unidos"
     }
+  ],
+  "verticals": [
+    "recetas ecuatorianas",
+    "adaptación cultural",
+    "fotografía urbana Miami",
+    "comida latina fusión",
+    "vida de emprendedora"
   ],
   "plan_7d": [
     {
@@ -69,7 +81,7 @@ Devuelve JSON válido con esta estructura:
       "ideas": [
         {
           "title": "...",
-          "core_key": "latina_miami",
+          "core_key": "latina_usa",
           "hook_line_1": "...",
           "beat_cut_timing": 0.8,
           "native_text_idea": "..."
@@ -82,7 +94,6 @@ Devuelve JSON válido con esta estructura:
     "instagram": { "structure": "...", "hooks": [...], "ctas": [...] },
     "youtube_shorts": { "structure": "...", "hooks": [...], "ctas": [...] }
   },
-  "verticals": ["vertical1", "vertical2", "vertical3", "vertical4", "vertical5"],
   "summary": "Resumen personalizado de 2-3 líneas sobre su perfil"
 }`;
 

@@ -6,27 +6,27 @@
 
 @layer base {
   :root {
-    /* Creator View Dark Theme */
-    --background: 220 20% 6%;
-    --foreground: 0 0% 98%;
+    /* Creator View Light Theme - Electric Violet */
+    --background: 270 30% 98%;
+    --foreground: 220 20% 10%;
 
-    --card: 220 18% 10%;
-    --card-foreground: 0 0% 98%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 20% 10%;
 
-    --popover: 220 18% 12%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 10%;
 
-    /* Gradient Purple to Pink */
-    --primary: 262 80% 62%;
+    /* Electric Violet Primary */
+    --primary: 263 70% 50%;
     --primary-foreground: 0 0% 100%;
     
-    --secondary: 220 16% 18%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 270 20% 95%;
+    --secondary-foreground: 220 20% 10%;
 
-    --muted: 220 15% 15%;
-    --muted-foreground: 220 10% 60%;
+    --muted: 270 20% 95%;
+    --muted-foreground: 220 10% 40%;
 
-    --accent: 328 85% 65%;
+    --accent: 328 75% 55%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 70% 58%;
@@ -38,21 +38,21 @@
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
 
-    --border: 220 15% 20%;
-    --input: 220 15% 18%;
-    --ring: 262 80% 62%;
+    --border: 270 20% 88%;
+    --input: 270 20% 90%;
+    --ring: 263 70% 50%;
 
     --radius: 1rem;
 
-    /* Gradient tokens */
-    --gradient-primary: linear-gradient(135deg, hsl(262 80% 62%) 0%, hsl(328 85% 65%) 100%);
-    --gradient-subtle: linear-gradient(180deg, hsl(220 18% 12%) 0%, hsl(220 20% 8%) 100%);
-    --gradient-glow: radial-gradient(circle at 50% 0%, hsla(262 80% 62% / 0.15), transparent 50%);
+    /* Gradient tokens - Electric Violet to Pink */
+    --gradient-primary: linear-gradient(135deg, hsl(263 70% 50%) 0%, hsl(328 75% 55%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(270 30% 98%) 0%, hsl(270 20% 95%) 100%);
+    --gradient-glow: radial-gradient(circle at 50% 0%, hsla(263 70% 50% / 0.12), transparent 50%);
     
-    /* Shadows */
-    --shadow-glow: 0 0 60px hsla(262 80% 62% / 0.3);
-    --shadow-card: 0 8px 32px hsla(220 20% 4% / 0.4);
-    --shadow-elegant: 0 4px 24px hsla(220 20% 4% / 0.3);
+    /* Shadows - Softer for light theme */
+    --shadow-glow: 0 0 40px hsla(263 70% 50% / 0.2);
+    --shadow-card: 0 8px 32px hsla(220 20% 10% / 0.08);
+    --shadow-elegant: 0 4px 24px hsla(220 20% 10% / 0.06);
     
     /* Transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

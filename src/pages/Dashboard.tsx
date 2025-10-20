@@ -74,7 +74,8 @@ const Dashboard = () => {
     );
   }
 
-  const cores = profile?.content_cores || [];
+  const cores = profile?.content_cores?.cores || [];
+  const verticals = profile?.content_cores?.verticals || [];
 
   return (
     <div className="min-h-screen p-4 md:p-8">
@@ -144,46 +145,68 @@ const Dashboard = () => {
         <div>
           <h2 className="text-2xl font-heading mb-4 flex items-center gap-2">
             <Sparkles className="w-6 h-6 text-primary" />
-            Tus 3 Content Cores
+            Tus Content Cores
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {cores.length > 0 ? (
-              cores.map((core: any, index: number) => (
-                <Card key={index} className="glass-card border-primary/20">
+          {cores.length > 0 ? (
+            <div className="space-y-6">
+              {/* Cores - Numbered List */}
+              <div className="space-y-3">
+                {cores.map((core: any, index: number) => (
+                  <Card key={index} className="glass-card border-primary/20">
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center font-heading text-primary font-bold">
+                          {index + 1}
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-lg font-heading mb-1">{core.label}</h3>
+                          <p className="text-sm text-muted-foreground">{core.description}</p>
+                        </div>
+                        <Badge className="bg-primary/20 text-primary border-0">
+                          {core.score}%
+                        </Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Verticales de Contenido */}
+              {verticals.length > 0 && (
+                <Card className="glass-card border-accent/20">
                   <CardHeader>
-                    <div className="flex justify-between items-start mb-2">
-                      <CardTitle className="text-lg">{core.label}</CardTitle>
-                      <Badge className="bg-primary/20 text-primary">
-                        {core.score}%
-                      </Badge>
-                    </div>
-                    <CardDescription className="text-sm leading-relaxed">
-                      {core.description}
+                    <CardTitle className="flex items-center gap-2">
+                      <Sparkles className="w-5 h-5 text-accent" />
+                      Verticales de Contenido
+                    </CardTitle>
+                    <CardDescription>
+                      Temas específicos que puedes buscar y crear
                     </CardDescription>
                   </CardHeader>
-                  {core.specific_tips && (
-                    <CardContent>
-                      <ul className="space-y-2 text-sm text-muted-foreground">
-                        {core.specific_tips.slice(0, 3).map((tip: string, i: number) => (
-                          <li key={i} className="flex gap-2">
-                            <span className="text-primary">·</span>
-                            <span>{tip}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                  )}
+                  <CardContent>
+                    <div className="flex flex-wrap gap-2">
+                      {verticals.map((vertical: string, index: number) => (
+                        <Badge 
+                          key={index} 
+                          variant="secondary" 
+                          className="px-3 py-1.5 text-sm bg-secondary/80 hover:bg-secondary"
+                        >
+                          {vertical}
+                        </Badge>
+                      ))}
+                    </div>
+                  </CardContent>
                 </Card>
-              ))
-            ) : (
-              <Card className="glass-card col-span-3">
-                <CardContent className="py-8 text-center text-muted-foreground">
-                  Completa el onboarding para descubrir tus Content Cores
-                </CardContent>
-              </Card>
-            )}
-          </div>
+              )}
+            </div>
+          ) : (
+            <Card className="glass-card">
+              <CardContent className="py-8 text-center text-muted-foreground">
+                Completa el onboarding para descubrir tus Content Cores
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* Quick Actions */}
