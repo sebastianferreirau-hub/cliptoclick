@@ -41,7 +41,7 @@ const Index = () => {
               </div>
               <h3 className="font-heading text-lg mb-2">Test Personalizado</h3>
               <p className="text-sm text-muted-foreground">
-                12 preguntas para detectar tu estilo único
+                7 preguntas para detectar tu estilo único
               </p>
             </div>
 

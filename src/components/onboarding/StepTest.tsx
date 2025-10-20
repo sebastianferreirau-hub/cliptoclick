@@ -9,7 +9,7 @@ interface StepTestProps {
 const questions = [
   {
     key: "movie_title",
-    question: "¿Cómo te llamarías si tu historia fuera una película?",
+    question: "¿Cómo te llamas y cómo te gusta/gustaría que te llamen?",
     helper: "Hace que empieces desde tu identidad y contexto emocional.",
   },
   {
