@@ -53,7 +53,8 @@ Para cada core:
 
 VERTICALES DE CONTENIDO (temas específicos para crear):
 Las verticales son temas más específicos derivados de los cores. Deben ser buscables y accionables.
-Ejemplo: "recetas ecuatorianas", "adaptación cultural", "fotografía urbana Miami", "comida latina fusión"
+IMPORTANTE: Genera EXACTAMENTE 3 verticales principales (las más fuertes). Máximo 5 si hay material excepcional.
+Ejemplo: "recetas ecuatorianas", "adaptación cultural", "fotografía urbana Miami"
 
 Luego genera:
 - Plan de 7 días: EXACTAMENTE 2 ideas de shorts por día (14 total). Cada idea con título, core_key asociado, hook_line_1 (primera línea "relatable"), beat_cut_timing (0.6/0.8/1.2), y native_text_idea
@@ -74,9 +75,7 @@ Devuelve JSON válido con esta estructura:
   "verticals": [
     "recetas ecuatorianas",
     "adaptación cultural",
-    "fotografía urbana Miami",
-    "comida latina fusión",
-    "vida de emprendedora"
+    "fotografía urbana Miami"
   ],
   "plan_7d": [
     {
