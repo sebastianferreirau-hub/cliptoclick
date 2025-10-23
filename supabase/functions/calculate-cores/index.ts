@@ -158,10 +158,18 @@ Identifica sus Content Cores principales, verticales de contenido, y genera plan
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Error in calculate-cores:", error);
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    // Log full error details server-side for debugging
+    console.error("Error in calculate-cores:", {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      timestamp: new Date().toISOString()
+    });
+    
+    // Return generic error message to client (no sensitive details)
     return new Response(
-      JSON.stringify({ error: errorMessage }),
+      JSON.stringify({ 
+        error: "Unable to process your request. Please try again or contact support if the issue persists." 
+      }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
