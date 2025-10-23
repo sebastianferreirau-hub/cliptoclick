@@ -1,1 +1,7 @@
 project_id = "fkyzmwpkdrorocyosbyh"
+
+[functions.kyc-session]
+verify_jwt = true
+
+[functions.kyc-webhook]
+verify_jwt = false
