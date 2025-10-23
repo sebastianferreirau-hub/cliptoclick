@@ -142,6 +142,200 @@ export type Database = {
         }
         Relationships: []
       }
+      audit_logs: {
+        Row: {
+          action: string
+          actor: string | null
+          created_at: string | null
+          entity_id: string
+          entity_type: string
+          id: number
+          ip: unknown
+          metadata: Json | null
+        }
+        Insert: {
+          action: string
+          actor?: string | null
+          created_at?: string | null
+          entity_id: string
+          entity_type: string
+          id?: number
+          ip?: unknown
+          metadata?: Json | null
+        }
+        Update: {
+          action?: string
+          actor?: string | null
+          created_at?: string | null
+          entity_id?: string
+          entity_type?: string
+          id?: number
+          ip?: unknown
+          metadata?: Json | null
+        }
+        Relationships: []
+      }
+      brands: {
+        Row: {
+          billing_country: string
+          created_at: string | null
+          kyb_status: string | null
+          org_name: string
+          user_id: string
+        }
+        Insert: {
+          billing_country: string
+          created_at?: string | null
+          kyb_status?: string | null
+          org_name: string
+          user_id: string
+        }
+        Update: {
+          billing_country?: string
+          created_at?: string | null
+          kyb_status?: string | null
+          org_name?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brands_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      campaigns: {
+        Row: {
+          brand_id: string
+          budget_usd: number
+          created_at: string | null
+          end_date: string | null
+          id: string
+          name: string
+          start_date: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          brand_id: string
+          budget_usd: number
+          created_at?: string | null
+          end_date?: string | null
+          id?: string
+          name: string
+          start_date?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          brand_id?: string
+          budget_usd?: number
+          created_at?: string | null
+          end_date?: string | null
+          id?: string
+          name?: string
+          start_date?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaigns_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      creators: {
+        Row: {
+          country_code: string | null
+          created_at: string | null
+          kyc_status: string | null
+          legal_name: string | null
+          risk_score: number | null
+          tax_form_type: string | null
+          tax_id: string | null
+          tax_status: string | null
+          user_id: string
+        }
+        Insert: {
+          country_code?: string | null
+          created_at?: string | null
+          kyc_status?: string | null
+          legal_name?: string | null
+          risk_score?: number | null
+          tax_form_type?: string | null
+          tax_id?: string | null
+          tax_status?: string | null
+          user_id: string
+        }
+        Update: {
+          country_code?: string | null
+          created_at?: string | null
+          kyc_status?: string | null
+          legal_name?: string | null
+          risk_score?: number | null
+          tax_form_type?: string | null
+          tax_id?: string | null
+          tax_status?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creators_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      disputes: {
+        Row: {
+          created_at: string | null
+          evidence_json: Json | null
+          id: string
+          offer_id: string
+          raiser_type: string | null
+          reason: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          evidence_json?: Json | null
+          id?: string
+          offer_id: string
+          raiser_type?: string | null
+          reason?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          evidence_json?: Json | null
+          id?: string
+          offer_id?: string
+          raiser_type?: string | null
+          reason?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "disputes_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "offers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       inspo: {
         Row: {
           created_at: string
@@ -174,6 +368,185 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      kyc_records: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          id: string
+          provider: string | null
+          reference: string | null
+          started_at: string | null
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          provider?: string | null
+          reference?: string | null
+          started_at?: string | null
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          provider?: string | null
+          reference?: string | null
+          started_at?: string | null
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      offers: {
+        Row: {
+          campaign_id: string
+          created_at: string | null
+          creator_id: string
+          escrow_amount_usd: number
+          id: string
+          status: string | null
+          terms_json: Json
+          updated_at: string | null
+        }
+        Insert: {
+          campaign_id: string
+          created_at?: string | null
+          creator_id: string
+          escrow_amount_usd: number
+          id?: string
+          status?: string | null
+          terms_json: Json
+          updated_at?: string | null
+        }
+        Update: {
+          campaign_id?: string
+          created_at?: string | null
+          creator_id?: string
+          escrow_amount_usd?: number
+          id?: string
+          status?: string | null
+          terms_json?: Json
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "offers_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "offers_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creators"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      payout_methods: {
+        Row: {
+          created_at: string | null
+          creator_id: string
+          details_json: Json
+          id: string
+          type: string
+          verified: boolean | null
+        }
+        Insert: {
+          created_at?: string | null
+          creator_id: string
+          details_json: Json
+          id?: string
+          type: string
+          verified?: boolean | null
+        }
+        Update: {
+          created_at?: string | null
+          creator_id?: string
+          details_json?: Json
+          id?: string
+          type?: string
+          verified?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payout_methods_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creators"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      payouts: {
+        Row: {
+          amount_usd: number
+          corridor: string
+          created_at: string | null
+          creator_id: string
+          currency: string
+          fee_usd: number | null
+          fx_rate: number | null
+          id: string
+          initiated_at: string | null
+          net_local: number | null
+          offer_id: string | null
+          settled_at: string | null
+          status: string | null
+        }
+        Insert: {
+          amount_usd: number
+          corridor: string
+          created_at?: string | null
+          creator_id: string
+          currency: string
+          fee_usd?: number | null
+          fx_rate?: number | null
+          id?: string
+          initiated_at?: string | null
+          net_local?: number | null
+          offer_id?: string | null
+          settled_at?: string | null
+          status?: string | null
+        }
+        Update: {
+          amount_usd?: number
+          corridor?: string
+          created_at?: string | null
+          creator_id?: string
+          currency?: string
+          fee_usd?: number | null
+          fx_rate?: number | null
+          id?: string
+          initiated_at?: string | null
+          net_local?: number | null
+          offer_id?: string | null
+          settled_at?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payouts_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creators"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "payouts_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "offers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       posts: {
         Row: {
