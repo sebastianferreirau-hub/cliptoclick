@@ -3,12 +3,12 @@ import { CheckCircle2 } from "lucide-react";
 
 const IncludesGrid = () => {
   const items = [
-    "Test 7 preguntas (Content Cores)",
-    "Plan 7 días (2 ideas/día)",
-    "Analytics 24h (checklist simple)",
-    "Plantilla Notion (inspos + clips + pipeline)",
-    "Comunidad privada (Discord)",
-    "2 revisiones grupales/semana",
+    "Test de Content Cores",
+    "Plan semanal personalizado",
+    "Checklist de calidad",
+    "Plantilla de organización",
+    "Comunidad privada",
+    "Revisiones grupales",
   ];
 
   return (

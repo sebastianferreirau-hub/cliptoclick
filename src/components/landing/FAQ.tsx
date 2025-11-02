@@ -16,16 +16,12 @@ const FAQ = () => {
       a: "Sí, ofrecemos plan de 2 pagos de USD 279 cada uno. Ten en cuenta que este plan no es elegible para la garantía de resultados.",
     },
     {
-      q: "¿Qué es la Beca LatAm?",
-      a: "Es un descuento del 30% para creadores de América Latina. Usa el código LATAM30 en el checkout para aplicarlo.",
-    },
-    {
       q: "¿Cuánto tiempo necesito dedicar?",
       a: "Entre 1-5 horas por semana es suficiente para empezar. El sistema está diseñado para ser sostenible sin burnout.",
     },
     {
       q: "¿Cómo se mide el avance?",
-      a: "Medimos retención en los primeros 1-3 segundos, constancia en publicaciones, y output semanal. Te damos feedback específico en las sesiones grupales.",
+      a: "Medimos impressiones y constancia en publicaciones. Te damos feedback específico en las sesiones grupales.",
     },
   ];
 

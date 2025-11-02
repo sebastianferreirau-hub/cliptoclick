@@ -89,8 +89,8 @@ const PricingBox = () => {
           </div>
 
           <div className="mb-6">
-            <label className="text-sm text-muted-foreground mb-2 block">¿Tienes código regional?</label>
-            <Input placeholder="Ej: LATAM30" className="rounded-xl" />
+            <label className="text-sm text-muted-foreground mb-2 block">¿Tienes código promocional?</label>
+            <Input placeholder="Ingresa tu código" className="rounded-xl" />
           </div>
 
           <Button

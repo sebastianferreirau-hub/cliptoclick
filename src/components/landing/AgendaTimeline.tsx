@@ -2,14 +2,14 @@ import { Card } from "@/components/ui/card";
 
 const AgendaTimeline = () => {
   const weeks = [
-    { week: 1, title: "Setup & Clips", desc: "Configuración inicial y primeros clips" },
-    { week: 2, title: "Ritmo I", desc: "Dominar el timing 0.6-1.2s" },
-    { week: 3, title: "Distribución I", desc: "Publicar con constancia" },
-    { week: 4, title: "Optimización", desc: "Ajustar según métricas" },
-    { week: 5, title: "Ritmo II", desc: "Refinar edición avanzada" },
-    { week: 6, title: "Distribución II", desc: "Escalar publicaciones" },
-    { week: 7, title: "Consolidación", desc: "Fortalecer tu sistema" },
-    { week: 8, title: "Lanzamiento", desc: "Sistema completo funcionando" },
+    { week: 1, title: "Setup & Clips" },
+    { week: 2, title: "Ritmo I" },
+    { week: 3, title: "Distribución I" },
+    { week: 4, title: "Optimización" },
+    { week: 5, title: "Ritmo II" },
+    { week: 6, title: "Distribución II" },
+    { week: 7, title: "Consolidación" },
+    { week: 8, title: "Lanzamiento" },
   ];
 
   return (
@@ -26,8 +26,7 @@ const AgendaTimeline = () => {
           {weeks.map((week) => (
             <Card key={week.week} className="glass-card p-6 hover:shadow-elegant transition-all">
               <div className="text-sm text-primary font-semibold mb-2">Semana {week.week}</div>
-              <h3 className="font-semibold text-lg mb-2">{week.title}</h3>
-              <p className="text-sm text-muted-foreground">{week.desc}</p>
+              <h3 className="font-semibold text-lg">{week.title}</h3>
             </Card>
           ))}
         </div>
