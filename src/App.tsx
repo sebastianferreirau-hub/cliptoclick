@@ -7,6 +7,8 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
+import Checkout from "./pages/Checkout";
+import Thanks from "./pages/Thanks";
 import Offers from "./pages/Offers";
 import Payouts from "./pages/Payouts";
 import Campaigns from "./pages/Campaigns";
@@ -27,6 +29,8 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/thanks" element={<Thanks />} />
           <Route path="/offers" element={<Offers />} />
           <Route path="/payouts" element={<Payouts />} />
           <Route path="/campaigns" element={<Campaigns />} />
