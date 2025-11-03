@@ -8,3 +8,33 @@ verify_jwt = false
 
 [functions.verticals-ai]
 verify_jwt = false
+
+[functions.instagram-connect]
+verify_jwt = false
+
+[functions.instagram-callback]
+verify_jwt = false
+
+[functions.tiktok-connect]
+verify_jwt = false
+
+[functions.tiktok-callback]
+verify_jwt = false
+
+[functions.snapchat-connect]
+verify_jwt = false
+
+[functions.snapchat-callback]
+verify_jwt = false
+
+[functions.onedrive-connect]
+verify_jwt = false
+
+[functions.onedrive-callback]
+verify_jwt = false
+
+[functions.analytics-providers]
+verify_jwt = true
+
+[functions.analytics-fetch]
+verify_jwt = false
