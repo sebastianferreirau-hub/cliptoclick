@@ -9,14 +9,12 @@ export default function Trust() {
   // Mock data - in production, fetch from backend
   const data = {
     'US-CO': {
-      kycCompletion: 97,
       payoutSuccess: 99.6,
       ttfdHours: 18,
       disputeRate: 0.3,
       fraudLossBps: 4,
     },
     'US-MX': {
-      kycCompletion: 95,
       payoutSuccess: 99.5,
       ttfdHours: 20,
       disputeRate: 0.4,
@@ -82,8 +80,7 @@ export default function Trust() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
-          <MetricCard label="KYC Completion" value={metrics.kycCompletion} suffix="%" trend="up" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
           <MetricCard label="Payout Success" value={metrics.payoutSuccess} suffix="%" trend="up" />
           <MetricCard label="Time to First Dollar (hrs)" value={metrics.ttfdHours} suffix="" />
           <MetricCard label="Dispute Rate" value={metrics.disputeRate} suffix="%" />
@@ -93,7 +90,7 @@ export default function Trust() {
         <div className="grid gap-6 md:grid-cols-2">
           <Card>
             <CardHeader>
-              <CardTitle>KYC Completion Trend</CardTitle>
+              <CardTitle>Payout Success Rate</CardTitle>
               <CardDescription>Last 30 days</CardDescription>
             </CardHeader>
             <CardContent className="h-64 flex items-center justify-center">
@@ -103,7 +100,7 @@ export default function Trust() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Payout Success Rate</CardTitle>
+              <CardTitle>Dispute Trend</CardTitle>
               <CardDescription>Last 30 days</CardDescription>
             </CardHeader>
             <CardContent className="h-64 flex items-center justify-center">
@@ -115,7 +112,7 @@ export default function Trust() {
         <Card>
           <CardHeader>
             <CardTitle>Recent Exceptions</CardTitle>
-            <CardDescription>Failed payouts and KYC rejections</CardDescription>
+            <CardDescription>Failed payouts and disputes</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-center py-8">

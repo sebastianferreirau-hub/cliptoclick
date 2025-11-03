@@ -5,14 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { ArrowRight, ArrowLeft } from "lucide-react";
-import { KycStatus } from "@/components/kyc/KycStatus";
 import StepBasics from "@/components/onboarding/StepBasics";
 import StepTime from "@/components/onboarding/StepTime";
 import StepFormat from "@/components/onboarding/StepFormat";
 import StepTest from "@/components/onboarding/StepTest";
 import StepGoal from "@/components/onboarding/StepGoal";
 
-const STEPS = 6;
+const STEPS = 5;
 
 const Onboarding = () => {
   const navigate = useNavigate();
@@ -147,9 +146,6 @@ const Onboarding = () => {
           )}
           {currentStep === 5 && (
             <StepGoal data={formData} updateData={updateFormData} />
-          )}
-          {currentStep === 6 && userId && (
-            <KycStatus userId={userId} />
           )}
         </div>
 
