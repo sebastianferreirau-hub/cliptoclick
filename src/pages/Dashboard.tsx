@@ -174,15 +174,13 @@ const Dashboard = () => {
                 </svg>
               }
               title="Plan de 8 semanas (Notion)"
-              description={!profile?.has_access ? "Plan de 8 semanas disponible tras el pago." : "Sincroniza tu plan y abre la plantilla en Notion."}
-              isLocked={!profile?.has_access}
+              description="Sincroniza tu plan y abre la plantilla en Notion."
               isConnected={profile?.notion_connected || false}
-              onUnlock={() => navigate('/checkout')}
-              primaryAction={profile?.has_access ? {
+              primaryAction={{
                 label: "Conectar Notion",
                 onClick: () => toast.info("OAuth de Notion - próximamente")
-              } : undefined}
-              secondaryAction={profile?.has_access && profile?.notion_connected ? {
+              }}
+              secondaryAction={profile?.notion_connected ? {
                 label: "Abrir plantilla",
                 onClick: () => toast.info("Abrir plantilla - próximamente")
               } : undefined}
@@ -192,9 +190,7 @@ const Dashboard = () => {
               icon={<Sparkles className="w-6 h-6" />}
               title="Plan 7 días (IA)"
               description="Tus ideas rápidas según tus verticales."
-              isLocked={!profile?.has_access}
-              onUnlock={() => navigate('/checkout')}
-              primaryAction={profile?.has_access && hasVerticalsData ? {
+              primaryAction={hasVerticalsData ? {
                 label: "Generar con IA",
                 onClick: () => setShowPlan7(true)
               } : undefined}
@@ -204,33 +200,29 @@ const Dashboard = () => {
               icon={<Cloud className="w-6 h-6" />}
               title="Conectar OneDrive"
               description="Usaremos tus archivos para sugerencias personalizadas (solo lectura)."
-              isLocked={!profile?.has_access}
               isConnected={profile?.onedrive_connected || false}
-              onUnlock={() => navigate('/checkout')}
-              primaryAction={profile?.has_access ? {
+              primaryAction={{
                 label: "Conectar OneDrive",
                 onClick: () => toast.info("OAuth de OneDrive - próximamente")
-              } : undefined}
+              }}
             />
 
             <QuickActionCard
               icon={<BarChart3 className="w-6 h-6" />}
               title="Analytics"
               description="Conecta IG/TikTok/Snapchat para importar vistas, ER y publicación."
-              isLocked={!profile?.has_access}
-              onUnlock={() => navigate('/checkout')}
-              primaryAction={profile?.has_access ? {
+              primaryAction={{
                 label: profile?.instagram_connected || profile?.tiktok_connected || profile?.snapchat_connected 
                   ? "Ver Analytics" 
                   : "Conectar plataformas",
                 onClick: () => toast.info("Analytics - próximamente")
-              } : undefined}
+              }}
             />
           </div>
         </div>
 
         {/* Plan 7 Dialog */}
-        {profile?.has_access && hasVerticalsData && (
+        {hasVerticalsData && (
           <Plan7Dialog 
             open={showPlan7} 
             onOpenChange={setShowPlan7}
