@@ -43,7 +43,8 @@ serve(async (req) => {
       success_url: `${baseUrl}/thanks?success=true`,
       cancel_url: `${baseUrl}/checkout?canceled=true`,
       metadata,
-      automatic_tax: { enabled: true },
+      // Automatic tax disabled for now - enable once Stripe is configured
+      // automatic_tax: { enabled: true },
       allow_promotion_codes: true,
     };
 
