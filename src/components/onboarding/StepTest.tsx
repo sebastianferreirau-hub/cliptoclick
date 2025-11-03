@@ -8,46 +8,41 @@ interface StepTestProps {
 
 const questions = [
   {
-    key: "movie_title",
-    question: "¿Cómo te llamas y cómo te gusta/gustaría que te llamen?",
-    helper: "Hace que empieces desde tu identidad y contexto emocional.",
-  },
-  {
-    key: "origin_location",
-    question: "¿De dónde eres y dónde estás viviendo ahora?",
+    key: "from_now",
+    question: "1. ¿De dónde eres y dónde estás viviendo ahora?",
     helper: "Dispara origen cultural y posible vertical de pertenencia o comunidad.",
   },
   {
-    key: "daily_life",
-    question: "¿Con quién o con qué vives que haga parte de tu día a día?",
+    key: "who_with",
+    question: "2. ¿Con quién o con qué vives que haga parte de tu día a día?",
     helper: "Sirve para descubrir si hay mascota, pareja, roomie, familia — todas posibles verticales.",
   },
   {
-    key: "passions",
-    question: "¿Qué cosas te apasionan o te dan energía últimamente?",
+    key: "energizes",
+    question: "3. ¿Qué cosas te apasionan o te dan energía últimamente?",
     helper: "Abre paso a verticales de hobby o estilo de vida.",
   },
   {
-    key: "work",
-    question: "¿A qué te dedicas o qué haces para pagar tus cuentas (aunque no te encante)?",
+    key: "job_now",
+    question: "4. ¿A qué te dedicas o qué haces para pagar tus cuentas (aunque no te encante)?",
     helper: "Permite mostrar contraste entre 'lo que hago' y 'lo que quiero hacer'.",
   },
   {
-    key: "future",
-    question: "¿Qué te gustaría estar haciendo dentro de un año si todo te saliera bien?",
+    key: "one_year",
+    question: "5. ¿Qué te gustaría estar haciendo dentro de un año si todo te saliera bien?",
     helper: "Aquí sale la cuarta vertical aspiracional, lo que quieres ser.",
   },
   {
-    key: "bio",
-    question: "Si tuvieras que contarte en cuatro frases, ¿qué dirías para que alguien entienda quién eres y qué haces?",
-    helper: "Cierra el bucle y te obliga a sintetizar.",
+    key: "five_min_topics",
+    question: "6. Nombra 3 temas de los que podrías hablar 5 minutos sin guion:",
+    helper: "Ej: 'Recetas ecuatorianas, Adaptarse a USA, Fotografía urbana'",
   },
 ];
 
 const StepTest = ({ data, updateData }: StepTestProps) => {
   const handleTextChange = (key: string, value: string) => {
-    const newResponses = { ...data.test_responses, [key]: value };
-    updateData("test_responses", newResponses);
+    const newResponses = { ...data.answers, [key]: value };
+    updateData("answers", newResponses);
   };
 
   return (
@@ -68,7 +63,7 @@ const StepTest = ({ data, updateData }: StepTestProps) => {
             <Label className="text-sm font-semibold leading-relaxed">{q.question}</Label>
             <p className="text-xs text-muted-foreground">{q.helper}</p>
             <Textarea
-              value={data.test_responses[q.key] || ""}
+              value={data.answers[q.key] || ""}
               onChange={(e) => handleTextChange(q.key, e.target.value)}
               placeholder="Escribe tu respuesta aquí..."
               className="min-h-[80px] resize-none"

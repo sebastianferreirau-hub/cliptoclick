@@ -11,7 +11,7 @@ import StepFormat from "@/components/onboarding/StepFormat";
 import StepTest from "@/components/onboarding/StepTest";
 import StepGoal from "@/components/onboarding/StepGoal";
 
-const STEPS = 5;
+const STEPS = 4;
 
 const Onboarding = () => {
   const navigate = useNavigate();
@@ -26,14 +26,13 @@ const Onboarding = () => {
     lang: "es",
     time_commitment: "",
     preferred_format: "",
-    test_responses: {
-      movie_title: "",
-      origin_location: "",
-      daily_life: "",
-      passions: "",
-      work: "",
-      future: "",
-      bio: "",
+    answers: {
+      from_now: "",
+      who_with: "",
+      energizes: "",
+      job_now: "",
+      one_year: "",
+      five_min_topics: "",
     },
     goal_primary: "",
   });
@@ -69,13 +68,18 @@ const Onboarding = () => {
     
     setLoading(true);
     try {
-      // Calculate content cores
-      const { data: aiData, error: aiError } = await supabase.functions.invoke('calculate-cores', {
+      // Call VerticalsAI
+      const { data: aiData, error: aiError } = await supabase.functions.invoke('verticals-ai', {
         body: {
-          testResponses: formData.test_responses,
-          goal: formData.goal_primary,
-          timeCommitment: formData.time_commitment,
-          preferredFormat: formData.preferred_format,
+          answers: {
+            name: formData.name,
+            ...formData.answers
+          },
+          meta: {
+            platforms: formData.preferred_format === 'short' ? ['instagram', 'tiktok'] : ['instagram', 'tiktok', 'youtube'],
+            language: formData.lang,
+            level: formData.time_commitment === '1-5h' ? 'beginner' : formData.time_commitment === '5-10h' ? 'intermediate' : 'advanced',
+          }
         }
       });
 
@@ -102,7 +106,7 @@ const Onboarding = () => {
       // Save analysis
       await supabase.from('ai_runs').insert({
         user_id: userId,
-        kind: 'profile',
+        kind: 'verticals',
         input_json: formData,
         output_json: aiData,
       });
@@ -136,15 +140,12 @@ const Onboarding = () => {
             <StepBasics data={formData} updateData={updateFormData} />
           )}
           {currentStep === 2 && (
-            <StepTime data={formData} updateData={updateFormData} />
+            <StepTest data={formData} updateData={updateFormData} />
           )}
           {currentStep === 3 && (
             <StepFormat data={formData} updateData={updateFormData} />
           )}
           {currentStep === 4 && (
-            <StepTest data={formData} updateData={updateFormData} />
-          )}
-          {currentStep === 5 && (
             <StepGoal data={formData} updateData={updateFormData} />
           )}
         </div>

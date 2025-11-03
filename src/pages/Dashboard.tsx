@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, LogOut, BarChart3, Upload, Calendar, Settings } from "lucide-react";
 import { toast } from "sonner";
+import VerticalsDisplay from "@/components/dashboard/VerticalsDisplay";
 
 interface Profile {
   name: string | null;
@@ -74,8 +75,9 @@ const Dashboard = () => {
     );
   }
 
-  const cores = profile?.content_cores?.cores || [];
   const verticals = profile?.content_cores?.verticals || [];
+  const summary = profile?.content_cores?.summary || "";
+  const hasVerticalsData = verticals.length > 0 && verticals[0]?.name;
 
   return (
     <div className="min-h-screen p-4 md:p-8">
@@ -141,73 +143,16 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        {/* Content Cores */}
-        <div>
-          <h2 className="text-2xl font-heading mb-4 flex items-center gap-2">
-            <Sparkles className="w-6 h-6 text-primary" />
-            Tus Content Cores
-          </h2>
-          
-          {cores.length > 0 ? (
-            <div className="space-y-6">
-              {/* Cores - Numbered List */}
-              <div className="space-y-3">
-                {cores.map((core: any, index: number) => (
-                  <Card key={index} className="glass-card border-primary/20">
-                    <CardContent className="p-4">
-                      <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center font-heading text-primary font-bold">
-                          {index + 1}
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="text-lg font-heading mb-1">{core.label}</h3>
-                          <p className="text-sm text-muted-foreground">{core.description}</p>
-                        </div>
-                        <Badge className="bg-primary/20 text-primary border-0">
-                          {core.score}%
-                        </Badge>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-
-              {/* Verticales de Contenido */}
-              {verticals.length > 0 && (
-                <Card className="glass-card border-accent/20">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Sparkles className="w-5 h-5 text-accent" />
-                      Verticales de Contenido
-                    </CardTitle>
-                    <CardDescription>
-                      Temas específicos que puedes buscar y crear
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-2">
-                      {verticals.map((vertical: string, index: number) => (
-                        <Badge 
-                          key={index} 
-                          variant="secondary" 
-                          className="px-3 py-1.5 text-sm bg-secondary/80 hover:bg-secondary"
-                        >
-                          {vertical}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
-          ) : (
-            <Card className="glass-card">
-              <CardContent className="py-8 text-center text-muted-foreground">
-                Completa el onboarding para descubrir tus Content Cores
-              </CardContent>
-            </Card>
-          )}
-        </div>
+        {/* Verticals Display */}
+        {hasVerticalsData ? (
+          <VerticalsDisplay verticals={verticals} summary={summary} />
+        ) : (
+          <Card className="glass-card">
+            <CardContent className="py-8 text-center text-muted-foreground">
+              Completa el onboarding para descubrir tus verticales de contenido
+            </CardContent>
+          </Card>
+        )}
 
         {/* Quick Actions */}
         <div>
