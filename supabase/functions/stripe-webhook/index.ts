@@ -18,9 +18,11 @@ serve(async (req) => {
     return new Response('Missing signature or webhook secret', { status: 400 });
   }
 
+  let event: Stripe.Event | undefined;
+  
   try {
     const body = await req.text();
-    const event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+    event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
 
     console.log('Webhook event received:', event.type);
 
