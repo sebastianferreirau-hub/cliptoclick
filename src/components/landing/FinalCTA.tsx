@@ -25,7 +25,7 @@ const FinalCTA = () => {
         </Button>
 
         <p className="text-sm text-muted-foreground">
-          Plazas limitadas · Early Bird termina en 72h
+          Plazas limitadas
         </p>
       </div>
     </section>

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,18 +7,26 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Shield, CreditCard } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const Checkout = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [plan, setPlan] = useState("one_time");
   const [coupon, setCoupon] = useState("");
   const [discount, setDiscount] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const prices = {
-    one_time: 499,
-    earlybird: 379,
-    two_pay: 279,
+    one_time: 299,
+    two_pay: 199,
   };
+
+  useEffect(() => {
+    if (searchParams.get("canceled")) {
+      toast.error("Pago cancelado. Puedes intentar nuevamente.");
+    }
+  }, [searchParams]);
 
   const applyCoupon = () => {
     if (coupon.toUpperCase() === "LATAM30") {
@@ -30,13 +38,33 @@ const Checkout = () => {
   };
 
   const calculatePrice = () => {
-    const basePrice = plan === "one_time" ? prices.earlybird : prices.two_pay;
+    const basePrice = plan === "one_time" ? prices.one_time : prices.two_pay;
     return Math.round(basePrice * (1 - discount));
   };
 
-  const handleCheckout = () => {
-    toast.success("Redirigiendo a pago seguro...");
-    setTimeout(() => navigate("/thanks"), 1500);
+  const handleCheckout = async () => {
+    setLoading(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+        body: { 
+          plan,
+          promo_code: coupon || null,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('No checkout URL received');
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      toast.error("Error al procesar el pago. Por favor intenta nuevamente.");
+      setLoading(false);
+    }
   };
 
   return (
@@ -64,10 +92,7 @@ const Checkout = () => {
                       <span className="font-semibold text-lg">Pago único</span>
                       <Shield className="w-4 h-4 text-success" />
                     </div>
-                    <p className="text-2xl font-bold text-primary mb-1">
-                      USD {prices.earlybird}
-                    </p>
-                    <p className="text-sm text-muted-foreground line-through mb-2">
+                    <p className="text-2xl font-bold text-primary mb-2">
                       USD {prices.one_time}
                     </p>
                     <p className="text-sm text-success font-medium">
@@ -122,12 +147,12 @@ const Checkout = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Precio base:</span>
-                  <span>USD {plan === "one_time" ? prices.earlybird : prices.two_pay}</span>
+                  <span>USD {plan === "one_time" ? prices.one_time : prices.two_pay}</span>
                 </div>
                 {discount > 0 && (
                   <div className="flex justify-between text-success">
                     <span>Descuento ({discount * 100}%):</span>
-                    <span>-USD {Math.round((plan === "one_time" ? prices.earlybird : prices.two_pay) * discount)}</span>
+                    <span>-USD {Math.round((plan === "one_time" ? prices.one_time : prices.two_pay) * discount)}</span>
                   </div>
                 )}
                 <div className="border-t pt-3 flex justify-between text-xl font-bold">
@@ -145,9 +170,10 @@ const Checkout = () => {
                 size="lg"
                 className="w-full bg-gradient-primary hover:opacity-90 text-white rounded-xl mb-4"
                 onClick={handleCheckout}
+                disabled={loading}
               >
                 <CreditCard className="mr-2 w-5 h-5" />
-                Proceder al pago
+                {loading ? "Procesando..." : "Proceder al pago"}
               </Button>
 
               {plan === "one_time" && (
