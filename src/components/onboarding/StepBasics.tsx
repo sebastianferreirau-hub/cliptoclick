@@ -23,7 +23,7 @@ const StepBasics = ({ data, updateData }: StepBasicsProps) => {
             placeholder="María García"
             value={data.name}
             onChange={(e) => updateData("name", e.target.value)}
-            className="bg-secondary/50"
+            className="bg-pink-200/50"
           />
         </div>
 
@@ -34,7 +34,7 @@ const StepBasics = ({ data, updateData }: StepBasicsProps) => {
             placeholder="@mariagarcia"
             value={data.handle}
             onChange={(e) => updateData("handle", e.target.value)}
-            className="bg-secondary/50"
+            className="bg-pink-200/50"
           />
         </div>
 
@@ -46,14 +46,14 @@ const StepBasics = ({ data, updateData }: StepBasicsProps) => {
               placeholder="México"
               value={data.country}
               onChange={(e) => updateData("country", e.target.value)}
-              className="bg-secondary/50"
+              className="bg-pink-200/50"
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="lang">Idioma principal</Label>
             <Select value={data.lang} onValueChange={(val) => updateData("lang", val)}>
-              <SelectTrigger className="bg-secondary/50">
+              <SelectTrigger className="bg-pink-200/50">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
