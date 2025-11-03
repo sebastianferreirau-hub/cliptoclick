@@ -653,6 +653,51 @@ export type Database = {
         }
         Relationships: []
       }
+      purchases: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          customer_id: string
+          email: string
+          guarantee_eligible: boolean
+          id: string
+          last_payment_at: string | null
+          plan: string
+          status: string
+          subscription_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          customer_id: string
+          email: string
+          guarantee_eligible?: boolean
+          id?: string
+          last_payment_at?: string | null
+          plan: string
+          status?: string
+          subscription_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          customer_id?: string
+          email?: string
+          guarantee_eligible?: boolean
+          id?: string
+          last_payment_at?: string | null
+          plan?: string
+          status?: string
+          subscription_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
