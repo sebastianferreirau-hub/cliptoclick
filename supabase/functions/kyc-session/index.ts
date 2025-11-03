@@ -19,22 +19,26 @@ Deno.serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
-    // Verify authentication
+    // Verify authentication using Authorization header
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       throw new Error('Missing authorization header');
     }
 
-    const token = authHeader.replace('Bearer ', '');
-    const userResponse = await fetch(`${supabaseUrl}/auth/v1/user`, {
-      headers: { Authorization: `Bearer ${token}` },
+    // Create Supabase client with user's token
+    const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
+    const supabaseClient = createClient(supabaseUrl, supabaseKey, {
+      global: {
+        headers: { Authorization: authHeader },
+      },
     });
 
-    if (!userResponse.ok) {
+    // Get authenticated user
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+    
+    if (authError || !user) {
       throw new Error('Invalid authentication');
     }
-
-    const user = await userResponse.json();
 
     const body: KycSessionRequest = await req.json();
     const { userId, legalName, countryCode } = body;
