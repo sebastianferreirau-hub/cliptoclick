@@ -54,6 +54,26 @@ serve(async (req) => {
           console.error('Error storing purchase:', purchaseError);
         }
 
+        // **CRITICAL: Grant access after successful payment**
+        if (email) {
+          const { data: userData, error: userError } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('email', email)
+            .single();
+
+          if (userData && !userError) {
+            const { error: accessError } = await supabase
+              .from('profiles')
+              .update({ has_access: true })
+              .eq('id', userData.id);
+
+            if (!accessError) {
+              console.log('Access granted to user:', userData.id);
+            }
+          }
+        }
+
         // For two-pay plan, create subscription schedule to limit to 2 payments
         if (subscriptionId && plan === 'two_pay') {
           try {

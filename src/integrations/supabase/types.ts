@@ -369,6 +369,39 @@ export type Database = {
         }
         Relationships: []
       }
+      integration_tokens: {
+        Row: {
+          access_token: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          provider: string
+          refresh_token: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          provider: string
+          refresh_token?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          provider?: string
+          refresh_token?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       kyc_records: {
         Row: {
           completed_at: string | null
@@ -611,11 +644,18 @@ export type Database = {
           email: string | null
           goal_primary: string | null
           handle: string | null
+          has_access: boolean
           id: string
+          instagram_connected: boolean
           lang: string | null
           name: string | null
+          notion_connected: boolean
+          notion_workspace_id: string | null
           onboarding_completed: boolean | null
+          onedrive_connected: boolean
           raw_folder_link: string | null
+          snapchat_connected: boolean
+          tiktok_connected: boolean
           time_commitment: string | null
           updated_at: string
         }
@@ -627,11 +667,18 @@ export type Database = {
           email?: string | null
           goal_primary?: string | null
           handle?: string | null
+          has_access?: boolean
           id: string
+          instagram_connected?: boolean
           lang?: string | null
           name?: string | null
+          notion_connected?: boolean
+          notion_workspace_id?: string | null
           onboarding_completed?: boolean | null
+          onedrive_connected?: boolean
           raw_folder_link?: string | null
+          snapchat_connected?: boolean
+          tiktok_connected?: boolean
           time_commitment?: string | null
           updated_at?: string
         }
@@ -643,11 +690,18 @@ export type Database = {
           email?: string | null
           goal_primary?: string | null
           handle?: string | null
+          has_access?: boolean
           id?: string
+          instagram_connected?: boolean
           lang?: string | null
           name?: string | null
+          notion_connected?: boolean
+          notion_workspace_id?: string | null
           onboarding_completed?: boolean | null
+          onedrive_connected?: boolean
           raw_folder_link?: string | null
+          snapchat_connected?: boolean
+          tiktok_connected?: boolean
           time_commitment?: string | null
           updated_at?: string
         }
