@@ -135,10 +135,14 @@ serve(async (req) => {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('Webhook error:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Webhook processing failed';
+    console.error('Webhook error:', {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      event: event?.type
+    });
+    
     return new Response(
-      JSON.stringify({ error: errorMessage }),
+      JSON.stringify({ error: 'Webhook processing failed' }),
       { status: 400, headers: { 'Content-Type': 'application/json' } }
     );
   }
