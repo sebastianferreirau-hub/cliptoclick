@@ -188,10 +188,10 @@ const Dashboard = () => {
 
             <QuickActionCard
               icon={<Sparkles className="w-6 h-6" />}
-              title="Plan 7 días (IA)"
+              title="Plan 7 días"
               description="Tus ideas rápidas según tus verticales."
               primaryAction={hasVerticalsData ? {
-                label: "Generar con IA",
+                label: "Generar plan",
                 onClick: () => setShowPlan7(true)
               } : undefined}
             />
@@ -210,12 +210,12 @@ const Dashboard = () => {
             <QuickActionCard
               icon={<BarChart3 className="w-6 h-6" />}
               title="Analytics"
-              description="Conecta IG/TikTok/Snapchat para importar vistas, ER y publicación."
+              description="Conecta IG/TikTok/Snapchat para ver métricas en tiempo real (solo lectura)."
               primaryAction={{
                 label: profile?.instagram_connected || profile?.tiktok_connected || profile?.snapchat_connected 
                   ? "Ver Analytics" 
                   : "Conectar plataformas",
-                onClick: () => toast.info("Analytics - próximamente")
+                onClick: () => navigate('/analytics')
               }}
             />
           </div>
