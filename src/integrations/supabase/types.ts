@@ -667,6 +667,7 @@ export type Database = {
           status: string
           subscription_id: string | null
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           amount: number
@@ -681,6 +682,7 @@ export type Database = {
           status?: string
           subscription_id?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           amount?: number
@@ -695,6 +697,7 @@ export type Database = {
           status?: string
           subscription_id?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -724,6 +727,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      decrypt_tax_id: { Args: { encrypted_tax_id: string }; Returns: string }
+      encrypt_tax_id: { Args: { plaintext_tax_id: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

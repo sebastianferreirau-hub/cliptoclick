@@ -60,7 +60,7 @@ serve(async (req) => {
               from_subscription: subscription.id,
               end_behavior: 'cancel',
               phases: [{
-                items: subscription.items.data.map(item => ({
+                items: subscription.items.data.map((item: any) => ({
                   price: item.price.id,
                   quantity: item.quantity || 1,
                 })),
@@ -136,8 +136,9 @@ serve(async (req) => {
     });
   } catch (error) {
     console.error('Webhook error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Webhook processing failed';
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: errorMessage }),
       { status: 400, headers: { 'Content-Type': 'application/json' } }
     );
   }
