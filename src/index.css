@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ClipCrafters Form Design Tokens */
+:root {
+  --cc-violet: #7C3AED;
+  --cc-pink: #EC4899;
+  --cc-text: #0F172A;
+  --cc-field-bg: #F8FAFC;
+  --cc-border: #E5E7EB;
+  --cc-border-hover: #CBD5E1;
+  --cc-placeholder: #94A3B8;
+  --cc-error: #EF4444;
+  --cc-error-bg: #FEF2F2;
+  --cc-success: #10B981;
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @layer base {

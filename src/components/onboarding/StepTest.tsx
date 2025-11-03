@@ -13,28 +13,33 @@ const questions = [
     helper: "Dispara origen cultural y posible vertical de pertenencia o comunidad.",
   },
   {
+    key: "cultural_heritage",
+    question: "2. ¿Cómo describirías tus raíces o tu identidad cultural?",
+    helper: "Por ejemplo: 'mitad colombiano, mitad dominicano', 'mexicano-americano', 'latino criado en Miami', etc.",
+  },
+  {
     key: "who_with",
-    question: "2. ¿Con quién o con qué vives que haga parte de tu día a día?",
+    question: "3. ¿Con quién o con qué vives que haga parte de tu día a día?",
     helper: "Sirve para descubrir si hay mascota, pareja, roomie, familia — todas posibles verticales.",
   },
   {
     key: "energizes",
-    question: "3. ¿Qué cosas te apasionan o te dan energía últimamente?",
+    question: "4. ¿Qué cosas te apasionan o te dan energía últimamente?",
     helper: "Abre paso a verticales de hobby o estilo de vida.",
   },
   {
     key: "job_now",
-    question: "4. ¿A qué te dedicas o qué haces para pagar tus cuentas (aunque no te encante)?",
+    question: "5. ¿A qué te dedicas o qué haces para pagar tus cuentas (aunque no te encante)?",
     helper: "Permite mostrar contraste entre 'lo que hago' y 'lo que quiero hacer'.",
   },
   {
     key: "one_year",
-    question: "5. ¿Qué te gustaría estar haciendo dentro de un año si todo te saliera bien?",
+    question: "6. ¿Qué te gustaría estar haciendo dentro de un año si todo te saliera bien?",
     helper: "Aquí sale la cuarta vertical aspiracional, lo que quieres ser.",
   },
   {
     key: "five_min_topics",
-    question: "6. Nombra 3 temas de los que podrías hablar 5 minutos sin guion:",
+    question: "7. Nombra 3 temas de los que podrías hablar 5 minutos sin guion:",
     helper: "Ej: 'Recetas ecuatorianas, Adaptarse a USA, Fotografía urbana'",
   },
 ];

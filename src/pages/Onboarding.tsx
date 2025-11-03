@@ -28,6 +28,7 @@ const Onboarding = () => {
     preferred_format: "",
     answers: {
       from_now: "",
+      cultural_heritage: "",
       who_with: "",
       energizes: "",
       job_now: "",
