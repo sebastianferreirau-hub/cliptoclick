@@ -64,7 +64,7 @@ const StepTest = ({ data, updateData }: StepTestProps) => {
 
       <div className="space-y-6">
         {questions.map((q) => (
-          <div key={q.key} className="space-y-2 p-4 rounded-xl bg-secondary/30">
+          <div key={q.key} className="space-y-2 p-4 rounded-xl bg-white border border-[var(--cc-border)]">
             <Label className="text-sm font-semibold leading-relaxed">{q.question}</Label>
             <p className="text-xs text-muted-foreground">{q.helper}</p>
             <Textarea
