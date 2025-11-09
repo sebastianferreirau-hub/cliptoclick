@@ -5,7 +5,7 @@ const AgendaTimeline = () => {
     { 
       week: 1, 
       title: "Setup & Clips",
-      detail: "Conectar IG, definir cores y grabar 10 clips brutos"
+      detail: "Conecta tus RRSS, definir cores y grabar 10 clips brutos"
     },
     { 
       week: 2, 
