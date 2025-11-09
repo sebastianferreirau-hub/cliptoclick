@@ -21,6 +21,25 @@ interface RequestBody {
   };
 }
 
+// Helper to clean markdown code fences from JSON response
+function cleanJsonResponse(content: string): string {
+  // Remove markdown code fences if present
+  const trimmed = content.trim();
+  if (trimmed.startsWith('```json')) {
+    return trimmed
+      .replace(/^```json\n/, '')
+      .replace(/\n```$/, '')
+      .trim();
+  }
+  if (trimmed.startsWith('```')) {
+    return trimmed
+      .replace(/^```\n/, '')
+      .replace(/\n```$/, '')
+      .trim();
+  }
+  return content;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -123,7 +142,9 @@ Return exactly 3 content verticals following the schema.`;
     }
 
     const aiData = await response.json();
-    const result = JSON.parse(aiData.choices[0].message.content);
+    const rawContent = aiData.choices[0].message.content;
+    const cleanedContent = cleanJsonResponse(rawContent);
+    const result = JSON.parse(cleanedContent);
 
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
