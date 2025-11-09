@@ -48,7 +48,6 @@ const Checkout = () => {
     setLoading(true);
     
     try {
-      console.log('Starting checkout process...');
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
         body: { 
           plan,
@@ -57,14 +56,10 @@ const Checkout = () => {
         },
       });
 
-      console.log('Checkout response:', { data, error });
-
       if (error) throw error;
 
       if (data?.url) {
-        console.log('Redirecting to:', data.url);
-        // Use window.location.replace for more reliable redirect
-        window.location.replace(data.url);
+        window.location.href = data.url;
       } else {
         throw new Error('No checkout URL received');
       }
