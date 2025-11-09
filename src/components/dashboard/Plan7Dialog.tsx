@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Loader2, Sparkles } from "lucide-react";
+import { Loader2, Sparkles, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -14,15 +14,46 @@ interface Plan7DialogProps {
 export const Plan7Dialog = ({ open, onOpenChange, verticals }: Plan7DialogProps) => {
   const [loading, setLoading] = useState(false);
   const [plan, setPlan] = useState<any>(null);
+  const [hasAccess, setHasAccess] = useState(false);
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('has_access')
+        .eq('id', user.id)
+        .single();
+      
+      setHasAccess(!!profile?.has_access);
+    };
+    
+    if (open) checkAccess();
+  }, [open]);
 
   const generatePlan = async () => {
+    if (!hasAccess) {
+      toast.error("Necesitas suscripción para generar el plan");
+      return;
+    }
+    
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('ai-plan-7', {
         body: { verticals: verticals.slice(0, 3) }
       });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message?.includes('subscription_required')) {
+          toast.error("Esta funcionalidad requiere suscripción activa");
+        } else {
+          throw error;
+        }
+        return;
+      }
+      
       setPlan(data);
       toast.success("Plan generado con éxito");
     } catch (error) {
@@ -48,11 +79,16 @@ export const Plan7Dialog = ({ open, onOpenChange, verticals }: Plan7DialogProps)
             <p className="text-muted-foreground mb-6">
               Genera 14 ideas de contenido basadas en tus verticales principales.
             </p>
-            <Button onClick={generatePlan} disabled={loading} size="lg">
+            <Button onClick={generatePlan} disabled={loading || !hasAccess} size="lg">
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Generando...
+                </>
+              ) : !hasAccess ? (
+                <>
+                  <Lock className="mr-2 h-4 w-4" />
+                  Requiere suscripción
                 </>
               ) : (
                 <>

@@ -4,12 +4,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-import { ArrowRight, ArrowLeft } from "lucide-react";
+import { ArrowRight, ArrowLeft, Loader2 } from "lucide-react";
 import StepBasics from "@/components/onboarding/StepBasics";
 import StepTime from "@/components/onboarding/StepTime";
 import StepFormat from "@/components/onboarding/StepFormat";
 import StepTest from "@/components/onboarding/StepTest";
 import StepGoal from "@/components/onboarding/StepGoal";
+import { PaywallOverlay } from "@/components/PaywallOverlay";
 
 const STEPS = 4;
 
@@ -18,6 +19,8 @@ const Onboarding = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [hasAccess, setHasAccess] = useState(false);
+  const [checkingAccess, setCheckingAccess] = useState(true);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -39,13 +42,28 @@ const Onboarding = () => {
   });
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    const checkAccess = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
       if (!session) {
         navigate("/auth");
-      } else {
-        setUserId(session.user.id);
+        return;
       }
-    });
+      
+      setUserId(session.user.id);
+      
+      // Verificar acceso
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('has_access')
+        .eq('id', session.user.id)
+        .single();
+      
+      setHasAccess(!!profile?.has_access);
+      setCheckingAccess(false);
+    };
+    
+    checkAccess();
   }, [navigate]);
 
   const updateFormData = (field: string, value: any) => {
@@ -84,7 +102,14 @@ const Onboarding = () => {
         }
       });
 
-      if (aiError) throw aiError;
+      if (aiError) {
+        if (aiError.message?.includes('subscription_required')) {
+          toast.error("Esta funcionalidad requiere suscripción activa");
+        } else {
+          throw aiError;
+        }
+        return;
+      }
 
       // Update profile
       const { error: profileError } = await supabase
@@ -122,6 +147,31 @@ const Onboarding = () => {
   };
 
   const progress = (currentStep / STEPS) * 100;
+
+  if (checkingAccess) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!hasAccess) {
+    return (
+      <div className="min-h-screen p-4 md:p-8">
+        <div className="max-w-3xl mx-auto">
+          <div className="mb-8">
+            <h1 className="text-4xl font-heading gradient-text mb-4">
+              Descubre tus Content Cores
+            </h1>
+          </div>
+          <PaywallOverlay 
+            message="El cuestionario IA y la generación de verticales están disponibles solo para suscriptores."
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen p-4 md:p-8">
