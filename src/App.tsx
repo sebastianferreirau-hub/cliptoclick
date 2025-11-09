@@ -15,6 +15,8 @@ import Payouts from "./pages/Payouts";
 import Campaigns from "./pages/Campaigns";
 import Trust from "./pages/Trust";
 import OpsQueue from "./pages/OpsQueue";
+import Course from "./pages/Course";
+import Lesson from "./pages/Lesson";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +40,8 @@ const App = () => (
           <Route path="/campaigns" element={<Campaigns />} />
           <Route path="/trust" element={<Trust />} />
           <Route path="/ops/queue" element={<OpsQueue />} />
+          <Route path="/curso" element={<Course />} />
+          <Route path="/curso/:slug" element={<Lesson />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

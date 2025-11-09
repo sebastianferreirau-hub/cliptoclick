@@ -4,7 +4,7 @@ import VerticalsDisplay from "@/components/dashboard/VerticalsDisplay";
 import { QuickActionCard } from "@/components/dashboard/QuickActionCard";
 import { Plan7Dialog } from "@/components/dashboard/Plan7Dialog";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, BarChart3, Settings, Cloud, Sparkles } from "lucide-react";
+import { LogOut, BarChart3, Settings, Cloud, Sparkles, PlayCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
@@ -184,6 +184,16 @@ const Dashboard = () => {
                 label: "Abrir plantilla",
                 onClick: () => toast.info("Abrir plantilla - próximamente")
               } : undefined}
+            />
+
+            <QuickActionCard
+              icon={<PlayCircle className="w-6 h-6" />}
+              title="Curso completo"
+              description="8 semanas de metodología paso a paso."
+              primaryAction={{
+                label: profile?.has_access ? "Ir al curso" : "Ver planes",
+                onClick: () => navigate(profile?.has_access ? '/curso' : '/checkout')
+              }}
             />
 
             <QuickActionCard

@@ -435,6 +435,163 @@ export type Database = {
         }
         Relationships: []
       }
+      lesson_progress: {
+        Row: {
+          completed_at: string | null
+          completion_percentage: number | null
+          created_at: string | null
+          id: string
+          is_bookmarked: boolean | null
+          last_position_seconds: number | null
+          lesson_id: string
+          notes: string | null
+          rating: number | null
+          started_at: string | null
+          updated_at: string | null
+          user_id: string
+          watch_time_seconds: number | null
+        }
+        Insert: {
+          completed_at?: string | null
+          completion_percentage?: number | null
+          created_at?: string | null
+          id?: string
+          is_bookmarked?: boolean | null
+          last_position_seconds?: number | null
+          lesson_id: string
+          notes?: string | null
+          rating?: number | null
+          started_at?: string | null
+          updated_at?: string | null
+          user_id: string
+          watch_time_seconds?: number | null
+        }
+        Update: {
+          completed_at?: string | null
+          completion_percentage?: number | null
+          created_at?: string | null
+          id?: string
+          is_bookmarked?: boolean | null
+          last_position_seconds?: number | null
+          lesson_id?: string
+          notes?: string | null
+          rating?: number | null
+          started_at?: string | null
+          updated_at?: string | null
+          user_id?: string
+          watch_time_seconds?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_progress_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lesson_vertical_tags: {
+        Row: {
+          created_at: string | null
+          id: string
+          lesson_id: string
+          relevance_score: number | null
+          vertical_slug: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          lesson_id: string
+          relevance_score?: number | null
+          vertical_slug: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          lesson_id?: string
+          relevance_score?: number | null
+          vertical_slug?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_vertical_tags_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lessons: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          duration_seconds: number | null
+          id: string
+          is_premium: boolean | null
+          learning_outcomes: Json | null
+          module_name: string
+          order_index: number
+          prerequisites: Json | null
+          publish_status: string | null
+          related_verticals: Json | null
+          seo_description: string | null
+          seo_title: string | null
+          slug: string
+          title: string
+          updated_at: string | null
+          vertical_relevance_score: Json | null
+          vimeo_thumbnail_url: string | null
+          vimeo_video_id: string
+          week_number: number
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          duration_seconds?: number | null
+          id?: string
+          is_premium?: boolean | null
+          learning_outcomes?: Json | null
+          module_name: string
+          order_index: number
+          prerequisites?: Json | null
+          publish_status?: string | null
+          related_verticals?: Json | null
+          seo_description?: string | null
+          seo_title?: string | null
+          slug: string
+          title: string
+          updated_at?: string | null
+          vertical_relevance_score?: Json | null
+          vimeo_thumbnail_url?: string | null
+          vimeo_video_id: string
+          week_number: number
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          duration_seconds?: number | null
+          id?: string
+          is_premium?: boolean | null
+          learning_outcomes?: Json | null
+          module_name?: string
+          order_index?: number
+          prerequisites?: Json | null
+          publish_status?: string | null
+          related_verticals?: Json | null
+          seo_description?: string | null
+          seo_title?: string | null
+          slug?: string
+          title?: string
+          updated_at?: string | null
+          vertical_relevance_score?: Json | null
+          vimeo_thumbnail_url?: string | null
+          vimeo_video_id?: string
+          week_number?: number
+        }
+        Relationships: []
+      }
       offers: {
         Row: {
           campaign_id: string
