@@ -85,6 +85,7 @@ export default function Analytics() {
     { key: 'instagram', label: 'Instagram' },
     { key: 'tiktok', label: 'TikTok' },
     { key: 'snapchat', label: 'Snapchat' },
+    { key: 'facebook', label: 'Facebook' },
   ];
 
   const rangeOptions = [

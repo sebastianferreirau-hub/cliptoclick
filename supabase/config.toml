@@ -27,10 +27,10 @@ verify_jwt = false
 [functions.snapchat-callback]
 verify_jwt = false
 
-[functions.onedrive-connect]
+[functions.google-drive-connect]
 verify_jwt = false
 
-[functions.onedrive-callback]
+[functions.google-drive-callback]
 verify_jwt = false
 
 [functions.analytics-providers]

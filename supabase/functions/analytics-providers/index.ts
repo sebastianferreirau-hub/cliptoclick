@@ -31,7 +31,7 @@ serve(async (req) => {
     // Get profile connection status
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('instagram_connected, tiktok_connected, snapchat_connected')
+      .select('instagram_connected, tiktok_connected, snapchat_connected, facebook_connected')
       .eq('id', user.id)
       .single();
 
@@ -52,6 +52,10 @@ serve(async (req) => {
       snapchat: {
         connected: profile?.snapchat_connected || false,
         configured: !!Deno.env.get('SNAPCHAT_CLIENT_ID') && !!Deno.env.get('SNAPCHAT_CLIENT_SECRET'),
+      },
+      facebook: {
+        connected: profile?.facebook_connected || false,
+        configured: !!Deno.env.get('FB_APP_ID') && !!Deno.env.get('FB_APP_SECRET'),
       },
     };
 

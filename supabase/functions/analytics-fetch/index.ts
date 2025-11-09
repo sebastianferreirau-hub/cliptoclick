@@ -9,13 +9,24 @@ const corsHeaders = {
 function getDemoData(provider: string, range: string) {
   const days = range === '7d' ? 7 : range === '30d' ? 30 : 90;
   
+  // Provider-specific base metrics
+  const providerMetrics = {
+    instagram: { views: 125000, reach: 98000, followers: 15400 },
+    tiktok: { views: 450000, reach: 380000, followers: 28900 },
+    facebook: { views: 210000, reach: 175000, followers: 18200 },
+    snapchat: { views: 89000, reach: 72000, followers: 12100 },
+  };
+  
+  const metrics = providerMetrics[provider as keyof typeof providerMetrics] || providerMetrics.instagram;
+  const multiplier = range === '7d' ? 0.2 : range === '30d' ? 1 : 3;
+  
   return {
     provider,
     range,
     metrics: {
-      totalViews: Math.floor(Math.random() * 100000) + 50000,
-      totalReach: Math.floor(Math.random() * 80000) + 30000,
-      followers: Math.floor(Math.random() * 50000) + 10000,
+      totalViews: Math.floor(metrics.views * multiplier),
+      totalReach: Math.floor(metrics.reach * multiplier),
+      followers: metrics.followers,
       engagementRate: (Math.random() * 5 + 2).toFixed(2),
     },
     dailyViews: Array.from({ length: days }, (_, i) => ({

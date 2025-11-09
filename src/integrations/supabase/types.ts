@@ -799,7 +799,9 @@ export type Database = {
           country: string | null
           created_at: string
           email: string | null
+          facebook_connected: boolean | null
           goal_primary: string | null
+          google_drive_connected: boolean | null
           handle: string | null
           has_access: boolean
           id: string
@@ -809,7 +811,6 @@ export type Database = {
           notion_connected: boolean
           notion_workspace_id: string | null
           onboarding_completed: boolean | null
-          onedrive_connected: boolean
           raw_folder_link: string | null
           snapchat_connected: boolean
           tiktok_connected: boolean
@@ -822,7 +823,9 @@ export type Database = {
           country?: string | null
           created_at?: string
           email?: string | null
+          facebook_connected?: boolean | null
           goal_primary?: string | null
+          google_drive_connected?: boolean | null
           handle?: string | null
           has_access?: boolean
           id: string
@@ -832,7 +835,6 @@ export type Database = {
           notion_connected?: boolean
           notion_workspace_id?: string | null
           onboarding_completed?: boolean | null
-          onedrive_connected?: boolean
           raw_folder_link?: string | null
           snapchat_connected?: boolean
           tiktok_connected?: boolean
@@ -845,7 +847,9 @@ export type Database = {
           country?: string | null
           created_at?: string
           email?: string | null
+          facebook_connected?: boolean | null
           goal_primary?: string | null
+          google_drive_connected?: boolean | null
           handle?: string | null
           has_access?: boolean
           id?: string
@@ -855,7 +859,6 @@ export type Database = {
           notion_connected?: boolean
           notion_workspace_id?: string | null
           onboarding_completed?: boolean | null
-          onedrive_connected?: boolean
           raw_folder_link?: string | null
           snapchat_connected?: boolean
           tiktok_connected?: boolean

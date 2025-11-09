@@ -2,9 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import VerticalsDisplay from "@/components/dashboard/VerticalsDisplay";
 import { QuickActionCard } from "@/components/dashboard/QuickActionCard";
-import { Plan7Dialog } from "@/components/dashboard/Plan7Dialog";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, BarChart3, Settings, Cloud, Sparkles, PlayCircle } from "lucide-react";
+import { LogOut, BarChart3, PlayCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
@@ -16,17 +15,17 @@ interface Profile {
   onboarding_completed: boolean | null;
   has_access: boolean;
   notion_connected: boolean;
-  onedrive_connected: boolean;
+  google_drive_connected: boolean;
   instagram_connected: boolean;
   tiktok_connected: boolean;
   snapchat_connected: boolean;
+  facebook_connected: boolean;
 }
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showPlan7, setShowPlan7] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -39,7 +38,7 @@ const Dashboard = () => {
 
       const { data, error } = await supabase
         .from("profiles")
-        .select("name, handle, content_cores, onboarding_completed, has_access, notion_connected, onedrive_connected, instagram_connected, tiktok_connected, snapchat_connected")
+        .select("name, handle, content_cores, onboarding_completed, has_access, notion_connected, google_drive_connected, instagram_connected, tiktok_connected, snapchat_connected, facebook_connected")
         .eq("id", user.id)
         .single();
 
@@ -197,32 +196,45 @@ const Dashboard = () => {
             />
 
             <QuickActionCard
-              icon={<Sparkles className="w-6 h-6" />}
-              title="Plan 7 días"
-              description="Tus ideas rápidas según tus verticales."
-              primaryAction={hasVerticalsData ? {
-                label: "Generar plan",
-                onClick: () => setShowPlan7(true)
-              } : undefined}
-            />
-
-            <QuickActionCard
-              icon={<Cloud className="w-6 h-6" />}
-              title="Conectar OneDrive"
-              description="Usaremos tus archivos para sugerencias personalizadas (solo lectura)."
-              isConnected={profile?.onedrive_connected || false}
+              icon={
+                <svg className="w-6 h-6" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg">
+                  <path fill="#0066DA" d="M6.6 66.85 3.85 62 0 68.5 7.65 78l13.75-23.8-8.25-5.15-6.55 11.8z"/>
+                  <path fill="#00AC47" d="M43.65 25.5 29.9 1.7l-8.25 5.15 13.75 23.8h16.5V25.5z"/>
+                  <path fill="#EA4335" d="M73.55 76.8l7.65-9.5-3.85-6.5-6.55 11.8-6.55-11.8H47.75l13.75 23.8z"/>
+                  <path fill="#00832D" d="M43.65 25.5h16.5L73.9 1.7 65.65-3.45 43.65 25.5z"/>
+                  <path fill="#2684FC" d="M6.6 66.85l6.55-11.8h-6.6L0 68.5l3.85 6.5h13.75l-11-8.15z"/>
+                  <path fill="#FFBA00" d="M73.55 76.8l11-8.15H64.25L47.75 78h25.8z"/>
+                </svg>
+              }
+              title="Google Drive"
+              description="Conecta tu Drive para acceder a recursos del curso."
+              isConnected={profile?.google_drive_connected || false}
               primaryAction={{
-                label: "Conectar OneDrive",
-                onClick: () => toast.info("OAuth de OneDrive - próximamente")
+                label: profile?.google_drive_connected ? "Ver archivos" : "Conectar Drive",
+                onClick: async () => {
+                  if (profile?.google_drive_connected) {
+                    toast.info("Explorador de archivos - próximamente");
+                  } else {
+                    try {
+                      const { data, error } = await supabase.functions.invoke('google-drive-connect');
+                      if (error) throw error;
+                      if (data.authUrl) {
+                        window.location.href = data.authUrl;
+                      }
+                    } catch (error) {
+                      toast.error("Error al conectar con Google Drive");
+                    }
+                  }
+                }
               }}
             />
 
             <QuickActionCard
               icon={<BarChart3 className="w-6 h-6" />}
               title="Analytics"
-              description="Conecta IG/TikTok/Snapchat para ver métricas en tiempo real (solo lectura)."
+              description="Conecta IG/TikTok/Snapchat/Facebook para métricas en tiempo real."
               primaryAction={{
-                label: profile?.instagram_connected || profile?.tiktok_connected || profile?.snapchat_connected 
+                label: profile?.instagram_connected || profile?.tiktok_connected || profile?.snapchat_connected || profile?.facebook_connected
                   ? "Ver Analytics" 
                   : "Conectar plataformas",
                 onClick: () => navigate('/analytics')
@@ -231,21 +243,12 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Plan 7 Dialog */}
-        {hasVerticalsData && (
-          <Plan7Dialog 
-            open={showPlan7} 
-            onOpenChange={setShowPlan7}
-            verticals={verticals}
-          />
-        )}
-
         {/* Coming Soon */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card className="glass-card border-accent/30">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-accent" />
+                <PlayCircle className="w-5 h-5 text-accent" />
                 Próximamente
               </CardTitle>
             </CardHeader>
