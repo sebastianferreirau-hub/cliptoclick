@@ -2,14 +2,46 @@ import { Card } from "@/components/ui/card";
 
 const AgendaTimeline = () => {
   const weeks = [
-    { week: 1, title: "Setup & Clips" },
-    { week: 2, title: "Ritmo I" },
-    { week: 3, title: "Distribución I" },
-    { week: 4, title: "Optimización" },
-    { week: 5, title: "Ritmo II" },
-    { week: 6, title: "Distribución II" },
-    { week: 7, title: "Consolidación" },
-    { week: 8, title: "Lanzamiento" },
+    { 
+      week: 1, 
+      title: "Setup & Clips",
+      detail: "Conectar IG, definir cores y grabar 10 clips brutos"
+    },
+    { 
+      week: 2, 
+      title: "Ritmo I",
+      detail: "Aplicar librería de hooks; publicar 5 piezas"
+    },
+    { 
+      week: 3, 
+      title: "Distribución I",
+      detail: "8 publicaciones + primera lectura de métricas"
+    },
+    { 
+      week: 4, 
+      title: "Optimización",
+      detail: "1 hipótesis de mejora por pieza (hook/thumbnail/CTA)"
+    },
+    { 
+      week: 5, 
+      title: "Ritmo II",
+      detail: "Batch de 10–12 piezas; reducir tiempo por pieza"
+    },
+    { 
+      week: 6, 
+      title: "Distribución II",
+      detail: "Multi-plataforma y horarios; prueba de CTAs"
+    },
+    { 
+      week: 7, 
+      title: "Consolidación",
+      detail: "Sistema diario que sostenga 3–5/sem"
+    },
+    { 
+      week: 8, 
+      title: "Lanzamiento",
+      detail: "Plan de 30 días y caso público (antes/después)"
+    }
   ];
 
   return (
@@ -27,6 +59,7 @@ const AgendaTimeline = () => {
             <Card key={week.week} className="glass-card p-6 hover:shadow-elegant transition-all">
               <div className="text-sm text-primary font-semibold mb-2">Semana {week.week}</div>
               <h3 className="font-semibold text-lg">{week.title}</h3>
+              <p className="text-sm text-muted-foreground mt-2">{week.detail}</p>
             </Card>
           ))}
         </div>
