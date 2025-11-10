@@ -17,7 +17,7 @@ interface QuickActionCardProps {
   };
   isLocked?: boolean;
   isConnected?: boolean;
-  connectionLabel?: string;
+  connectionLabel?: string | null;
   onUnlock?: () => void;
 }
 
@@ -29,7 +29,7 @@ export const QuickActionCard = ({
   secondaryAction,
   isLocked = false,
   isConnected = false,
-  connectionLabel = "Conectado",
+  connectionLabel = null,
   onUnlock,
 }: QuickActionCardProps) => {
   return (
@@ -50,7 +50,7 @@ export const QuickActionCard = ({
         <div className="p-3 rounded-lg bg-white border border-[#E5E7EB]">
           {icon}
         </div>
-        {!isLocked && connectionLabel && (
+        {!isLocked && connectionLabel !== null && (
           <Badge variant={isConnected ? "default" : "outline"} className="ml-2">
             {isConnected ? "✅" : "⚪"} {isConnected ? connectionLabel : "No conectado"}
           </Badge>
