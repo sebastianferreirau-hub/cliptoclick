@@ -251,6 +251,41 @@ export type Database = {
           },
         ]
       }
+      comment_reports: {
+        Row: {
+          comment_id: string
+          created_at: string | null
+          id: string
+          reason: string
+          reporter_id: string
+          status: string | null
+        }
+        Insert: {
+          comment_id: string
+          created_at?: string | null
+          id?: string
+          reason: string
+          reporter_id: string
+          status?: string | null
+        }
+        Update: {
+          comment_id?: string
+          created_at?: string | null
+          id?: string
+          reason?: string
+          reporter_id?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comment_reports_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "lesson_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       creators: {
         Row: {
           country_code: string | null
@@ -435,6 +470,63 @@ export type Database = {
         }
         Relationships: []
       }
+      lesson_comments: {
+        Row: {
+          body: string
+          created_at: string | null
+          id: string
+          is_answer: boolean | null
+          is_pinned: boolean | null
+          lesson_id: string
+          parent_id: string | null
+          ts_seconds: number | null
+          updated_at: string | null
+          upvotes: number | null
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string | null
+          id?: string
+          is_answer?: boolean | null
+          is_pinned?: boolean | null
+          lesson_id: string
+          parent_id?: string | null
+          ts_seconds?: number | null
+          updated_at?: string | null
+          upvotes?: number | null
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string | null
+          id?: string
+          is_answer?: boolean | null
+          is_pinned?: boolean | null
+          lesson_id?: string
+          parent_id?: string | null
+          ts_seconds?: number | null
+          updated_at?: string | null
+          upvotes?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_comments_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lesson_comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "lesson_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lesson_progress: {
         Row: {
           completed_at: string | null
@@ -525,13 +617,17 @@ export type Database = {
       }
       lessons: {
         Row: {
+          comments_enabled: boolean | null
           created_at: string | null
           description: string | null
           duration_seconds: number | null
           id: string
+          instructor_avatar_url: string | null
+          instructor_name: string | null
           is_premium: boolean | null
           learning_outcomes: Json | null
           module_name: string
+          notion_page_id: string | null
           order_index: number
           prerequisites: Json | null
           publish_status: string | null
@@ -547,13 +643,17 @@ export type Database = {
           week_number: number
         }
         Insert: {
+          comments_enabled?: boolean | null
           created_at?: string | null
           description?: string | null
           duration_seconds?: number | null
           id?: string
+          instructor_avatar_url?: string | null
+          instructor_name?: string | null
           is_premium?: boolean | null
           learning_outcomes?: Json | null
           module_name: string
+          notion_page_id?: string | null
           order_index: number
           prerequisites?: Json | null
           publish_status?: string | null
@@ -569,13 +669,17 @@ export type Database = {
           week_number: number
         }
         Update: {
+          comments_enabled?: boolean | null
           created_at?: string | null
           description?: string | null
           duration_seconds?: number | null
           id?: string
+          instructor_avatar_url?: string | null
+          instructor_name?: string | null
           is_premium?: boolean | null
           learning_outcomes?: Json | null
           module_name?: string
+          notion_page_id?: string | null
           order_index?: number
           prerequisites?: Json | null
           publish_status?: string | null

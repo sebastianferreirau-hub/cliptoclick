@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useImperativeHandle, forwardRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface VimeoPlayerProps {
@@ -8,9 +8,34 @@ interface VimeoPlayerProps {
   onProgress?: (position: number, percentage: number) => void;
 }
 
-export function VimeoPlayer({ videoId, lessonId, title, onProgress }: VimeoPlayerProps) {
-  const iframeRef = useRef<HTMLIFrameElement>(null);
-  const [player, setPlayer] = useState<any>(null);
+export interface VimeoPlayerHandle {
+  getCurrentTime: () => Promise<number>;
+  seekTo: (seconds: number) => Promise<void>;
+}
+
+export const VimeoPlayer = forwardRef<VimeoPlayerHandle, VimeoPlayerProps>(
+  ({ videoId, lessonId, title, onProgress }, ref) => {
+    const iframeRef = useRef<HTMLIFrameElement>(null);
+    const [player, setPlayer] = useState<any>(null);
+
+    useImperativeHandle(ref, () => ({
+      async getCurrentTime() {
+        if (!player) return 0;
+        try {
+          return Math.floor(await player.getCurrentTime());
+        } catch {
+          return 0;
+        }
+      },
+      async seekTo(seconds: number) {
+        if (!player) return;
+        try {
+          await player.setCurrentTime(seconds);
+        } catch (e) {
+          console.error("Failed to seek:", e);
+        }
+      }
+    }));
 
   useEffect(() => {
     // Load Vimeo Player SDK
@@ -69,16 +94,17 @@ export function VimeoPlayer({ videoId, lessonId, title, onProgress }: VimeoPlaye
     };
   }, [videoId, lessonId]);
 
-  return (
-    <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
-      <iframe
-        ref={iframeRef}
-        className="absolute inset-0 w-full h-full rounded-xl"
-        src={`https://player.vimeo.com/video/${videoId}?title=0&byline=0&portrait=0`}
-        title={title}
-        allow="autoplay; fullscreen; picture-in-picture"
-        allowFullScreen
-      />
-    </div>
-  );
-}
+    return (
+      <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+        <iframe
+          ref={iframeRef}
+          className="absolute inset-0 w-full h-full rounded-xl"
+          src={`https://player.vimeo.com/video/${videoId}?title=0&byline=0&portrait=0`}
+          title={title}
+          allow="autoplay; fullscreen; picture-in-picture"
+          allowFullScreen
+        />
+      </div>
+    );
+  }
+);
