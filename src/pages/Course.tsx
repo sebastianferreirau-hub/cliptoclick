@@ -45,6 +45,12 @@ export default function Course() {
       
       setHasAccess(!!profile?.has_access);
 
+      // Redirect to checkout if user doesn't have access
+      if (!profile?.has_access) {
+        navigate("/checkout");
+        return;
+      }
+
       // Extract user's vertical slugs from content_cores
       if (profile?.content_cores) {
         const cores = profile.content_cores as any;

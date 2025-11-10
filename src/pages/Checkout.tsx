@@ -18,7 +18,7 @@ const Checkout = () => {
   const [loading, setLoading] = useState(false);
 
   const prices = {
-    one_time: 299,
+    one_time: 297,
     two_pay: 199,
   };
 
