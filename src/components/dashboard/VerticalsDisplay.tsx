@@ -21,6 +21,7 @@ interface VerticalsDisplayProps {
 
 const VerticalsDisplay = ({ verticals, summary }: VerticalsDisplayProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(false);
 
   const handleGenerate7DayPlan = async () => {
     setIsGenerating(true);
@@ -53,7 +54,8 @@ const VerticalsDisplay = ({ verticals, summary }: VerticalsDisplayProps) => {
         return;
       }
 
-      toast.success("¡Plan generado! Sincroniza con Notion para verlo en tu calendario.");
+      toast.success("¡Plan generado! Revisa las instrucciones para copiarlo a Notion.", { duration: 6000 });
+      setShowInstructions(true);
       
     } catch (error) {
       console.error('Error generating plan:', error);
@@ -171,6 +173,39 @@ const VerticalsDisplay = ({ verticals, summary }: VerticalsDisplayProps) => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Notion Instructions */}
+      {showInstructions && (
+        <Card className="glass-card border-accent/30 bg-accent/5">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Lightbulb className="w-5 h-5 text-accent" />
+              Siguiente paso: Copia a Notion
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Tu plan de 7 días ha sido generado y guardado en tu perfil. Sigue estos pasos:
+            </p>
+            <ol className="list-decimal list-inside space-y-2 text-sm text-foreground">
+              <li>Abre tu <strong>Template Scheduler en Notion</strong></li>
+              <li>Ve a la <strong>vista de calendario semanal</strong></li>
+              <li>Copia cada idea del plan generado a su día correspondiente</li>
+              <li>Los shorts van en la columna "Shorts" (2 por día)</li>
+              <li>El video largo va en el Día 7</li>
+            </ol>
+            <div className="flex gap-2 mt-4">
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => setShowInstructions(false)}
+              >
+                Entendido
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

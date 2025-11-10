@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import VerticalsDisplay from "@/components/dashboard/VerticalsDisplay";
 import { QuickActionCard } from "@/components/dashboard/QuickActionCard";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, PlayCircle, ShoppingBag } from "lucide-react";
+import { LogOut, PlayCircle, ShoppingBag, Cloud, Cpu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
@@ -168,9 +168,9 @@ const Dashboard = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* 1. Curso completo - Vimeo Pro */}
             <QuickActionCard
-              icon={<PlayCircle className="w-6 h-6" />}
+              icon={<PlayCircle className="w-6 h-6 text-primary" />}
               title="Curso completo"
-              description="8 semanas de metodología paso a paso. Integrado con Vimeo Pro."
+              description="Metodología 8 semanas integrada con Vimeo Pro"
               primaryAction={{
                 label: profile?.has_access ? "Ir al curso" : "Ver planes",
                 onClick: () => navigate(profile?.has_access ? '/curso' : '/checkout')
@@ -179,18 +179,9 @@ const Dashboard = () => {
 
             {/* 2. Google Drive */}
             <QuickActionCard
-              icon={
-                <svg className="w-6 h-6" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg">
-                  <path fill="#0066DA" d="M6.6 66.85 3.85 62 0 68.5 7.65 78l13.75-23.8-8.25-5.15-6.55 11.8z"/>
-                  <path fill="#00AC47" d="M43.65 25.5 29.9 1.7l-8.25 5.15 13.75 23.8h16.5V25.5z"/>
-                  <path fill="#EA4335" d="M73.55 76.8l7.65-9.5-3.85-6.5-6.55 11.8-6.55-11.8H47.75l13.75 23.8z"/>
-                  <path fill="#00832D" d="M43.65 25.5h16.5L73.9 1.7 65.65-3.45 43.65 25.5z"/>
-                  <path fill="#2684FC" d="M6.6 66.85l6.55-11.8h-6.6L0 68.5l3.85 6.5h13.75l-11-8.15z"/>
-                  <path fill="#FFBA00" d="M73.55 76.8l11-8.15H64.25L47.75 78h25.8z"/>
-                </svg>
-              }
+              icon={<Cloud className="w-6 h-6 text-blue-500" />}
               title="Google Drive"
-              description="Conecta tu Drive para acceder a recursos del curso."
+              description="Recursos del curso sincronizados en tu Drive"
               isConnected={profile?.google_drive_connected || false}
               primaryAction={{
                 label: profile?.google_drive_connected ? "Ver archivos" : "Conectar Drive",
@@ -219,8 +210,8 @@ const Dashboard = () => {
                   <path d="M4.459 4.208c.746.606 1.026.56 2.428.466l13.215-.793c.28 0 .047-.28-.046-.326L17.86 1.968c-.42-.326-.981-.7-2.055-.607L3.01 2.295c-.466.046-.56.28-.374.466zm.793 3.08v13.904c0 .747.373 1.027 1.214.98l14.523-.84c.841-.046.935-.56.935-1.167V6.354c0-.606-.233-.933-.748-.887l-15.177.887c-.56.047-.747.327-.747.933zm14.337.745c.093.42 0 .84-.42.888l-.7.14v10.264c-.608.327-1.168.514-1.635.514-.748 0-.935-.233-1.495-.933l-4.577-7.186v6.952L12.21 19s0 .84-1.168.84l-3.222.186c-.093-.186 0-.653.327-.746l.84-.233V9.854L7.822 9.76c-.094-.42.14-1.026.793-1.073l3.456-.233 4.764 7.279v-6.44l-1.215-.139c-.093-.514.28-.887.747-.933zM1.936 1.035l13.31-.98c1.634-.14 2.055-.047 3.082.7l4.249 2.986c.7.513.934.653.934 1.213v16.378c0 1.026-.373 1.634-1.68 1.726l-15.458.934c-.98.047-1.448-.093-1.962-.747l-3.129-4.06c-.56-.747-.793-1.306-.793-1.96V2.667c0-.839.374-1.54 1.447-1.632z"/>
                 </svg>
               }
-              title="Accede al Template Scheduler"
-              description="Sincroniza tu plan generado con el template."
+              title="Template Scheduler"
+              description="Plan de 7 días listo para copiar a Notion"
               isConnected={profile?.notion_connected || false}
               primaryAction={{
                 label: "Conectar Notion",
@@ -234,9 +225,9 @@ const Dashboard = () => {
 
             {/* 4. Equipo esencial */}
             <QuickActionCard
-              icon={<ShoppingBag className="w-6 h-6" />}
+              icon={<Cpu className="w-6 h-6 text-purple-500" />}
               title="Equipo esencial"
-              description="Descubre las herramientas que usan los top creators para producir contenido de calidad."
+              description="Herramientas y gear de los top creators"
               primaryAction={{
                 label: "Ver recomendaciones",
                 onClick: () => toast.info("Próximamente: equipos con descuentos exclusivos")
