@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useImperativeHandle, forwardRef } from "react";
+import React, { useEffect, useRef, useState, useImperativeHandle, forwardRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface VimeoPlayerProps {
@@ -13,7 +13,7 @@ export interface VimeoPlayerHandle {
   seekTo: (seconds: number) => Promise<void>;
 }
 
-export const VimeoPlayer = forwardRef<VimeoPlayerHandle, VimeoPlayerProps>(
+const VimeoPlayerComponent = forwardRef<VimeoPlayerHandle, VimeoPlayerProps>(
   ({ videoId, lessonId, title, onProgress }, ref) => {
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const [player, setPlayer] = useState<any>(null);
@@ -108,3 +108,7 @@ export const VimeoPlayer = forwardRef<VimeoPlayerHandle, VimeoPlayerProps>(
     );
   }
 );
+
+VimeoPlayerComponent.displayName = "VimeoPlayer";
+
+export const VimeoPlayer = VimeoPlayerComponent;

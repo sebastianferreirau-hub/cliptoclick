@@ -81,18 +81,7 @@ export function Comments({ lessonId, playerRef }: CommentsProps) {
   async function loadComments() {
     const { data, error } = await supabase
       .from("lesson_comments")
-      .select(`
-        id,
-        user_id,
-        parent_id,
-        body,
-        ts_seconds,
-        is_answer,
-        is_pinned,
-        upvotes,
-        created_at,
-        profiles:user_id (name, email)
-      `)
+      .select("*")
       .eq("lesson_id", lessonId)
       .order("is_pinned", { ascending: false })
       .order(sortBy === "relevant" ? "upvotes" : "created_at", { 
@@ -104,7 +93,24 @@ export function Comments({ lessonId, playerRef }: CommentsProps) {
       return;
     }
 
-    setComments(data || []);
+    // Fetch user profiles separately
+    if (data && data.length > 0) {
+      const userIds = [...new Set(data.map(c => c.user_id))];
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, name, email")
+        .in("id", userIds);
+
+      const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+      const enrichedComments = data.map(comment => ({
+        ...comment,
+        profiles: profileMap.get(comment.user_id)
+      }));
+      
+      setComments(enrichedComments as any);
+    } else {
+      setComments([]);
+    }
   }
 
   useEffect(() => {
