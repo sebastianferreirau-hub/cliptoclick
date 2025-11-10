@@ -30,7 +30,7 @@ const Hero = () => {
             className="bg-gradient-primary hover:opacity-90 text-white text-lg px-8 py-6 rounded-xl shadow-glow"
             onClick={() => window.location.href = '/checkout'}
           >
-            Unirme a la cohorte — USD 299
+            Unirme a la cohorte — USD 297
           </Button>
           <Button
             size="lg"

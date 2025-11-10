@@ -19,7 +19,7 @@ const PricingBox = () => {
 
         <Card className="glass-card p-8 md:p-12">
           <div className="bg-gradient-primary text-white rounded-xl p-6 mb-8">
-            <div className="text-4xl font-bold mb-2">USD 299</div>
+            <div className="text-4xl font-bold mb-2">USD 297</div>
             <div className="text-sm opacity-90">Pago único</div>
           </div>
 
