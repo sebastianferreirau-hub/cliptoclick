@@ -16,8 +16,8 @@ serve(async (req) => {
   }
 
   try {
-    const { plan, promo_code, test_mode } = await req.json();
-    console.log('Create checkout session request:', { plan, promo_code, test_mode });
+    const { plan, promo_code } = await req.json();
+    console.log('Create checkout session request:', { plan, promo_code });
     
     const baseUrl = Deno.env.get('BASE_URL') || req.headers.get('origin') || 'http://localhost:8080';
     
@@ -26,17 +26,13 @@ serve(async (req) => {
     let metadata: Record<string, string>;
     
     if (plan === 'one_time') {
-      priceId = test_mode 
-        ? (Deno.env.get('STRIPE_PRICE_ONE_TIME_TEST') || Deno.env.get('STRIPE_PRICE_ONE_TIME')) as string
-        : Deno.env.get('STRIPE_PRICE_ONE_TIME') as string;
+      priceId = Deno.env.get('STRIPE_PRICE_ONE_TIME') as string;
       mode = 'payment';
-      metadata = { plan: 'one_time', guarantee_eligible: 'true', test_mode: test_mode ? 'true' : 'false' };
+      metadata = { plan: 'one_time', guarantee_eligible: 'true' };
     } else {
-      priceId = test_mode
-        ? (Deno.env.get('STRIPE_PRICE_TWO_PAY_TEST') || Deno.env.get('STRIPE_PRICE_TWO_PAY')) as string
-        : Deno.env.get('STRIPE_PRICE_TWO_PAY') as string;
+      priceId = Deno.env.get('STRIPE_PRICE_TWO_PAY') as string;
       mode = 'subscription';
-      metadata = { plan: 'two_pay', guarantee_eligible: 'false', test_mode: test_mode ? 'true' : 'false' };
+      metadata = { plan: 'two_pay', guarantee_eligible: 'false' };
     }
 
     console.log('Using price ID:', priceId, 'Mode:', mode);

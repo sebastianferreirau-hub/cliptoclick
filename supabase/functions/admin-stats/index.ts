@@ -128,13 +128,13 @@ serve(async (req) => {
         status: 200,
       }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching admin stats:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: error.message.includes('Unauthorized') ? 403 : 500,
+        status: error.message?.includes('Unauthorized') ? 403 : 500,
       }
     );
   }

@@ -69,24 +69,7 @@ const Onboarding = () => {
     
     setLoading(true);
     try {
-      // Call VerticalsAI
-      const { data: aiData, error: aiError } = await supabase.functions.invoke('verticals-ai', {
-        body: {
-          answers: {
-            name: formData.name,
-            ...formData.answers
-          },
-          meta: {
-            platforms: formData.preferred_format === 'short' ? ['instagram', 'tiktok'] : ['instagram', 'tiktok', 'youtube'],
-            language: formData.lang,
-            level: formData.time_commitment === '1-5h' ? 'beginner' : formData.time_commitment === '5-10h' ? 'intermediate' : 'advanced',
-          }
-        }
-      });
-
-      if (aiError) throw aiError;
-
-      // Update profile
+      // Solo guardar respuestas del cuestionario, NO llamar AI
       const { error: profileError } = await supabase
         .from('profiles')
         .update({
@@ -96,23 +79,21 @@ const Onboarding = () => {
           lang: formData.lang,
           time_commitment: formData.time_commitment,
           goal_primary: formData.goal_primary,
-          content_cores: aiData,
-          ai_profile_summary: aiData.summary,
           onboarding_completed: true,
         })
         .eq('id', userId);
 
       if (profileError) throw profileError;
 
-      // Save analysis
+      // Guardar respuestas para análisis posterior (sin output de AI)
       await supabase.from('ai_runs').insert({
         user_id: userId,
-        kind: 'verticals',
+        kind: 'onboarding_responses',
         input_json: formData,
-        output_json: aiData,
+        output_json: null,
       });
 
-      toast.success("¡Perfil creado con éxito!");
+      toast.success("¡Bienvenido! Ya tienes acceso al curso");
       navigate("/dashboard");
     } catch (error: any) {
       toast.error(error.message || "Error al completar onboarding");

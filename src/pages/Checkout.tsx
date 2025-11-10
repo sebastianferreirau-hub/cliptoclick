@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Shield, CreditCard, AlertCircle } from "lucide-react";
+import { Shield, CreditCard } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -17,7 +16,6 @@ const Checkout = () => {
   const [coupon, setCoupon] = useState("");
   const [discount, setDiscount] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [testMode, setTestMode] = useState(false);
 
   const prices = {
     one_time: 299,
@@ -52,7 +50,6 @@ const Checkout = () => {
         body: { 
           plan,
           promo_code: coupon || null,
-          test_mode: testMode,
         },
       });
 
@@ -80,31 +77,6 @@ const Checkout = () => {
           <p className="text-muted-foreground">
             Elige tu plan y completa el pago seguro
           </p>
-        </div>
-
-        {testMode && (
-          <Card className="glass-card p-4 mb-6 border-warning bg-warning/5">
-            <div className="flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
-              <div className="text-sm">
-                <p className="font-semibold text-warning mb-1">Modo de Prueba Activado</p>
-                <p className="text-muted-foreground">
-                  Usa la tarjeta de prueba: <code className="bg-background px-2 py-1 rounded">4242 4242 4242 4242</code>
-                </p>
-              </div>
-            </div>
-          </Card>
-        )}
-
-        <div className="flex items-center justify-center gap-3 mb-8">
-          <Label htmlFor="test-mode" className="text-sm text-muted-foreground">
-            Modo de Prueba
-          </Label>
-          <Switch
-            id="test-mode"
-            checked={testMode}
-            onCheckedChange={setTestMode}
-          />
         </div>
 
         <div className="grid md:grid-cols-2 gap-8">

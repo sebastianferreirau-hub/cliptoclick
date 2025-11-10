@@ -1,8 +1,36 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CheckCircle2, ArrowRight } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Thanks = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkOnboardingStatus = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('onboarding_completed')
+          .eq('id', user.id)
+          .single();
+        
+        if (!profile?.onboarding_completed) {
+          // Redirigir automáticamente a onboarding después de 3 segundos
+          setTimeout(() => {
+            navigate('/onboarding');
+          }, 3000);
+        }
+      }
+    };
+    
+    checkOnboardingStatus();
+  }, [navigate]);
+
   return (
     <div className="min-h-screen bg-gradient-subtle flex items-center justify-center px-4">
       <Card className="glass-card max-w-2xl w-full p-12 text-center">

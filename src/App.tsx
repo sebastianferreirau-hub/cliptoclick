@@ -19,6 +19,8 @@ import OpsQueue from "./pages/OpsQueue";
 import Course from "./pages/Course";
 import Lesson from "./pages/Lesson";
 import Admin from "./pages/Admin";
+import ResetPassword from "./pages/ResetPassword";
+import AccessDenied from "./pages/AccessDenied";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -45,6 +47,8 @@ const App = () => (
           <Route path="/curso" element={<Course />} />
           <Route path="/curso/:slug" element={<Lesson />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/access-denied" element={<AccessDenied />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

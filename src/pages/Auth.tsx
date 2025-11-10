@@ -7,13 +7,15 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Sparkles } from "lucide-react";
+import { Sparkles, ArrowLeft } from "lucide-react";
 
 const Auth = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPasswordReset, setShowPasswordReset] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -40,7 +42,7 @@ const Auth = () => {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/onboarding`,
+          emailRedirectTo: `${window.location.origin}/checkout`,
         },
       });
 
@@ -71,6 +73,26 @@ const Auth = () => {
     }
   };
 
+  const handlePasswordReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) throw error;
+      toast.success("Revisa tu email para restablecer tu contraseña");
+      setShowPasswordReset(false);
+      setResetEmail("");
+    } catch (error: any) {
+      toast.error(error.message || "Error al enviar email de recuperación");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-glow opacity-30" />
@@ -93,14 +115,53 @@ const Auth = () => {
         </CardHeader>
 
         <CardContent>
-          <Tabs defaultValue="signin" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-8">
-              <TabsTrigger value="signin">Entrar</TabsTrigger>
-              <TabsTrigger value="signup">Crear cuenta</TabsTrigger>
-            </TabsList>
+          {showPasswordReset ? (
+            <div>
+              <Button 
+                variant="ghost" 
+                onClick={() => setShowPasswordReset(false)}
+                className="mb-4 gap-2"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Volver
+              </Button>
+              <form onSubmit={handlePasswordReset} className="space-y-4">
+                <div className="text-center mb-6">
+                  <h2 className="text-2xl font-heading mb-2">Recuperar contraseña</h2>
+                  <p className="text-sm text-muted-foreground">
+                    Te enviaremos un enlace para restablecer tu contraseña
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="reset-email">Email</Label>
+                  <Input
+                    id="reset-email"
+                    type="email"
+                    placeholder="tu@email.com"
+                    value={resetEmail}
+                    onChange={(e) => setResetEmail(e.target.value)}
+                    required
+                    className="bg-secondary/50"
+                  />
+                </div>
+                <Button 
+                  type="submit" 
+                  className="w-full bg-gradient-primary hover:opacity-90 transition-opacity"
+                  disabled={loading}
+                >
+                  {loading ? "Enviando..." : "Enviar enlace de recuperación"}
+                </Button>
+              </form>
+            </div>
+          ) : (
+            <Tabs defaultValue="signin" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-8">
+                <TabsTrigger value="signin">Entrar</TabsTrigger>
+                <TabsTrigger value="signup">Crear cuenta</TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="signin">
-              <form onSubmit={handleSignIn} className="space-y-4">
+              <TabsContent value="signin">
+                <form onSubmit={handleSignIn} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="signin-email">Email</Label>
                   <Input
@@ -131,6 +192,14 @@ const Auth = () => {
                   disabled={loading}
                 >
                   {loading ? "Cargando..." : "Entrar"}
+                </Button>
+                <Button
+                  type="button"
+                  variant="link"
+                  onClick={() => setShowPasswordReset(true)}
+                  className="w-full text-sm"
+                >
+                  ¿Olvidaste tu contraseña?
                 </Button>
               </form>
             </TabsContent>
@@ -172,6 +241,7 @@ const Auth = () => {
               </form>
             </TabsContent>
           </Tabs>
+          )}
         </CardContent>
       </Card>
     </div>
