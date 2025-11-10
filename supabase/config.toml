@@ -45,5 +45,8 @@ verify_jwt = false
 [functions.admin-stats]
 verify_jwt = true
 
+[functions.generate-7day-plan]
+verify_jwt = true
+
 [functions.send-purchase-confirmation]
 verify_jwt = false

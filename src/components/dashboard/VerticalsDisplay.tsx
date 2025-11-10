@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, Lightbulb } from "lucide-react";
+import { Sparkles, Lightbulb, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Vertical {
   name: string;
@@ -18,8 +20,48 @@ interface VerticalsDisplayProps {
 }
 
 const VerticalsDisplay = ({ verticals, summary }: VerticalsDisplayProps) => {
-  const handleGenerate7DayPlan = () => {
-    toast.info("Plan de 7 días - próximamente");
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const handleGenerate7DayPlan = async () => {
+    setIsGenerating(true);
+    const loadingToast = toast.loading("Generando tu plan personalizado de 7 días...");
+    
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast.error("Debes estar autenticado");
+        return;
+      }
+
+      const { data, error } = await supabase.functions.invoke('generate-7day-plan', {
+        body: { 
+          verticals: verticals.slice(0, 3),
+          user_id: user.id 
+        }
+      });
+
+      if (error) {
+        if (error.message?.includes('Rate limit')) {
+          toast.error("Límite de peticiones alcanzado. Intenta en unos minutos.");
+        } else if (error.message?.includes('Payment required')) {
+          toast.error("Créditos agotados. Contacta soporte.");
+        } else {
+          toast.error("Error al generar el plan");
+        }
+        console.error('Error:', error);
+        return;
+      }
+
+      toast.success("¡Plan generado! Sincroniza con Notion para verlo en tu calendario.");
+      
+    } catch (error) {
+      console.error('Error generating plan:', error);
+      toast.error("Error al generar el plan");
+    } finally {
+      toast.dismiss(loadingToast);
+      setIsGenerating(false);
+    }
   };
 
   if (!verticals || verticals.length === 0) return null;
@@ -111,10 +153,20 @@ const VerticalsDisplay = ({ verticals, summary }: VerticalsDisplayProps) => {
             </div>
             <Button
               onClick={handleGenerate7DayPlan}
+              disabled={isGenerating}
               className="bg-gradient-primary hover:opacity-90 gap-2 shrink-0"
             >
-              <Sparkles className="w-4 h-4" />
-              Generar plan 7 días
+              {isGenerating ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Generando...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4" />
+                  Generar plan 7 días
+                </>
+              )}
             </Button>
           </div>
         </CardContent>
