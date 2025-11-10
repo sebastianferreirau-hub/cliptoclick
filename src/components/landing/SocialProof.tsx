@@ -12,7 +12,7 @@ const SocialProof = () => {
     <section className="py-20 bg-muted/30">
       <div className="max-w-6xl mx-auto px-4">
         <h2 className="text-3xl md:text-4xl font-heading text-center mb-4">
-          +363M vistas en 3 meses
+          +363M impresiones en 3 meses
         </h2>
         <p className="text-xs text-muted-foreground/70 text-center mb-12">
           *Resultados de casos reales. Tus resultados dependen de consistencia y ejecución.

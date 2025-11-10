@@ -5,18 +5,18 @@ const HowItWorks = () => {
   const steps = [
     {
       icon: GraduationCap,
-      title: "Mira el método",
-      text: "Curso en plataforma estilo Platzi con 8 semanas de contenido estructurado",
+      title: "Aprende el método",
+      text: "Plataforma de aprendizaje con módulos cortos, progreso y recursos prácticos",
     },
     {
       icon: Sparkles,
       title: "Genera tu plan IA",
-      text: "7 días de ideas personalizadas basadas en tus cores y verticales",
+      text: "Un plan de 7 días basado en tus cores y verticales",
     },
     {
       icon: FileText,
-      title: "Ejecuta en Notion",
-      text: "Copy-paste del plan a tu Notion Scheduler y comienza a publicar",
+      title: "Ejecuta con orden",
+      text: "Copia y pega el plan en tu Notion Scheduler y publica con consistencia",
     },
   ];
 
@@ -27,7 +27,7 @@ const HowItWorks = () => {
           Cómo funciona
         </h2>
         <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
-          Un sistema simple en 3 pasos para crear contenido auténtico que funciona
+          Un sistema simple para pasar de <strong>clip</strong> a <strong>click</strong> en días, no meses
         </p>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

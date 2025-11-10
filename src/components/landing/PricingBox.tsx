@@ -10,10 +10,10 @@ const PricingBox = () => {
       <div className="max-w-4xl mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-heading mb-4">
-            Únete a la cohorte
+            Acceso al programa
           </h2>
           <p className="text-muted-foreground">
-            Plazas limitadas: 100 creadores, 4 grupos
+            Empieza hoy. Sin cohortes, sin esperas.
           </p>
         </div>
 
@@ -26,19 +26,19 @@ const PricingBox = () => {
           <div className="space-y-4 mb-8">
             <div className="flex items-center gap-3">
               <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
-              <span>8 semanas de programa estructurado</span>
+              <span>Módulos de aprendizaje estructurados</span>
             </div>
             <div className="flex items-center gap-3">
               <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
-              <span>2 revisiones grupales por semana</span>
+              <span>Plan de 7 días generado con IA</span>
             </div>
             <div className="flex items-center gap-3">
               <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
-              <span>Acceso a comunidad privada Discord</span>
+              <span>Plantillas y herramientas completas</span>
             </div>
             <div className="flex items-center gap-3">
               <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
-              <span>Todas las herramientas y plantillas</span>
+              <span>Comunidad privada + revisiones grupales</span>
             </div>
           </div>
 

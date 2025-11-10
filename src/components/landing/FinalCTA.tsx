@@ -8,11 +8,11 @@ const FinalCTA = () => {
       
       <div className="relative z-10 max-w-4xl mx-auto px-4 text-center space-y-8">
         <h2 className="text-4xl md:text-5xl font-heading gradient-text">
-          Empieza hoy tu transformación
+          Publica con constancia. Crece con datos.
         </h2>
         
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Únete a 100 creadores que están construyendo su presencia con contenido auténtico
+          Únete a creadores que priorizan <strong>autenticidad</strong> y <strong>sistema</strong>
         </p>
 
         <Button
@@ -20,13 +20,9 @@ const FinalCTA = () => {
           className="bg-gradient-primary hover:opacity-90 text-white text-lg px-8 py-6 rounded-xl shadow-glow group"
           onClick={() => window.location.href = '/checkout'}
         >
-          Reservar mi plaza
+          Empezar ahora
           <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
         </Button>
-
-        <p className="text-sm text-muted-foreground">
-          Plazas limitadas
-        </p>
       </div>
     </section>
   );

@@ -11,9 +11,9 @@ const GuaranteeBox = () => {
               <Shield className="w-8 h-8 text-success" />
             </div>
             <div>
-              <h3 className="text-2xl font-heading mb-4">Garantía de resultados</h3>
+              <h3 className="text-2xl font-heading mb-4">Garantía orientada a métricas</h3>
               <p className="text-lg mb-4">
-                Si publicas ≥20 clips en 30 días y no ves +50% en impressiones, devolvemos 100%.
+                Si publicas ≥20 clips en 30 días siguiendo el método y no ves +50% en impresiones, te devolvemos el 100%.
               </p>
 
               <p className="text-sm text-muted-foreground">

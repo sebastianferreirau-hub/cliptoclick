@@ -21,15 +21,15 @@ const FAQ = () => {
     },
     {
       q: "¿Qué pasa si no veo resultados?",
-      a: "Ofrecemos garantía condicional: si sigues el método consistentemente durante 8 semanas y no ves mejora en tus métricas, trabajamos contigo hasta lograrlo.",
+      a: "Si publicas ≥20 clips en 30 días siguiendo el método y no ves +50% en impresiones, te devolvemos el 100%. La garantía aplica solo al pago único.",
     },
     {
       q: "¿Puedo pagar en 2 cuotas?",
-      a: "Sí, ofrecemos plan de 2 pagos de USD 279 cada uno. Ten en cuenta que este plan no es elegible para la garantía de resultados.",
+      a: "Sí, ofrecemos plan de 2 pagos de USD 199 cada uno. Ten en cuenta que este plan no es elegible para la garantía de resultados.",
     },
     {
       q: "¿Cómo se mide el avance?",
-      a: "Medimos impressiones, constancia en publicaciones y engagement. Te damos feedback específico en las sesiones grupales semanales.",
+      a: "Medimos impresiones, constancia en publicaciones y engagement. Te damos feedback específico en las sesiones grupales.",
     },
   ];
 
