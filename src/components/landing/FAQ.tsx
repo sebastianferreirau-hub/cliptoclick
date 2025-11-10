@@ -8,20 +8,28 @@ import {
 const FAQ = () => {
   const faqs = [
     {
-      q: "¿Qué equipo necesito?",
-      a: "Un teléfono (iPhone 11+ recomendado) y luz básica. No necesitas cámara profesional ni setup costoso para empezar.",
+      q: "¿Necesito cámara profesional?",
+      a: "No, un iPhone 11+ es suficiente. El método está diseñado para crear contenido auténtico sin equipo costoso.",
     },
     {
-      q: "¿Puedo pagar en 2 cuotas?",
-      a: "Sí, ofrecemos plan de 2 pagos de USD 279 cada uno. Ten en cuenta que este plan no es elegible para la garantía de resultados.",
+      q: "¿Sirve si nunca edité videos?",
+      a: "Sí, el método está diseñado para principiantes. Te enseñamos paso a paso el ritmo 0.6-1.2s y las técnicas de edición básicas.",
     },
     {
       q: "¿Cuánto tiempo necesito dedicar?",
       a: "Entre 1-5 horas por semana es suficiente para empezar. El sistema está diseñado para ser sostenible sin burnout.",
     },
     {
+      q: "¿Qué pasa si no veo resultados?",
+      a: "Ofrecemos garantía condicional: si sigues el método consistentemente durante 8 semanas y no ves mejora en tus métricas, trabajamos contigo hasta lograrlo.",
+    },
+    {
+      q: "¿Puedo pagar en 2 cuotas?",
+      a: "Sí, ofrecemos plan de 2 pagos de USD 279 cada uno. Ten en cuenta que este plan no es elegible para la garantía de resultados.",
+    },
+    {
       q: "¿Cómo se mide el avance?",
-      a: "Medimos impressiones y constancia en publicaciones. Te damos feedback específico en las sesiones grupales.",
+      a: "Medimos impressiones, constancia en publicaciones y engagement. Te damos feedback específico en las sesiones grupales semanales.",
     },
   ];
 

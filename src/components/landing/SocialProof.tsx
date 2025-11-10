@@ -11,9 +11,12 @@ const SocialProof = () => {
   return (
     <section className="py-20 bg-muted/30">
       <div className="max-w-6xl mx-auto px-4">
-        <h2 className="text-3xl md:text-4xl font-heading text-center mb-12">
-          Creadores que ya están creciendo
+        <h2 className="text-3xl md:text-4xl font-heading text-center mb-4">
+          +363M vistas en 3 meses
         </h2>
+        <p className="text-xs text-muted-foreground/70 text-center mb-12">
+          *Resultados de casos reales. Tus resultados dependen de consistencia y ejecución.
+        </p>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {items.map((item, index) => {

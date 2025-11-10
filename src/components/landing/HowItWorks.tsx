@@ -1,22 +1,22 @@
 import { Card } from "@/components/ui/card";
-import { Video, Scissors, Send } from "lucide-react";
+import { GraduationCap, Sparkles, FileText } from "lucide-react";
 
 const HowItWorks = () => {
   const steps = [
     {
-      icon: Video,
-      title: "Clipping diario",
-      text: "Graba fragmentos de 5–10s sin presión de publicar.",
+      icon: GraduationCap,
+      title: "Mira el método",
+      text: "Curso en plataforma estilo Platzi con 8 semanas de contenido estructurado",
     },
     {
-      icon: Scissors,
-      title: "Edita en ≤12s",
-      text: "Ritmo 0.6–1.2s alineado a música/beat; guía simple.",
+      icon: Sparkles,
+      title: "Genera tu plan IA",
+      text: "7 días de ideas personalizadas basadas en tus cores y verticales",
     },
     {
-      icon: Send,
-      title: "Distribuye constante",
-      text: "Señales al algoritmo 3–5×/semana sin burnout.",
+      icon: FileText,
+      title: "Ejecuta en Notion",
+      text: "Copy-paste del plan a tu Notion Scheduler y comienza a publicar",
     },
   ];
 

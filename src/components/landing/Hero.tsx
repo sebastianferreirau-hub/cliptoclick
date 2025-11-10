@@ -16,9 +16,12 @@ const Hero = () => {
         </h1>
         
         <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-          Tu OS para shorts de alto impacto con contenido real.
-          <br />
-          <span className="text-primary font-semibold">10k→60k vistas/mes en 8 semanas</span>
+          Crea contenido real que convierte, sin equipo caro ni horas de edición
+        </p>
+
+        <p className="text-lg md:text-xl text-muted-foreground/90 max-w-2xl mx-auto italic">
+          "No creas todos los días; recolecta todos los días. 
+          Crear se vuelve fácil cuando dejas de empezar desde cero."
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
