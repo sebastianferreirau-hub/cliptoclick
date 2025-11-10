@@ -24,6 +24,7 @@ export default function Course() {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [hasAccess, setHasAccess] = useState(false);
   const [userVerticals, setUserVerticals] = useState<string[]>([]);
+  const [hasVerticals, setHasVerticals] = useState(false);
   const [progress, setProgress] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
 
@@ -54,12 +55,19 @@ export default function Course() {
       // Extract user's vertical slugs from content_cores
       if (profile?.content_cores) {
         const cores = profile.content_cores as any;
-        if (cores?.verticals) {
-          const verticalSlugs = cores.verticals
-            .map((v: any) => v.slug || v.name?.toLowerCase().replace(/\s+/g, '_'))
-            .filter(Boolean);
-          setUserVerticals(verticalSlugs);
+        if (cores?.cores && cores.cores.length > 0) {
+          setHasVerticals(true);
+          if (cores.verticals) {
+            const verticalSlugs = cores.verticals
+              .map((v: any) => v.slug || v.name?.toLowerCase().replace(/\s+/g, '_'))
+              .filter(Boolean);
+            setUserVerticals(verticalSlugs);
+          }
+        } else {
+          setHasVerticals(false);
         }
+      } else {
+        setHasVerticals(false);
       }
 
       // Get lessons
@@ -149,41 +157,85 @@ export default function Course() {
 
         {/* Lessons by Week */}
         <div className="space-y-8">
-          {Object.entries(lessonsByWeek).map(([week, weekLessons]) => (
-            <div key={week}>
-              <div className="flex items-center gap-3 mb-4">
-                <Badge variant="outline" className="text-base px-3 py-1">
-                  Semana {week}
-                </Badge>
-                <h2 className="text-xl font-heading">
-                  {weekLessons[0]?.module_name}
-                </h2>
-              </div>
+          {Object.entries(lessonsByWeek).map(([week, weekLessons]) => {
+            const weekNum = parseInt(week);
+            const isLocked = weekNum >= 4 && !hasVerticals;
 
-              <div className="space-y-3">
-                {weekLessons
-                  .sort((a, b) => {
-                    // Sort by relevance to user's verticals (personalized)
-                    const relevanceA = calculateRelevance(a);
-                    const relevanceB = calculateRelevance(b);
-                    if (relevanceB !== relevanceA) return relevanceB - relevanceA;
-                    return a.order_index - b.order_index;
-                  })
-                  .map((lesson) => {
-                    const relevance = calculateRelevance(lesson);
-                    const isRelevant = relevance > 150;
-                    const completion = progress[lesson.id] || 0;
-                    const isCompleted = completion === 100;
+            return (
+              <div key={week}>
+                <div className="flex items-center gap-3 mb-4">
+                  <Badge variant="outline" className="text-base px-3 py-1">
+                    Semana {week}
+                  </Badge>
+                  <h2 className="text-xl font-heading">
+                    {weekLessons[0]?.module_name}
+                  </h2>
+                  {isLocked && (
+                    <Badge variant="secondary" className="gap-1">
+                      <Lock className="w-3 h-3" />
+                      Bloqueado
+                    </Badge>
+                  )}
+                </div>
 
-                    return (
-                      <Link key={lesson.id} to={`/curso/${lesson.slug}`}>
-                        <Card className={`glass-card p-5 hover:shadow-glow transition-all cursor-pointer ${
-                          isRelevant ? 'border-primary/30' : ''
-                        }`}>
+                {/* Gate for Module 3 - Show special card if verticals not generated */}
+                {weekNum === 3 && !hasVerticals && (
+                  <Card className="glass-card p-6 mb-4 border-primary/50">
+                    <div className="flex items-start gap-4">
+                      <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                        <Star className="w-6 h-6 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-lg mb-2">
+                          Genera tus Content Cores con IA
+                        </h3>
+                        <p className="text-muted-foreground mb-4">
+                          Completa el cuestionario de onboarding para que la IA identifique tus verticales de contenido. 
+                          Esto desbloqueará los módulos 4-8 del curso.
+                        </p>
+                        <Link to="/onboarding">
+                          <button className="px-4 py-2 bg-gradient-primary rounded-lg hover:opacity-90 transition-opacity">
+                            Completar cuestionario
+                          </button>
+                        </Link>
+                      </div>
+                    </div>
+                  </Card>
+                )}
+
+                <div className="space-y-3">
+                  {weekLessons
+                    .sort((a, b) => {
+                      // Sort by relevance to user's verticals (personalized)
+                      const relevanceA = calculateRelevance(a);
+                      const relevanceB = calculateRelevance(b);
+                      if (relevanceB !== relevanceA) return relevanceB - relevanceA;
+                      return a.order_index - b.order_index;
+                    })
+                    .map((lesson) => {
+                      const relevance = calculateRelevance(lesson);
+                      const isRelevant = relevance > 150;
+                      const completion = progress[lesson.id] || 0;
+                      const isCompleted = completion === 100;
+                      const lessonLocked = isLocked;
+
+                      return (
+                        <Link 
+                          key={lesson.id} 
+                          to={lessonLocked ? "#" : `/curso/${lesson.slug}`}
+                          onClick={(e) => lessonLocked && e.preventDefault()}
+                        >
+                          <Card className={`glass-card p-5 ${
+                            lessonLocked 
+                              ? 'opacity-60 cursor-not-allowed' 
+                              : 'hover:shadow-glow transition-all cursor-pointer'
+                          } ${isRelevant ? 'border-primary/30' : ''}`}>
                           <div className="flex items-center gap-4">
                             {/* Icon */}
                             <div className="flex-shrink-0">
-                              {isCompleted ? (
+                              {lessonLocked ? (
+                                <Lock className="w-8 h-8 text-muted-foreground" />
+                              ) : isCompleted ? (
                                 <CheckCircle2 className="w-8 h-8 text-success" />
                               ) : hasAccess ? (
                                 <PlayCircle className="w-8 h-8 text-primary" />
@@ -230,12 +282,13 @@ export default function Course() {
                             </div>
                           </div>
                         </Card>
-                      </Link>
-                    );
-                  })}
+                        </Link>
+                      );
+                    })}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

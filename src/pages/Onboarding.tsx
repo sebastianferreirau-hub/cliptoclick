@@ -69,7 +69,7 @@ const Onboarding = () => {
     
     setLoading(true);
     try {
-      // Solo guardar respuestas del cuestionario, NO llamar AI
+      // Guardar perfil básico primero
       const { error: profileError } = await supabase
         .from('profiles')
         .update({
@@ -79,23 +79,48 @@ const Onboarding = () => {
           lang: formData.lang,
           time_commitment: formData.time_commitment,
           goal_primary: formData.goal_primary,
-          onboarding_completed: true,
         })
         .eq('id', userId);
 
       if (profileError) throw profileError;
 
-      // Guardar respuestas para análisis posterior (sin output de AI)
-      await supabase.from('ai_runs').insert({
-        user_id: userId,
-        kind: 'onboarding_responses',
-        input_json: formData,
-        output_json: null,
+      // Llamar a calculate-cores para generar verticales con IA
+      toast.loading("Analizando tu perfil con IA...");
+      
+      const { data: coresData, error: coresError } = await supabase.functions.invoke('calculate-cores', {
+        body: {
+          testResponses: {
+            movie_title: formData.answers.from_now,
+            origin_location: formData.answers.cultural_heritage,
+            daily_life: formData.answers.who_with,
+            passions: formData.answers.energizes,
+            work: formData.answers.job_now,
+            future: formData.answers.one_year,
+            bio: formData.answers.five_min_topics,
+          },
+          goal: formData.goal_primary,
+          timeCommitment: formData.time_commitment,
+          preferredFormat: formData.preferred_format,
+        }
       });
 
-      toast.success("¡Bienvenido! Ya tienes acceso al curso");
+      if (coresError) throw coresError;
+
+      // Guardar content_cores en el perfil
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({
+          content_cores: coresData,
+          onboarding_completed: true,
+        })
+        .eq('id', userId);
+
+      if (updateError) throw updateError;
+
+      toast.success("¡Perfil creado! Tus content cores están listos");
       navigate("/dashboard");
     } catch (error: any) {
+      console.error('Onboarding error:', error);
       toast.error(error.message || "Error al completar onboarding");
     } finally {
       setLoading(false);
