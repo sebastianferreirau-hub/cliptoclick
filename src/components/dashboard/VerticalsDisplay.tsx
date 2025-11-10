@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, Lightbulb, Loader2 } from "lucide-react";
+import { Sparkles, Lightbulb, Loader2, Copy, Check, ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -22,6 +22,98 @@ interface VerticalsDisplayProps {
 const VerticalsDisplay = ({ verticals, summary }: VerticalsDisplayProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
+  const [generatedPlan, setGeneratedPlan] = useState<any>(null);
+  const [showPlanPreview, setShowPlanPreview] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  // Load existing plan from profile
+  useEffect(() => {
+    const loadExistingPlan = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('content_cores')
+        .eq('id', user.id)
+        .single();
+
+      if (profile?.content_cores) {
+        const cores = profile.content_cores as any;
+        if (cores?.week_plan) {
+          setGeneratedPlan(cores.week_plan);
+        }
+      }
+    };
+
+    loadExistingPlan();
+  }, []);
+
+
+  const generateMarkdownPlan = (plan: any) => {
+    if (!plan?.plan_7d) return "";
+
+    let markdown = "# Plan de Contenido 7 Días - From Clip to Click™\n\n";
+    markdown += `> ${plan.summary || "Plan personalizado basado en tus verticales de contenido"}\n\n`;
+    markdown += "---\n\n";
+
+    plan.plan_7d.forEach((day: any) => {
+      markdown += `## Día ${day.day}\n\n`;
+      
+      if (day.ideas && day.ideas.length > 0) {
+        day.ideas.forEach((idea: any, idx: number) => {
+          markdown += `### Short ${idx + 1}: ${idea.title}\n`;
+          markdown += `- **Core:** ${idea.core_key}\n`;
+          markdown += `- **Hook:** ${idea.hook_line_1}\n`;
+          markdown += `- **Beat timing:** ${idea.beat_cut_timing}s\n`;
+          markdown += `- **Texto nativo:** ${idea.native_text_idea}\n`;
+          markdown += `\n`;
+        });
+      }
+
+      if (day.long_video) {
+        markdown += `### Video Largo: ${day.long_video.title}\n`;
+        markdown += `- **Hook:** ${day.long_video.hook}\n`;
+        markdown += `- **Estructura:** ${day.long_video.structure}\n`;
+        markdown += `- **Puntos clave:** ${day.long_video.key_points?.join(", ") || "N/A"}\n`;
+        markdown += `- **CTA:** ${day.long_video.cta}\n`;
+        markdown += `- **Duración objetivo:** ${day.long_video.duration_target}\n`;
+        markdown += `\n`;
+      }
+
+      markdown += "---\n\n";
+    });
+
+    markdown += "## Caption Patterns\n\n";
+    if (plan.caption_patterns) {
+      Object.entries(plan.caption_patterns).forEach(([platform, patterns]: [string, any]) => {
+        markdown += `### ${platform.toUpperCase()}\n`;
+        markdown += `**Estructura:** ${patterns.structure}\n`;
+        markdown += `**Hooks:** ${patterns.hooks?.join(", ") || "N/A"}\n`;
+        markdown += `**CTAs:** ${patterns.ctas?.join(", ") || "N/A"}\n\n`;
+      });
+    }
+
+    return markdown;
+  };
+
+  const handleCopyToClipboard = async () => {
+    if (!generatedPlan) {
+      toast.error("No hay plan generado aún");
+      return;
+    }
+
+    const markdown = generateMarkdownPlan(generatedPlan);
+    
+    try {
+      await navigator.clipboard.writeText(markdown);
+      setCopied(true);
+      toast.success("¡Plan copiado al portapapeles! Pégalo en Notion");
+      setTimeout(() => setCopied(false), 3000);
+    } catch (error) {
+      toast.error("Error al copiar. Intenta de nuevo.");
+    }
+  };
 
   const handleGenerate7DayPlan = async () => {
     setIsGenerating(true);
@@ -54,8 +146,9 @@ const VerticalsDisplay = ({ verticals, summary }: VerticalsDisplayProps) => {
         return;
       }
 
-      toast.success("¡Plan generado! Revisa las instrucciones para copiarlo a Notion.", { duration: 6000 });
-      setShowInstructions(true);
+      setGeneratedPlan(data);
+      setShowPlanPreview(true);
+      toast.success("¡Plan generado! Revisa la vista previa abajo.", { duration: 6000 });
       
     } catch (error) {
       console.error('Error generating plan:', error);
@@ -174,34 +267,102 @@ const VerticalsDisplay = ({ verticals, summary }: VerticalsDisplayProps) => {
         </CardContent>
       </Card>
 
-      {/* Notion Instructions */}
-      {showInstructions && (
+      {/* Plan Preview & Copy to Notion */}
+      {generatedPlan && (
         <Card className="glass-card border-accent/30 bg-accent/5">
           <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Lightbulb className="w-5 h-5 text-accent" />
-              Siguiente paso: Copia a Notion
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <p className="text-sm text-muted-foreground">
-              Tu plan de 7 días ha sido generado y guardado en tu perfil. Sigue estos pasos:
-            </p>
-            <ol className="list-decimal list-inside space-y-2 text-sm text-foreground">
-              <li>Abre tu <strong>Template Scheduler en Notion</strong></li>
-              <li>Ve a la <strong>vista de calendario semanal</strong></li>
-              <li>Copia cada idea del plan generado a su día correspondiente</li>
-              <li>Los shorts van en la columna "Shorts" (2 por día)</li>
-              <li>El video largo va en el Día 7</li>
-            </ol>
-            <div className="flex gap-2 mt-4">
-              <Button 
-                variant="ghost" 
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-accent" />
+                Plan de 7 Días Generado
+              </CardTitle>
+              <Button
+                variant="ghost"
                 size="sm"
-                onClick={() => setShowInstructions(false)}
+                onClick={() => setShowPlanPreview(!showPlanPreview)}
               >
-                Entendido
+                {showPlanPreview ? (
+                  <>
+                    <ChevronUp className="w-4 h-4 mr-1" />
+                    Ocultar
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="w-4 h-4 mr-1" />
+                    Ver preview
+                  </>
+                )}
               </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Copy Button */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button
+                onClick={handleCopyToClipboard}
+                className="bg-gradient-primary hover:opacity-90 gap-2 flex-1"
+              >
+                {copied ? (
+                  <>
+                    <Check className="w-4 h-4" />
+                    ¡Copiado!
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4" />
+                    Copiar plan a Notion
+                  </>
+                )}
+              </Button>
+            </div>
+
+            {/* Plan Preview */}
+            {showPlanPreview && generatedPlan.plan_7d && (
+              <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
+                {generatedPlan.plan_7d.map((day: any) => (
+                  <Card key={day.day} className="bg-background/50">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-base">Día {day.day}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      {day.ideas?.map((idea: any, idx: number) => (
+                        <div key={idx} className="text-sm border-l-2 border-primary/30 pl-3">
+                          <p className="font-semibold text-foreground mb-1">
+                            Short {idx + 1}: {idea.title}
+                          </p>
+                          <p className="text-muted-foreground text-xs">
+                            Hook: {idea.hook_line_1}
+                          </p>
+                          <p className="text-muted-foreground text-xs">
+                            Beat: {idea.beat_cut_timing}s · {idea.native_text_idea}
+                          </p>
+                        </div>
+                      ))}
+                      {day.long_video && (
+                        <div className="text-sm border-l-2 border-accent/30 pl-3">
+                          <p className="font-semibold text-foreground mb-1">
+                            Video Largo: {day.long_video.title}
+                          </p>
+                          <p className="text-muted-foreground text-xs">
+                            {day.long_video.hook}
+                          </p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+
+            {/* Instructions */}
+            <div className="bg-muted/30 rounded-lg p-4">
+              <h4 className="font-semibold text-sm mb-2">Cómo usar en Notion:</h4>
+              <ol className="list-decimal list-inside space-y-1 text-xs text-muted-foreground">
+                <li>Abre tu Notion Scheduler</li>
+                <li>Crea una nueva página o base de datos</li>
+                <li>Pega el contenido copiado</li>
+                <li>Notion convertirá automáticamente el markdown a formato limpio</li>
+              </ol>
             </div>
           </CardContent>
         </Card>
