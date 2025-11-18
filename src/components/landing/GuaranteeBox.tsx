@@ -16,8 +16,13 @@ const GuaranteeBox = () => {
               <p className="text-lg mb-4">
                 {COPY.guarantee.description}
               </p>
-              <p className="text-sm text-muted-foreground mb-4">
-                {COPY.guarantee.note}
+              {COPY.guarantee.detailsList.map((detail, index) => (
+                <p key={index} className="text-sm mb-2">
+                  {detail}
+                </p>
+              ))}
+              <p className="text-sm text-muted-foreground mt-4 mb-4">
+                {COPY.guarantee.reasoning}
               </p>
               <p className="text-xs text-muted-foreground/70">
                 {COPY.guarantee.disclaimer}
