@@ -7,6 +7,7 @@ import PricingBox from "@/components/landing/PricingBox";
 import GuaranteeBox from "@/components/landing/GuaranteeBox";
 import FAQ from "@/components/landing/FAQ";
 import FinalCTA from "@/components/landing/FinalCTA";
+import { BRAND } from "@/lib/constants";
 
 const Index = () => {
   return (
@@ -22,8 +23,8 @@ const Index = () => {
       <FinalCTA />
       
       <footer className="bg-muted/30 py-8 text-center text-sm text-muted-foreground">
-        <p>From Clip to Click™ · Relatable &gt; Perfecto · Ritmo &gt; Efectos</p>
-        <p className="mt-2">© 2025 ClipCrafters. Todos los derechos reservados.</p>
+        <p>{BRAND.fullName} · {BRAND.principles.join(" · ")}</p>
+        <p className="mt-2">© 2025 {BRAND.name}. Todos los derechos reservados.</p>
       </footer>
     </div>
   );
