@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CheckCircle2 } from "lucide-react";
+import { BRAND, PRICING } from "@/lib/constants";
 
 const PricingBox = () => {
 
@@ -10,7 +11,7 @@ const PricingBox = () => {
       <div className="max-w-4xl mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-heading mb-4">
-            Acceso al programa
+            Acceso completo a {BRAND.name}
           </h2>
           <p className="text-muted-foreground">
             Empieza hoy. Sin cohortes, sin esperas.
@@ -18,15 +19,19 @@ const PricingBox = () => {
         </div>
 
         <Card className="glass-card p-8 md:p-12">
-          <div className="bg-gradient-primary text-white rounded-xl p-6 mb-8">
-            <div className="text-4xl font-bold mb-2">USD 297</div>
-            <div className="text-sm opacity-90">Pago único</div>
+          <div className="bg-gradient-primary text-white rounded-xl p-6 mb-8 text-center">
+            <div className="text-4xl md:text-5xl font-bold mb-2">USD {PRICING.course.price}</div>
+            <div className="text-sm opacity-90">Pago único · Acceso de por vida</div>
           </div>
 
           <div className="space-y-4 mb-8">
             <div className="flex items-center gap-3">
               <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
-              <span>Módulos de aprendizaje estructurados</span>
+              <span>8 módulos de aprendizaje paso a paso</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
+              <span>Test de Content Cores (IA personalizada)</span>
             </div>
             <div className="flex items-center gap-3">
               <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
@@ -34,19 +39,16 @@ const PricingBox = () => {
             </div>
             <div className="flex items-center gap-3">
               <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
-              <span>Plantillas y herramientas completas</span>
+              <span>Plantillas Notion + recursos descargables</span>
             </div>
             <div className="flex items-center gap-3">
               <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
-              <span>Comunidad privada + revisiones grupales</span>
+              <span>Comunidad privada Discord</span>
             </div>
-          </div>
-
-          <div className="bg-muted/50 rounded-lg p-4 mb-6">
-            <p className="text-sm text-muted-foreground mb-2">
-              También disponible:
-            </p>
-            <p className="font-medium">2 pagos de USD 199 <span className="text-sm text-muted-foreground">(sin garantía)</span></p>
+            <div className="flex items-center gap-3">
+              <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
+              <span>Garantía de satisfacción 30 días</span>
+            </div>
           </div>
 
           <div className="mb-6">

@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
+import { BRAND, COPY } from "@/lib/constants";
 
 const Hero = () => {
   return (
@@ -12,17 +13,17 @@ const Hero = () => {
         </div>
         
         <h1 className="text-5xl md:text-7xl font-heading gradient-text leading-tight">
-          From Clip to Click™
+          {BRAND.fullName}
         </h1>
         
         <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-          Crea contenido real que <strong>convierte</strong>: más <strong>impresiones</strong>, sin equipo caro ni horas de edición
+          {COPY.hero.headline}
         </p>
 
-        <p className="text-lg md:text-xl text-muted-foreground/90 max-w-2xl mx-auto italic">
-          "No crees todos los días; <strong>recolecta</strong> todos los días. 
-          Crear es fácil cuando dejas de empezar desde cero."
-        </p>
+        <blockquote className="text-lg md:text-xl text-muted-foreground/90 max-w-2xl mx-auto italic">
+          <p>"{COPY.hero.founderQuote.text}"</p>
+          <cite className="text-sm not-italic">— {COPY.hero.founderQuote.author}</cite>
+        </blockquote>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
           <Button
@@ -30,7 +31,7 @@ const Hero = () => {
             className="bg-gradient-primary hover:opacity-90 text-white text-lg px-8 py-6 rounded-xl shadow-glow"
             onClick={() => window.location.href = '/checkout'}
           >
-            Empezar ahora — USD 297
+            {COPY.cta.primary}
           </Button>
           <Button
             size="lg"
@@ -38,7 +39,7 @@ const Hero = () => {
             className="text-lg px-8 py-6 rounded-xl"
             onClick={() => document.getElementById('como-funciona')?.scrollIntoView({ behavior: 'smooth' })}
           >
-            Ver cómo funciona
+            {COPY.cta.secondary}
           </Button>
         </div>
       </div>

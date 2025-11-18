@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
-import { Shield, CheckCircle2 } from "lucide-react";
+import { Shield } from "lucide-react";
+import { COPY } from "@/lib/constants";
 
 const GuaranteeBox = () => {
   return (
@@ -11,13 +12,15 @@ const GuaranteeBox = () => {
               <Shield className="w-8 h-8 text-success" />
             </div>
             <div>
-              <h3 className="text-2xl font-heading mb-4">Garantía orientada a métricas</h3>
+              <h3 className="text-2xl font-heading mb-4">{COPY.guarantee.title}</h3>
               <p className="text-lg mb-4">
-                Si publicas ≥20 clips en 30 días siguiendo el método y no ves +50% en impresiones, te devolvemos el 100%.
+                {COPY.guarantee.description}
               </p>
-
-              <p className="text-sm text-muted-foreground">
-                * Aplica solo para el plan de pago único. El plan en 2 pagos no es elegible a reembolso.
+              <p className="text-sm text-muted-foreground mb-4">
+                {COPY.guarantee.note}
+              </p>
+              <p className="text-xs text-muted-foreground/70">
+                {COPY.guarantee.disclaimer}
               </p>
             </div>
           </div>

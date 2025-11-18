@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { COPY } from "@/lib/constants";
 
 const FinalCTA = () => {
   return (
@@ -20,7 +21,7 @@ const FinalCTA = () => {
           className="bg-gradient-primary hover:opacity-90 text-white text-lg px-8 py-6 rounded-xl shadow-glow group"
           onClick={() => window.location.href = '/checkout'}
         >
-          Empezar ahora
+          {COPY.cta.primary}
           <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
         </Button>
       </div>
