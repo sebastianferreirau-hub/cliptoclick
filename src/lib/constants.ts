@@ -9,8 +9,9 @@ export const BRAND = {
     "Velocidad > Complejidad"
   ],
   domain: "cliptoclic.com",
+  adminDomain: "admin.cliptoclic.com",
   email: "hola@cliptoclic.com",
-  discord: "https://discord.gg/cliptoclic", // Update with real link when available
+  discord: "https://discord.gg/cliptoclickxxx",
 } as const;
 
 export const PRICING = {
@@ -25,26 +26,44 @@ export const PRICING = {
     currency: "USD",
     name: "Dashboard Pro",
     trialDays: 90
+  },
+  dfyStudio: {
+    starter: 1500,
+    pro: 2500,
+    currency: "USD"
   }
 } as const;
 
+// Dark marketing copy - focuses on pain, scarcity, and proven results
 export const COPY = {
   hero: {
-    headline: "Convierte 30 clips diarios en contenido que convierte",
-    subheadline: "El método probado que generó +363M impresiones en 3 meses—sin equipo de edición ni horas perdidas",
+    headline: "Deja de perder 10+ horas editando contenido que nadie ve",
+    subheadline: "El sistema exacto que usamos para generar 363M impresiones en 90 días—sin contratar editores ni comprar equipo caro",
     founderQuote: {
-      text: "No crees todos los días; recolecta todos los días. Crear es fácil cuando dejas de empezar desde cero.",
-      author: "Sebastián Ferreira, fundador de Clip To Click"
+      text: "Pasé 3 años creando contenido sin sistema. Burnout constante, resultados inconsistentes. Este método cambió todo.",
+      author: "Sebastián Ferreira, +120M impresiones en Q1 2025"
     }
   },
   cta: {
-    primary: "Generar mi plan de 7 días — USD 297",
-    secondary: "Ver el método en acción"
+    primary: "Conseguir acceso ahora — $297",
+    primaryUrgency: "Quedan 47 spots este mes",
+    secondary: "Ver el sistema en acción"
+  },
+  socialProof: {
+    headline: "363M impresiones en 3 meses",
+    subheadline: "Los números no mienten. El método funciona.",
+    disclaimer: "*Resultados de aplicar el método consistentemente. Sin trucos, sin bots, sin comprar views."
   },
   guarantee: {
-    title: "Garantía de satisfacción",
-    description: "Completa el 70% del curso en 30 días y no estás satisfecho con el método? Te devolvemos el 100%, sin preguntas.",
-    disclaimer: "Para procesar reembolso: email a soporte@cliptoclic.com con captura de tu progreso del curso. Debes haber completado al menos 6 de 8 módulos del curso y el quiz de Content Cores.",
-    note: "Por qué 70%? Porque queremos que realmente pruebes el sistema antes de decidir. No es un curso para ver 2 videos y pedir reembolso—es un método que requiere ejecución."
+    title: "Garantía sin riesgo (pero con compromiso)",
+    description: "Completa el 70% del curso en 30 días y no estás satisfecho? Reembolso del 100%.",
+    detailsList: [
+      "✓ Debes completar 6 de 8 módulos (demuestra que intentaste)",
+      "✓ Debes completar el quiz de Content Cores",
+      "✓ Solicitud dentro de 30 días de compra",
+      "✓ Un email a reembolsos@cliptoclic.com y listo"
+    ],
+    reasoning: "No queremos tu dinero si el método no te sirve. Pero si no lo aplicas, no podemos ayudarte. Por eso pedimos demostrar esfuerzo.",
+    disclaimer: "No ofrecemos reembolsos a quienes compran y nunca entran. El método funciona si lo sigues."
   }
 } as const;
