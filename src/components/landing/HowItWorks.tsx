@@ -1,22 +1,22 @@
 import { Card } from "@/components/ui/card";
-import { GraduationCap, Sparkles, FileText } from "lucide-react";
+import { GraduationCap, Sparkles, LayoutDashboard } from "lucide-react";
 
 const HowItWorks = () => {
   const steps = [
     {
       icon: GraduationCap,
       title: "Aprende el método",
-      text: "Plataforma de aprendizaje con módulos cortos, progreso y recursos prácticos",
+      text: "8 módulos que enseñan clipping, ritmo 0.6s, y cómo estructurar contenido real sin forzarlo",
     },
     {
       icon: Sparkles,
-      title: "Genera tu plan IA",
-      text: "Un plan de 7 días basado en tus cores y verticales",
+      title: "Descubre tus Content Cores",
+      text: "Quiz de IA que detecta tus 3 verticales de contenido + genera plan de publicación de 7 días",
     },
     {
-      icon: FileText,
-      title: "Ejecuta con orden",
-      text: "Copia y pega el plan en tu Notion Scheduler y publica con consistencia",
+      icon: LayoutDashboard,
+      title: "Ejecuta con tu Dashboard",
+      text: "Organiza clips, conecta Notion, revisa métricas y publica con constancia desde un solo lugar",
     },
   ];
 
@@ -24,10 +24,10 @@ const HowItWorks = () => {
     <section id="como-funciona" className="py-20">
       <div className="max-w-6xl mx-auto px-4">
         <h2 className="text-3xl md:text-4xl font-heading text-center mb-4">
-          Cómo funciona
+          Cómo funciona Clip To Click
         </h2>
         <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
-          Un sistema simple para pasar de <strong>clip</strong> a <strong>click</strong> en días, no meses
+          Un sistema simple para pasar de <strong>clip</strong> a <strong>contenido publicado</strong> en días, no meses
         </p>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
