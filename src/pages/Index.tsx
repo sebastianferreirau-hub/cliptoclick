@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { PageHeader } from "@/components/ui/page-header";
+import { SectionHeader } from "@/components/ui/section-header";
 import {
   Accordion,
   AccordionContent,
@@ -16,487 +18,494 @@ import {
   GraduationCap,
   Sparkles,
   LayoutDashboard,
-  PlayCircle,
   Zap,
   Calendar,
   FileText,
-  Users as UsersIcon
+  Users as UsersIcon,
+  ChevronDown
 } from "lucide-react";
-import { BRAND, PRICING, COPY } from "@/lib/constants";
-import Hero from "@/components/landing/Hero";
-import SocialProof from "@/components/landing/SocialProof";
-import HowItWorks from "@/components/landing/HowItWorks";
-import IncludesGrid from "@/components/landing/IncludesGrid";
-import AgendaTimeline from "@/components/landing/AgendaTimeline";
-import PricingBox from "@/components/landing/PricingBox";
-import GuaranteeBox from "@/components/landing/GuaranteeBox";
-import FAQ from "@/components/landing/FAQ";
-import FinalCTA from "@/components/landing/FinalCTA";
+import { BRAND, PRICING, COPY, TYPOGRAPHY, CARD_STYLES, BUTTON_STYLES } from "@/lib/constants";
+import { cn } from "@/lib/utils";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-muted/20 to-background">
-      {/* Hero Section */}
-      <section className="relative px-4 py-16 md:py-24">
-        <div className="max-w-5xl mx-auto text-center">
-          <div className="mb-8">
-            <h1 className="text-3xl md:text-4xl font-heading gradient-text mb-2">
-              {BRAND.name}
-            </h1>
-            <p className="text-sm text-muted-foreground">{BRAND.fullName}</p>
+    <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-purple-50">
+      
+      {/* ==================== HERO SECTION - FIXED HIERARCHY ==================== */}
+      <section className="relative overflow-hidden">
+        <div className="page-container pt-20 pb-16 md:pt-32 md:pb-24">
+          
+          {/* Brand badge - small, subtle */}
+          <div className="flex justify-center mb-8">
+            <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 text-sm">
+              {BRAND.fullName}
+            </Badge>
           </div>
 
-          <h2 className="text-4xl md:text-6xl font-heading mb-6 leading-tight">
+          {/* Main headline - TRUE H1 with gradient */}
+          <h1 className={cn(
+            TYPOGRAPHY.pageTitle,
+            TYPOGRAPHY.gradientText,
+            "text-center mb-6 max-w-5xl mx-auto"
+          )}>
             {COPY.hero.headline}
-          </h2>
+          </h1>
 
-          <p className="text-xl md:text-2xl text-muted-foreground mb-10 leading-relaxed max-w-4xl mx-auto">
+          {/* Subheadline */}
+          <p className={cn(
+            TYPOGRAPHY.pageSubtitle,
+            "text-center mb-12 mx-auto"
+          )}>
             {COPY.hero.subheadline}
           </p>
 
-          {/* Social Proof Numbers */}
-          <div className="flex flex-wrap justify-center gap-8 mb-12">
-            <div className="text-center">
-              <div className="text-4xl md:text-5xl font-bold text-success">363M</div>
-              <div className="text-sm text-muted-foreground mt-1">Impresiones en 90 días</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl md:text-5xl font-bold gradient-text">150+</div>
-              <div className="text-sm text-muted-foreground mt-1">Creadores activos</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl md:text-5xl font-bold text-accent">8h</div>
-              <div className="text-sm text-muted-foreground mt-1">Ahorradas por semana</div>
-            </div>
-          </div>
-
-          {/* CTAs */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
-            <Button 
-              size="lg" 
-              className="bg-gradient-primary hover:opacity-90 text-white px-10 py-6 text-lg font-semibold shadow-glow w-full sm:w-auto"
+          {/* PRIMARY CTA - Single, dominant */}
+          <div className="flex flex-col items-center gap-6 mb-12">
+            <Button
+              size="lg"
               onClick={() => window.location.href = "/checkout"}
+              className={cn(
+                BUTTON_STYLES.primary,
+                "text-xl px-12 py-8 rounded-2xl"
+              )}
             >
+              <Sparkles className="w-6 h-6 mr-3" />
               {COPY.cta.primary}
             </Button>
-            <Button 
-              size="lg" 
-              variant="outline"
-              className="border-2 px-10 py-6 text-lg font-semibold w-full sm:w-auto"
+
+            {/* Urgency badge - BELOW primary CTA */}
+            <Badge className="bg-amber-100 text-amber-900 border-2 border-amber-300 px-4 py-2 text-sm animate-pulse">
+              🔥 {COPY.cta.primaryUrgency}
+            </Badge>
+
+            {/* Secondary CTA - subtle, ghost style */}
+            <Button
+              variant="ghost"
+              size="lg"
               onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
+              className="text-gray-600 hover:text-gray-900 text-base"
             >
               {COPY.cta.secondary}
+              <ChevronDown className="w-5 h-5 ml-2" />
             </Button>
           </div>
 
-          {/* Urgency */}
-          <div className="inline-flex items-center gap-2 bg-warning/10 border border-warning/30 rounded-full px-5 py-2.5">
-            <Clock className="w-4 h-4 text-warning" />
-            <span className="text-sm text-warning font-medium">
-              {COPY.cta.primaryUrgency}
-            </span>
-          </div>
-
-          {/* Founder Quote */}
-          <blockquote className="mt-16 border-l-4 border-primary pl-6 italic text-left max-w-3xl mx-auto bg-card rounded-r-lg p-6 shadow-card">
-            <p className="text-foreground text-lg mb-4">"{COPY.hero.founderQuote.text}"</p>
-            <cite className="text-muted-foreground not-italic text-sm font-medium">
-              — {COPY.hero.founderQuote.author}
-            </cite>
-          </blockquote>
-        </div>
-      </section>
-
-      {/* PHASE 1: Enhanced Social Proof Section */}
-      <section className="px-4 py-20 bg-card">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h3 className="text-3xl md:text-4xl font-heading mb-4">
-              {COPY.socialProof.headline}
-            </h3>
-            <p className="text-xl text-muted-foreground">
-              {COPY.socialProof.subheadline}
-            </p>
-            <p className="text-sm text-muted-foreground/70 mt-4">
-              {COPY.socialProof.disclaimer}
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card className="border-2 border-border hover:border-primary/50 hover:shadow-elegant transition-all group">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>Instagram</span>
-                  <TrendingUp className="w-5 h-5 text-success" />
-                </CardTitle>
-                <p className="text-muted-foreground text-sm">@ferenloscielos</p>
-              </CardHeader>
-              <CardContent>
-                <div className="aspect-video bg-gradient-to-br from-primary/10 to-secondary/10 rounded-lg mb-4 flex items-center justify-center relative group-hover:scale-105 transition-transform overflow-hidden">
-                  <PlayCircle className="w-16 h-16 text-primary/60" />
-                </div>
-                <p className="text-foreground text-sm leading-relaxed">
-                  De <strong>15K a 40K seguidores</strong> en 90 días. <strong>50K+ views/reel</strong> promedio.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-2 border-border hover:border-primary/50 hover:shadow-elegant transition-all group">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>TikTok</span>
-                  <TrendingUp className="w-5 h-5 text-success" />
-                </CardTitle>
-                <p className="text-muted-foreground text-sm">@mariaclaudiaql</p>
-              </CardHeader>
-              <CardContent>
-                <div className="aspect-video bg-gradient-to-br from-accent/10 to-primary/10 rounded-lg mb-4 flex items-center justify-center relative group-hover:scale-105 transition-transform overflow-hidden">
-                  <PlayCircle className="w-16 h-16 text-accent/60" />
-                </div>
-                <p className="text-foreground text-sm leading-relaxed">
-                  De <strong>500 a 12K seguidores</strong> en 60 días. Cuenta fantasma → audiencia real.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-2 border-border hover:border-primary/50 hover:shadow-elegant transition-all group">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>Multi-canal</span>
-                  <TrendingUp className="w-5 h-5 text-success" />
-                </CardTitle>
-                <p className="text-muted-foreground text-sm">@sebasferreirauu</p>
-              </CardHeader>
-              <CardContent>
-                <div className="aspect-video bg-gradient-to-br from-success/10 to-accent/10 rounded-lg mb-4 flex items-center justify-center relative group-hover:scale-105 transition-transform overflow-hidden">
-                  <PlayCircle className="w-16 h-16 text-success/60" />
-                </div>
-                <p className="text-foreground text-sm leading-relaxed">
-                  <strong>+120M impresiones</strong> en Q1 2025. Fundador aplicando el método.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* PHASE 2: Creator Testimonials Section */}
-      <section className="px-4 py-20 bg-gradient-to-b from-muted/30 to-background">
-        <div className="max-w-6xl mx-auto">
-          <h3 className="text-3xl md:text-4xl font-heading text-center mb-12">
-            Lo que dicen creadores que aplicaron el sistema
-          </h3>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            {COPY.testimonials.map((testimonial, index) => (
-              <Card key={index} className="border-2 border-border hover:border-primary/50 hover:shadow-elegant transition-all">
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 rounded-full bg-gradient-primary flex items-center justify-center text-white font-bold">
-                      {testimonial.name.charAt(0)}
-                    </div>
-                    <div>
-                      <p className="font-semibold">{testimonial.name}</p>
-                      <p className="text-sm text-muted-foreground">{testimonial.handle}</p>
-                    </div>
-                  </div>
-                  
-                  <blockquote 
-                    className="text-foreground/90 mb-4 text-sm leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: testimonial.quote }}
-                  />
-                  
-                  <div className="flex items-center gap-2 text-sm text-primary font-medium">
-                    <TrendingUp className="w-4 h-4" />
-                    <span>{testimonial.metric}</span>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* PHASE 3: Updated How It Works Section */}
-      <section id="how-it-works" className="px-4 py-20 bg-card">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h3 className="text-3xl md:text-5xl font-heading mb-4">
-              {COPY.howItWorks.title}
-            </h3>
-            <p className="text-xl text-muted-foreground">
-              {COPY.howItWorks.subtitle}
-            </p>
-          </div>
-
-          <div className="space-y-16">
-            {COPY.howItWorks.steps.map((step, index) => (
-              <div key={index} className="grid md:grid-cols-2 gap-12 items-center">
-                <div className={index % 2 === 0 ? "order-1" : "order-1 md:order-2"}>
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 w-14 h-14 rounded-full bg-gradient-primary flex items-center justify-center text-white font-bold text-2xl shadow-glow">
-                      {step.number}
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="text-2xl md:text-3xl font-heading mb-4">
-                        {step.title}
-                      </h4>
-                      <p className="text-foreground/90 text-lg mb-6 leading-relaxed">
-                        {step.description}
-                      </p>
-                      <div className="flex items-start gap-3 bg-destructive/10 border border-destructive/30 rounded-lg p-4">
-                        <XCircle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
-                        <p className="text-sm text-destructive/90 leading-relaxed">{step.painPoint}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className={index % 2 === 0 ? "order-2" : "order-2 md:order-1"}>
-                  <div className="aspect-video bg-gradient-to-br from-primary/10 to-secondary/10 rounded-xl border-2 border-border flex items-center justify-center shadow-elegant">
-                    <Zap className="w-20 h-20 text-primary/40" />
-                  </div>
-                </div>
+          {/* Social proof numbers - AFTER CTAs */}
+          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            <div className="text-center">
+              <div className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+                363M
               </div>
-            ))}
+              <p className={cn(TYPOGRAPHY.body, "text-gray-600")}>
+                Impresiones en 90 días
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+                150+
+              </div>
+              <p className={cn(TYPOGRAPHY.body, "text-gray-600")}>
+                Creadores activos
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+                8h
+              </div>
+              <p className={cn(TYPOGRAPHY.body, "text-gray-600")}>
+                Ahorradas por semana
+              </p>
+            </div>
+          </div>
+
+          {/* Founder quote - tertiary */}
+          <div className="max-w-3xl mx-auto mt-16">
+            <Card className={CARD_STYLES.tertiary}>
+              <CardContent className="pt-6">
+                <p className={cn(TYPOGRAPHY.body, "italic text-gray-700 mb-3")}>
+                  "{COPY.hero.founderQuote.text}"
+                </p>
+                <p className={cn(TYPOGRAPHY.bodySmall, "text-gray-600 font-medium")}>
+                  — {COPY.hero.founderQuote.author}
+                </p>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
 
-      {/* PHASE 4: Enhanced What's Included Section */}
-      <section className="px-4 py-20 bg-gradient-to-b from-muted/30 to-background">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h3 className="text-3xl md:text-5xl font-heading mb-4">
-              {COPY.includes.title}
-            </h3>
-            <p className="text-xl text-muted-foreground">
-              {COPY.includes.subtitle}
-            </p>
-          </div>
+      {/* ==================== SOCIAL PROOF - CASE STUDIES ==================== */}
+      <section className="section bg-gradient-to-b from-white to-purple-50">
+        <div className="page-container">
+          <SectionHeader
+            title={COPY.socialProof.headline}
+            subtitle={COPY.socialProof.subheadline}
+            gradient
+          />
 
-          <div className="grid md:grid-cols-2 gap-6">
-            {COPY.includes.items.map((item, index) => (
-              <Card 
-                key={index} 
-                className="border-2 border-border hover:border-primary/50 hover:shadow-elegant transition-all group"
-              >
-                <CardHeader>
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="w-12 h-12 rounded-full bg-primary/10 group-hover:bg-primary/20 transition flex items-center justify-center flex-shrink-0">
-                      {index === 0 && <Sparkles className="w-6 h-6 text-primary" />}
-                      {index === 1 && <Calendar className="w-6 h-6 text-primary" />}
-                      {index === 2 && <LayoutDashboard className="w-6 h-6 text-primary" />}
-                      {index === 3 && <FileText className="w-6 h-6 text-primary" />}
-                      {index === 4 && <UsersIcon className="w-6 h-6 text-primary" />}
-                      {index === 5 && <GraduationCap className="w-6 h-6 text-primary" />}
-                    </div>
-                    <Badge className="bg-success/10 text-success border border-success/30 whitespace-nowrap ml-3">
-                      {item.value}
-                    </Badge>
+          {/* Case study grid */}
+          <div className="grid md:grid-cols-3 gap-8 mb-12">
+            {/* Instagram case */}
+            <Card className={cn(CARD_STYLES.secondary, "interactive-scale")}>
+              <CardHeader>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                    <TrendingUp className="w-6 h-6 text-white" />
                   </div>
-                  <CardTitle className="text-xl group-hover:text-primary transition">
-                    {item.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground leading-relaxed">
-                    {item.description}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* Total Value */}
-          <div className="mt-16 text-center bg-gradient-to-r from-primary/5 to-secondary/5 rounded-2xl p-8 border-2 border-primary/20">
-            <p className="text-foreground/80 text-lg mb-2">Valor total si compras todo por separado:</p>
-            <p className="text-4xl font-bold text-muted-foreground/40 mb-3 line-through">
-              $1,294
-            </p>
-            <p className="text-foreground/80 text-lg mb-3">Tu inversión hoy:</p>
-            <p className="text-6xl font-bold gradient-text mb-3">
-              ${PRICING.course.price}
-            </p>
-            <p className="text-muted-foreground">
-              Ahorro de <strong className="text-success">$997</strong>. Pago único. Sin renovaciones ocultas.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* PHASE 7: Program Roadmap Section */}
-      <section className="px-4 py-20 bg-card">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h3 className="text-3xl md:text-5xl font-heading mb-4">
-              {COPY.agenda.title}
-            </h3>
-            <p className="text-xl text-muted-foreground">
-              {COPY.agenda.subtitle}
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {COPY.agenda.modules.map((module, index) => (
-              <Card 
-                key={index} 
-                className="glass-card hover:border-success/50 transition-all group cursor-pointer"
-              >
-                <CardHeader>
-                  <div className="flex items-start justify-between mb-2">
-                    <Badge variant="outline" className="border-success/50 text-success">
-                      M{module.week}
-                    </Badge>
+                  <div>
+                    <Badge className="bg-purple-100 text-purple-700">Instagram</Badge>
                   </div>
-                  <CardTitle className="text-lg group-hover:text-primary transition">
-                    {module.title}
-                  </CardTitle>
-                </CardHeader>
-              </Card>
-            ))}
+                </div>
+                <CardTitle className={TYPOGRAPHY.cardTitle}>
+                  @ferenloscielos
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className={TYPOGRAPHY.body}>
+                  De 15K a 40K seguidores en 90 días. 50K+ views/reel promedio.
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* TikTok case */}
+            <Card className={cn(CARD_STYLES.secondary, "interactive-scale")}>
+              <CardHeader>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                    <Sparkles className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <Badge className="bg-purple-100 text-purple-700">TikTok</Badge>
+                  </div>
+                </div>
+                <CardTitle className={TYPOGRAPHY.cardTitle}>
+                  @mariaclaudiaql
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className={TYPOGRAPHY.body}>
+                  De 500 a 12K seguidores en 60 días. Cuenta fantasma → audiencia real.
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Multi-channel case */}
+            <Card className={cn(CARD_STYLES.primary, "interactive-scale")}>
+              <CardHeader>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-center">
+                    <Zap className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <Badge className="bg-green-100 text-green-700">Multi-canal</Badge>
+                  </div>
+                </div>
+                <CardTitle className={TYPOGRAPHY.cardTitle}>
+                  @sebasferreirauu
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className={TYPOGRAPHY.body}>
+                  +120M impresiones en Q1 2025. Instagram, TikTok, Snapchat sincronizados.
+                </p>
+              </CardContent>
+            </Card>
           </div>
 
-          <p className="text-center text-sm text-muted-foreground mt-8">
-            Cada módulo termina con una acción de 15–30 min
+          <p className={cn(TYPOGRAPHY.caption, "text-center text-gray-500 italic")}>
+            {COPY.socialProof.disclaimer}
           </p>
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <PricingBox />
+      {/* ==================== HOW IT WORKS ==================== */}
+      <section id="how-it-works" className="section">
+        <div className="page-container">
+          <SectionHeader
+            title={COPY.howItWorks.title}
+            subtitle={COPY.howItWorks.subtitle}
+          />
 
-      {/* PHASE 6: Behind the Scenes Section */}
-      <section className="px-4 py-20 bg-gradient-to-b from-muted/30 to-background">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h3 className="text-3xl md:text-5xl font-heading mb-4">
-              {COPY.behindTheScenes.title}
-            </h3>
-            <p className="text-xl text-muted-foreground">
-              {COPY.behindTheScenes.subtitle}
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <div className="aspect-video bg-gradient-to-br from-primary/10 to-secondary/10 rounded-lg shadow-2xl border-2 border-primary/20 flex items-center justify-center">
-                <LayoutDashboard className="w-24 h-24 text-primary/40" />
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 text-muted-foreground">
-                <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
-                <p className="text-lg">Banco de clips siempre listo</p>
-              </div>
-              <div className="flex items-center gap-3 text-muted-foreground">
-                <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
-                <p className="text-lg">Ideas catalogadas en Notion</p>
-              </div>
-              <div className="flex items-center gap-3 text-muted-foreground">
-                <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
-                <p className="text-lg">Métricas que dicen qué funciona</p>
-              </div>
-            </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            {COPY.howItWorks.steps.map((step, index) => (
+              <Card key={index} className={cn(CARD_STYLES.secondary, "interactive-scale")}>
+                <CardHeader>
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center mb-4 mx-auto">
+                    <span className="text-3xl font-bold text-white">{step.number}</span>
+                  </div>
+                  <CardTitle className={cn(TYPOGRAPHY.cardTitle, "text-center")}>
+                    {step.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-center">
+                  <p className={cn(TYPOGRAPHY.body, "mb-4")}>
+                    {step.description}
+                  </p>
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                    <p className={cn(TYPOGRAPHY.bodySmall, "text-red-800")}>
+                      {step.painPoint}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Guarantee Section */}
-      <GuaranteeBox />
+      {/* ==================== WHAT'S INCLUDED ==================== */}
+      <section className="section bg-gradient-to-b from-white to-purple-50">
+        <div className="page-container">
+          <SectionHeader
+            title={COPY.includes.title}
+            subtitle={COPY.includes.subtitle}
+            gradient
+          />
 
-      {/* FAQ Section */}
-      <FAQ />
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {COPY.includes.items.map((item, index) => {
+              const icons = [
+                <Sparkles className="w-6 h-6" />,
+                <Calendar className="w-6 h-6" />,
+                <LayoutDashboard className="w-6 h-6" />,
+                <FileText className="w-6 h-6" />,
+                <UsersIcon className="w-6 h-6" />,
+                <GraduationCap className="w-6 h-6" />
+              ];
 
-      {/* PHASE 5: Visual Two Paths Final CTA */}
-      <section className="px-4 py-20 bg-card">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h3 className="text-3xl md:text-5xl font-heading mb-4">
-              {COPY.finalCTA.title}
-            </h3>
+              return (
+                <Card key={index} className={cn(CARD_STYLES.secondary, "interactive-scale")}>
+                  <CardHeader>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">
+                        {icons[index]}
+                      </div>
+                      <Badge className="bg-green-100 text-green-700 border-green-300">
+                        {item.value}
+                      </Badge>
+                    </div>
+                    <CardTitle className={TYPOGRAPHY.cardTitle}>
+                      {item.title}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className={TYPOGRAPHY.bodySmall}>
+                      {item.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Path 1 - Pain */}
-            <Card className="bg-gradient-to-br from-destructive/5 to-destructive/10 border-2 border-destructive/30 relative overflow-hidden">
-              <div className="absolute inset-0 opacity-10">
-                <XCircle className="w-64 h-64 text-destructive absolute -bottom-16 -right-16" />
+          {/* Value comparison */}
+          <Card className={cn(CARD_STYLES.primary, "max-w-3xl mx-auto")}>
+            <CardContent className="pt-6">
+              <div className="text-center">
+                <p className={cn(TYPOGRAPHY.body, "text-gray-700 mb-2")}>
+                  Valor total si compras todo por separado:
+                </p>
+                <div className="text-4xl font-bold text-gray-400 line-through mb-4">
+                  $1,294
+                </div>
+                <p className={cn(TYPOGRAPHY.bodyLarge, "text-gray-900 font-semibold mb-2")}>
+                  Tu inversión hoy:
+                </p>
+                <div className={cn(
+                  "text-6xl font-bold mb-4",
+                  TYPOGRAPHY.gradientText
+                )}>
+                  ${PRICING.course.price}
+                </div>
+                <p className={cn(TYPOGRAPHY.body, "text-gray-700")}>
+                  Ahorro de $997. Pago único. Sin renovaciones ocultas.
+                </p>
               </div>
-              
-              <CardHeader className="relative z-10">
-                <CardTitle className="text-2xl text-destructive flex items-center gap-3">
-                  <XCircle className="w-8 h-8" />
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* ==================== PRICING - MOVED UP ==================== */}
+      <section className="section">
+        <div className="page-container">
+          <SectionHeader
+            title={COPY.pricing.title}
+            subtitle={COPY.pricing.subtitle}
+            gradient
+          />
+
+          {/* Main pricing card */}
+          <div className="max-w-2xl mx-auto">
+            <Card className={cn(CARD_STYLES.elevated)}>
+              <CardHeader className="text-center border-b border-purple-200 bg-white/80 backdrop-blur pb-8">
+                <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm px-4 py-2 mb-4 mx-auto">
+                  {COPY.pricing.mainPlan.badge}
+                </Badge>
+                <div className="text-6xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+                  ${COPY.pricing.mainPlan.price}
+                </div>
+                <p className={cn(TYPOGRAPHY.body, "text-gray-600")}>
+                  {COPY.pricing.mainPlan.frequency}
+                </p>
+              </CardHeader>
+              <CardContent className="pt-8">
+                <ul className="space-y-4 mb-8">
+                  {COPY.pricing.mainPlan.includes.map((item, index) => (
+                    <li key={index} className="flex items-start gap-3">
+                      <CheckCircle2 className="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5" />
+                      <span className={TYPOGRAPHY.body}>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <Button
+                  size="lg"
+                  onClick={() => window.location.href = "/checkout"}
+                  className={cn(BUTTON_STYLES.primary, "w-full text-xl py-8")}
+                >
+                  <Sparkles className="w-6 h-6 mr-3" />
+                  Conseguir acceso ahora
+                </Button>
+
+                <div className="mt-6 bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div className="flex items-center gap-3">
+                    <Shield className="w-6 h-6 text-green-600 flex-shrink-0" />
+                    <p className={cn(TYPOGRAPHY.bodySmall, "text-green-900")}>
+                      {COPY.pricing.mainPlan.guarantee}
+                    </p>
+                  </div>
+                </div>
+
+                <p className={cn(TYPOGRAPHY.caption, "text-center text-gray-500 mt-6")}>
+                  Después del trial de 90 días, el Dashboard es $19/mes (opcional). El curso + Notion + Discord son tuyos para siempre.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Urgency banner */}
+          {COPY.pricing.urgency.enabled && (
+            <div className="max-w-2xl mx-auto mt-8">
+              <Card className="border-2 border-amber-300 bg-amber-50">
+                <CardContent className="pt-6 text-center">
+                  <p className={cn(TYPOGRAPHY.bodyLarge, "text-amber-900 font-semibold")}>
+                    🔥 {COPY.pricing.urgency.text}
+                  </p>
+                  <p className={cn(TYPOGRAPHY.bodySmall, "text-amber-800 mt-2")}>
+                    {COPY.pricing.urgency.reasoning}
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ==================== FAQ - IMPROVED ==================== */}
+      <section className="section bg-gradient-to-b from-white to-purple-50">
+        <div className="page-container">
+          <SectionHeader
+            title={COPY.faq.title}
+          />
+
+          <div className="max-w-3xl mx-auto">
+            <Accordion type="single" collapsible className="space-y-4">
+              {COPY.faq.questions.map((item, index) => (
+                <Card key={index} className={cn(CARD_STYLES.secondary)}>
+                  <AccordionItem value={`item-${index}`} className="border-none">
+                    <AccordionTrigger className="hover:no-underline px-6 py-4">
+                      <div className="flex items-center gap-3 text-left">
+                        <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
+                          <span className="text-purple-600 font-bold text-sm">{index + 1}</span>
+                        </div>
+                        <span className={cn(TYPOGRAPHY.cardTitle, "text-base")}>
+                          {item.q}
+                        </span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-6 pb-6">
+                      <p className={cn(TYPOGRAPHY.body, "text-gray-700")}>
+                        {item.a}
+                      </p>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Card>
+              ))}
+            </Accordion>
+          </div>
+        </div>
+      </section>
+
+      {/* ==================== FINAL CTA ==================== */}
+      <section className="section">
+        <div className="page-container">
+          <SectionHeader
+            title={COPY.finalCTA.title}
+            gradient
+          />
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {/* Path 1 - Pain */}
+            <Card className="border-2 border-red-200 bg-gradient-to-br from-red-50 to-orange-50">
+              <CardHeader>
+                <CardTitle className={cn(TYPOGRAPHY.cardTitle, "text-red-900")}>
                   {COPY.finalCTA.option1.title}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="relative z-10 space-y-4">
-                <p className="text-destructive/90 font-medium">
+              <CardContent>
+                <p className={cn(TYPOGRAPHY.body, "text-red-800 mb-6")}>
                   {COPY.finalCTA.option1.description}
                 </p>
-                
-                <div className="space-y-3 pt-4">
-                  {COPY.finalCTA.option1.timeline.map((item, index) => (
-                    <div key={index} className="flex items-start gap-2">
-                      <Clock className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
-                      <p className="text-sm text-destructive/80">
-                        <strong>{item.period}</strong> {item.outcome}
-                      </p>
-                    </div>
+                <ul className="space-y-3">
+                  {COPY.finalCTA.option1.timeline?.map((item: any, index: number) => (
+                    <li key={index} className="flex items-start gap-2">
+                      <XCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                      <span className={cn(TYPOGRAPHY.bodySmall, "text-red-800")}>
+                        <strong>{item.period}:</strong> {item.outcome}
+                      </span>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </CardContent>
             </Card>
 
             {/* Path 2 - Solution */}
-            <Card className="bg-gradient-to-br from-primary/5 to-secondary/5 border-2 border-primary relative overflow-hidden">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20">
-                <Badge className="bg-gradient-primary text-white px-6 py-2">
+            <Card className={cn(CARD_STYLES.elevated)}>
+              <CardHeader>
+                <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white mb-4 w-fit">
                   ✨ Opción inteligente
                 </Badge>
-              </div>
-              
-              <div className="absolute inset-0 opacity-10">
-                <CheckCircle2 className="w-64 h-64 text-primary absolute -bottom-16 -right-16" />
-              </div>
-              
-              <CardHeader className="relative z-10 pt-8">
-                <CardTitle className="text-2xl text-primary flex items-center gap-3">
-                  <CheckCircle2 className="w-8 h-8" />
+                <CardTitle className={cn(TYPOGRAPHY.cardTitle, "bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent")}>
                   {COPY.finalCTA.option2.title}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="relative z-10 space-y-6">
-                <p className="text-foreground/90 font-medium">
+              <CardContent>
+                <p className={cn(TYPOGRAPHY.body, "text-gray-700 mb-6")}>
                   {COPY.finalCTA.option2.description}
                 </p>
-                
-                <div className="space-y-3">
-                  {COPY.finalCTA.option2.timeline.map((item, index) => (
-                    <div key={index} className="flex items-start gap-2">
-                      <Zap className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                      <p className="text-sm text-foreground/80">
-                        <strong>{item.period}</strong> {item.outcome}
-                      </p>
-                    </div>
+                <ul className="space-y-3 mb-6">
+                  {COPY.finalCTA.option2.timeline?.map((item: any, index: number) => (
+                    <li key={index} className="flex items-start gap-2">
+                      <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                      <span className={cn(TYPOGRAPHY.bodySmall, "text-gray-700")}>
+                        <strong>{item.period}:</strong> {item.outcome}
+                      </span>
+                    </li>
                   ))}
-                </div>
-                
+                </ul>
                 <Button
                   size="lg"
-                  className="w-full bg-gradient-primary hover:opacity-90 text-white py-6 text-lg font-semibold shadow-glow"
                   onClick={() => window.location.href = "/checkout"}
+                  className={cn(BUTTON_STYLES.primary, "w-full text-lg py-6")}
                 >
+                  <Sparkles className="w-5 h-5 mr-2" />
                   {COPY.finalCTA.option2.cta}
                 </Button>
-
-                <div className="text-center">
-                  <div className="inline-flex items-center gap-2 bg-warning/10 border border-warning/30 rounded-full px-4 py-2">
-                    <Clock className="w-4 h-4 text-warning" />
-                    <span className="text-sm text-warning font-medium">
-                      {COPY.finalCTA.option2.urgency}
-                    </span>
-                  </div>
+                <div className="mt-4 text-center">
+                  <Badge className="bg-amber-100 text-amber-900 border-amber-300 text-sm">
+                    🔥 {COPY.finalCTA.option2.urgency}
+                  </Badge>
                 </div>
               </CardContent>
             </Card>
@@ -504,32 +513,28 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="px-4 py-12 bg-muted/30 border-t border-border">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-8">
-            <p className="text-muted-foreground text-sm mb-4">
+      {/* ==================== FOOTER ==================== */}
+      <footer className="section-tight bg-gray-900 text-white">
+        <div className="page-container">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <p className={cn(TYPOGRAPHY.bodySmall, "text-gray-400")}>
               {BRAND.fullName} · {BRAND.principles.join(" · ")}
             </p>
+            <div className="flex gap-6">
+              <a href="/terms" className={cn(TYPOGRAPHY.bodySmall, "text-gray-400 hover:text-white transition-colors")}>
+                Términos
+              </a>
+              <a href="/privacy" className={cn(TYPOGRAPHY.bodySmall, "text-gray-400 hover:text-white transition-colors")}>
+                Privacidad
+              </a>
+              <a href="/refund" className={cn(TYPOGRAPHY.bodySmall, "text-gray-400 hover:text-white transition-colors")}>
+                Reembolso
+              </a>
+            </div>
           </div>
-          
-          <div className="flex flex-wrap justify-center gap-6 mb-8">
-            <a href="/terms" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
-              Términos y condiciones
-            </a>
-            <a href="/privacy" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
-              Política de privacidad
-            </a>
-            <a href="/refund-policy" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
-              Política de reembolso
-            </a>
-          </div>
-
-          <div className="text-center">
-            <p className="text-muted-foreground/70 text-sm">
-              © 2025 {BRAND.name}. Todos los derechos reservados.
-            </p>
-          </div>
+          <p className={cn(TYPOGRAPHY.caption, "text-gray-500 text-center mt-6")}>
+            © 2025 {BRAND.name}. Todos los derechos reservados.
+          </p>
         </div>
       </footer>
     </div>
