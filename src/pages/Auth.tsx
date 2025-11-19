@@ -1,100 +1,65 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { toast } from "sonner";
-import { Sparkles, ArrowLeft } from "lucide-react";
+import { Lock, Mail, AlertCircle } from "lucide-react";
+import { BRAND } from "@/lib/constants";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const Auth = () => {
-  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showPasswordReset, setShowPasswordReset] = useState(false);
-  const [resetEmail, setResetEmail] = useState("");
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        navigate("/dashboard");
-      }
-    });
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        navigate("/dashboard");
-      }
+      if (session) navigate('/dashboard');
     });
-
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) navigate('/dashboard');
+    });
     return () => subscription.unsubscribe();
   }, [navigate]);
-
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/checkout`,
-        },
-      });
-
-      if (error) throw error;
-      toast.success("Cuenta creada. Por favor revisa tu email para confirmar.");
-    } catch (error: any) {
-      toast.error(error.message || "Error al crear cuenta");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
+      toast({ title: "✅ Sesión iniciada", description: "Redirigiendo a tu dashboard..." });
     } catch (error: any) {
-      toast.error(error.message || "Error al iniciar sesión");
-    } finally {
+      toast({ title: "❌ Error al iniciar sesión", description: error.message || "Verifica tu email y contraseña", variant: "destructive" });
       setLoading(false);
     }
   };
 
-  const handlePasswordReset = async (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
-
+      const { error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: `${window.location.origin}/` } });
       if (error) throw error;
-      toast.success("Revisa tu email para restablecer tu contraseña");
-      setShowPasswordReset(false);
-      setResetEmail("");
+      toast({ title: "✅ Cuenta creada exitosamente", description: "Revisa tu email para confirmar tu cuenta" });
+      setLoading(false);
     } catch (error: any) {
-      toast.error(error.message || "Error al enviar email de recuperación");
-    } finally {
+      toast({ title: "❌ Error al crear cuenta", description: error.message || "Intenta con otro email", variant: "destructive" });
       setLoading(false);
     }
+  };
+
+  const handlePasswordReset = () => {
+    toast({ title: "Recuperar contraseña", description: "Funcionalidad próximamente disponible" });
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-purple-50 flex items-center justify-center py-12 px-4">
       <div className="absolute inset-0 bg-gradient-glow opacity-30" />
       
       <Card className="w-full max-w-md glass-card relative z-10">

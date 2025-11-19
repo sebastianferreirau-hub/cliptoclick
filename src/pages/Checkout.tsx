@@ -10,36 +10,30 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
 const Checkout = () => {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const [plan, setPlan] = useState("one_time");
-  const [coupon, setCoupon] = useState("");
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
   const [discount, setDiscount] = useState(0);
   const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
-  const prices = {
-    one_time: 297,
-    two_pay: 199,
-  };
+  const basePrice = PRICING.course.price;
+  const finalPrice = basePrice - discount;
 
-  useEffect(() => {
-    if (searchParams.get("canceled")) {
-      toast.error("Pago cancelado. Puedes intentar nuevamente.");
-    }
-  }, [searchParams]);
-
-  const applyCoupon = () => {
-    if (coupon.toUpperCase() === "LATAM30") {
-      setDiscount(0.3);
-      toast.success("¡Beca LATAM aplicada! 30% de descuento");
+  const handleApplyCoupon = () => {
+    if (couponCode.toUpperCase() === "LATAM30") {
+      setDiscount(Math.round(basePrice * 0.3));
+      setAppliedCoupon("LATAM30");
+      toast({
+        title: "✅ Beca LATAM aplicada",
+        description: "30% de descuento agregado",
+      });
     } else {
-      toast.error("Código inválido");
+      toast({
+        title: "❌ Código inválido",
+        description: "El código no existe o ya expiró",
+        variant: "destructive",
+      });
     }
-  };
-
-  const calculatePrice = () => {
-    const basePrice = plan === "one_time" ? prices.one_time : prices.two_pay;
-    return Math.round(basePrice * (1 - discount));
   };
 
   const handleCheckout = async () => {
@@ -48,8 +42,8 @@ const Checkout = () => {
     try {
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
         body: { 
-          plan,
-          promo_code: coupon || null,
+          plan: 'one_time',
+          promo_code: couponCode || null,
         },
       });
 
@@ -57,18 +51,19 @@ const Checkout = () => {
 
       if (data?.url) {
         window.location.href = data.url;
-      } else {
-        throw new Error('No checkout URL received');
       }
     } catch (error) {
-      console.error('Checkout error:', error);
-      toast.error("Error al procesar el pago. Por favor intenta nuevamente.");
+      toast({
+        title: "❌ Error al procesar el pago",
+        description: "Por favor intenta nuevamente.",
+        variant: "destructive",
+      });
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-subtle py-20 px-4">
+    <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-purple-50 py-12 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-heading gradient-text mb-4">
