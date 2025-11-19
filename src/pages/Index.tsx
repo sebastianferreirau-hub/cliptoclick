@@ -340,29 +340,18 @@ const Index = () => {
             {COPY.agenda.modules.map((module, index) => (
               <Card 
                 key={index} 
-                className="glass-card hover:border-success/50 transition-all group"
+                className="glass-card hover:border-success/50 transition-all group cursor-pointer"
               >
                 <CardHeader>
                   <div className="flex items-start justify-between mb-2">
                     <Badge variant="outline" className="border-success/50 text-success">
                       M{module.week}
                     </Badge>
-                    <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground font-bold text-sm">
-                      {module.week}
-                    </div>
                   </div>
                   <CardTitle className="text-lg group-hover:text-primary transition">
                     {module.title}
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
-                  <p className="text-sm text-muted-foreground">
-                    <strong className="text-foreground">Outcome:</strong> {module.outcome}
-                  </p>
-                  <p className="text-sm text-success">
-                    {module.action}
-                  </p>
-                </CardContent>
               </Card>
             ))}
           </div>
@@ -395,20 +384,19 @@ const Index = () => {
               </div>
             </div>
 
-            <div className="space-y-6">
-              {COPY.behindTheScenes.steps.map((step, index) => (
-                <div key={index} className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-white font-bold flex-shrink-0">
-                    {step.number}
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-lg mb-2">{step.title}</h4>
-                    <p className="text-muted-foreground">
-                      {step.description}
-                    </p>
-                  </div>
-                </div>
-              ))}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 text-muted-foreground">
+                <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
+                <p className="text-lg">Banco de clips siempre listo</p>
+              </div>
+              <div className="flex items-center gap-3 text-muted-foreground">
+                <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
+                <p className="text-lg">Ideas catalogadas en Notion</p>
+              </div>
+              <div className="flex items-center gap-3 text-muted-foreground">
+                <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
+                <p className="text-lg">Métricas que dicen qué funciona</p>
+              </div>
             </div>
           </div>
         </div>
