@@ -202,138 +202,69 @@ export const COPY = {
     ]
   },
   behindTheScenes: {
-    title: "El sistema por dentro: cómo funciona en la práctica",
-    subtitle: "No vendemos teoría. Esto es lo que pasa cuando aplicas el método.",
-    examples: [
+    title: "Así se ve el sistema en acción",
+    subtitle: "No es magia. Es método + constancia.",
+    steps: [
       {
-        scenario: "Cliente: 'Quiero viralizar mi negocio pero odio estar en cámara'",
-        solution: "Le enseñamos clipping + CapCut. Ahora hace 15 videos/mes sin grabar su cara. +30K impresiones/semana.",
-        outcome: "3 negocios escalados sin contratar equipo de contenido"
+        number: 1,
+        title: "Banco de clips organizado",
+        description: "Grabas 30 clips los domingos. Los guardas en Drive categorizados por vertical. Nunca más 'no sé qué publicar hoy'."
       },
       {
-        scenario: "Creador: 'Tengo 50K seguidores pero 0 engagement'",
-        solution: "Analizamos sus métricas → 80% de su contenido era irrelevante. Le dimos 3 verticales core. Engagement +400%.",
-        outcome: "De fantasma a +10K likes/post en 60 días"
+        number: 2,
+        title: "Ideas siempre listas en Notion",
+        description: "Cada vez que ves un video que te inspira, lo guardas en tu tabla de inspos. Tienes 50+ ideas esperando ser ejecutadas."
       },
       {
-        scenario: "Agencia: 'No podemos escalar editando 1 video a la vez'",
-        solution: "Implementaron batching + plantillas de ritmo. De 15 videos/mes a 60 videos/mes sin contratar más editores.",
-        outcome: "+$8K MRR adicionales sin aumentar costos"
+        number: 3,
+        title: "Dashboard te dice qué funciona",
+        description: "Ves tus métricas cada 24h. 'Vertical inmigrante' hace 3x más impresiones? Duplicas ahí. Data > intuición."
       }
     ]
   },
-  pricing: {
-    title: "Consigue acceso completo hoy",
-    subtitle: "Un solo pago. Sin renovaciones sorpresa. Sin upsells ocultos.",
-    dashboardNote: "Después del trial de 90 días, el Dashboard es $19/mes (opcional). El curso + Notion + Discord son tuyos para siempre.",
-    mainPlan: {
-      badge: "🔥 Más popular",
-      price: 297,
-      frequency: "Pago único · Acceso de por vida",
-      includes: [
-        "Quiz IA de Content Cores (identifica tus 3 verticales en 30 min)",
-        "Plan personalizado de 7 días generado por IA",
-        "Dashboard operativo - 90 días gratis ($171 de valor)",
-        "Curso completo: 8 módulos, 12 horas de contenido",
-        "Sistema Notion completo (plantillas + workflows)",
-        "Comunidad Discord de por vida (150+ creadores activos)",
-        "Actualizaciones gratuitas de contenido (cuando agregamos módulos nuevos)"
-      ],
-      guarantee: "🛡️ Garantía de 90 días - Si no obtienes resultados, devolvemos 100% de tu dinero. Sin preguntas."
-    },
-    urgency: {
-      enabled: true,
-      text: "Solo quedan 47 spots este mes",
-      reasoning: "Limitamos ingresos mensuales para dar soporte real en Discord. Cuando lleguemos a 200 miembros activos, cerramos hasta el próximo mes."
-    }
-  },
   finalCTA: {
-    title: "Dos caminos. Tú eliges.",
+    title: "Dos caminos desde aquí",
     option1: {
-      title: "❌ Seguir sin sistema",
-      description: "Improvisando contenido. Quemándote cada semana. Resultados inconsistentes.",
+      title: "Seguir improvisando",
+      description: "Grabas cuando 'te inspiras'. Editas sin sistema. Publicas cuando 'sale algo bueno'.",
       timeline: [
         {
-          period: "Próximos 30 días",
-          outcome: "Publicarás 5-8 videos (si tienes suerte). 2-3 tendrán engagement decente."
+          period: "En 3 meses:",
+          outcome: "20 videos publicados, resultados inconsistentes, frustración alta"
         },
         {
-          period: "Próximos 90 días",
-          outcome: "Burnout creativo. Pensarás en contratar un editor ($500-$2K/mes)."
-        },
-        {
-          period: "Próximo año",
-          outcome: "Seguirás con los mismos resultados. O peor: habrás dejado de crear."
+          period: "En 6 meses:",
+          outcome: "Mismo lugar, misma audiencia, sin clarity de qué funciona"
         }
       ]
     },
     option2: {
-      title: "✅ Aplicar el sistema",
-      description: "Método probado. Dashboard que organiza todo. Comunidad que te mantiene accountable.",
+      title: "Conseguir el sistema hoy",
+      description: "En 8 semanas dominas clipping, edición rápida, distribución multi-plataforma.",
       timeline: [
         {
-          period: "Primeros 7 días",
-          outcome: "Completas el quiz. Tienes tus 3 verticales core. Ya sabes QUÉ contenido crear."
+          period: "En 3 meses:",
+          outcome: "60+ videos publicados sin burnout, primeras señales de traction"
         },
         {
-          period: "Primeros 30 días",
-          outcome: "Publicas 15-20 videos. Algunos pegarán fuerte. Sabes cuáles duplicar."
-        },
-        {
-          period: "Primeros 90 días",
-          outcome: "Sistema rodando solo. 3h/semana de trabajo. Resultados medibles. Cero burnout."
+          period: "En 6 meses:",
+          outcome: "Sistema que escala solo. Sabes qué duplicar, qué dejar."
         }
       ],
-      cta: "Conseguir acceso completo — $297",
-      urgency: "47 spots restantes este mes"
+      cta: "Conseguir acceso — $297",
+      urgency: "47 spots restantes"
     }
   },
-  faq: {
-    title: "Preguntas que todos hacen (y respuestas sin bullshit)",
-    questions: [
-      {
-        q: "¿Necesito experiencia editando videos?",
-        a: "No. Te enseñamos desde cero. El método está diseñado para que cualquiera pueda hacerlo—incluso si nunca has abierto CapCut. Lo importante es la consistencia, no ser Spielberg."
-      },
-      {
-        q: "¿Funciona si no tengo seguidores aún?",
-        a: "Sí. De hecho, es mejor empezar con el sistema ANTES de tener audiencia. Así construyes desde el principio sin malos hábitos. +60% de nuestros estudiantes empezaron con <1K seguidores."
-      },
-      {
-        q: "¿Qué plataformas cubre el método?",
-        a: "Instagram, TikTok, Snapchat, YouTube Shorts. El principio de clipping funciona en todas. Te enseñamos cómo adaptar formato y distribución según plataforma."
-      },
-      {
-        q: "¿Cuánto tiempo necesito invertir por semana?",
-        a: "Semana 1-2: ~5-6 horas (estás aprendiendo). Semana 3+: ~3 horas/semana. Una vez que dominas batching, bajas a 2 horas. El objetivo es MENOS tiempo trabajando, MEJOR contenido."
-      },
-      {
-        q: "¿El Dashboard es obligatorio?",
-        a: "No. Tienes 90 días gratis para probarlo. Después son $19/mes OPCIONALES. Si prefieres usar solo Notion + el curso, puedes hacerlo. El Dashboard solo acelera el proceso."
-      },
-      {
-        q: "¿Qué pasa si no tengo tiempo ahora?",
-        a: "El curso es tuyo para siempre. Puedes empezar cuando quieras. Pero seamos honestos: si 'no tienes tiempo' para 3 horas/semana de contenido, nunca vas a crecer. El método está diseñado para gente ocupada—esa es la ventaja."
-      },
-      {
-        q: "¿Hay garantía de resultados?",
-        a: "90 días. Si aplicas el método, publicas consistente (15-20 videos/mes), y no ves progreso medible, te devolvemos el 100%. Sin dramas. Pero debes hacer el trabajo—esto no es magia, es sistema."
-      },
-      {
-        q: "¿Cuándo empiezo a ver resultados?",
-        a: "Primeras 2 semanas: Claridad. Sabes QUÉ crear y CÓMO organizarte. Días 30-60: Primeros videos virales (no todos, algunos). Día 90: Sistema funcionando. Métricas subiendo. Menos estrés. Ese es el punto de quiebre."
-      }
-    ]
-  },
   guarantee: {
-    title: "Garantía sin letra chica",
-    description: "Tienes 90 días para aplicar el método. Si haces el trabajo (15-20 videos/mes) y no ves progreso, te devolvemos el 100% de tu inversión.",
+    title: "Garantía sin riesgo (pero con compromiso)",
+    description: "Completa el 70% del curso en 30 días y no estás satisfecho? Reembolso del 100%.",
     detailsList: [
-      "Debes completar el quiz de Content Cores",
-      "Publicar mínimo 15 videos/mes durante 2 meses",
-      "Mostrar que usaste el sistema (capturas del Dashboard o Notion)",
-      "Si cumples esto y no funcionó, escribes a hola@cliptoclic.com y procesamos tu reembolso en 48h"
+      "✓ Debes completar 6 de 8 módulos (demuestra que intentaste)",
+      "✓ Debes completar el quiz de Content Cores",
+      "✓ Solicitud dentro de 30 días de compra",
+      "✓ Un email a reembolsos@cliptoclic.com y listo"
     ],
-    disclaimer: "Esto no es un curso para consumir. Es un sistema para APLICAR. Si lo aplicas y no funciona, no mereces pagar. Así de simple."
+    reasoning: "No queremos tu dinero si el método no te sirve. Pero si no lo aplicas, no podemos ayudarte. Por eso pedimos demostrar esfuerzo.",
+    disclaimer: "No ofrecemos reembolsos a quienes compran y nunca entran. El método funciona si lo sigues."
   }
 } as const;
