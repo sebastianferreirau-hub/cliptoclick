@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -11,28 +10,13 @@ import {
   MessageCircle
 } from "lucide-react";
 import { BRAND } from "@/lib/constants";
-import Confetti from "react-confetti";
 
 const Thanks = () => {
-  const [showConfetti, setShowConfetti] = useState(true);
-
-  useEffect(() => {
-    const confettiTimer = setTimeout(() => {
-      setShowConfetti(false);
-    }, 5000);
-
-    return () => {
-      clearTimeout(confettiTimer);
-    };
-  }, []);
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-purple-50 py-12 px-4">
-      {showConfetti && <Confetti recycle={false} numberOfPieces={500} />}
-      
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 mb-6 shadow-lg">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 mb-6 shadow-lg animate-bounce">
             <CheckCircle2 className="w-10 h-10 text-white" />
           </div>
           
@@ -156,29 +140,25 @@ const Thanks = () => {
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                 <p>
-                  <strong>Email de confirmación:</strong> Llegará en menos de 2 minutos con 
-                  tu recibo y link de acceso.
+                  <strong>Email de confirmación:</strong> Llegará en menos de 2 minutos
                 </p>
               </div>
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                 <p>
-                  <strong>Invitación a Discord:</strong> Recibirás link exclusivo para unirte 
-                  a la comunidad privada.
+                  <strong>Invitación a Discord:</strong> Link exclusivo para la comunidad
                 </p>
               </div>
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                 <p>
-                  <strong>Acceso inmediato al curso:</strong> Los 8 módulos están disponibles 
-                  desde hoy. No hay esperas.
+                  <strong>Acceso al curso:</strong> Los 8 módulos disponibles desde hoy
                 </p>
               </div>
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                 <p>
-                  <strong>Dashboard gratis por 90 días:</strong> Después puedes renovar por 
-                  $19/mes o seguir usando curso + Notion gratis.
+                  <strong>Dashboard gratis 90 días:</strong> Después $19/mes opcional
                 </p>
               </div>
             </div>
@@ -187,7 +167,7 @@ const Thanks = () => {
 
         <div className="mt-12 text-center">
           <p className="text-gray-600 mb-4">
-            ¿Tienes preguntas? Escríbenos a{" "}
+            ¿Preguntas? Escríbenos a{" "}
             <a 
               href={`mailto:${BRAND.email}`}
               className="text-purple-600 hover:underline font-medium"
