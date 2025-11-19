@@ -11,6 +11,7 @@ import {
   CreditCard
 } from "lucide-react";
 import { BRAND, PRICING } from "@/lib/constants";
+import { supabase } from "@/integrations/supabase/client";
 
 const Checkout = () => {
   const [couponCode, setCouponCode] = useState("");
@@ -33,9 +34,27 @@ const Checkout = () => {
 
   const handleCheckout = async () => {
     setLoading(true);
-    setTimeout(() => {
-      window.location.href = "/thanks";
-    }, 2000);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+        body: {
+          plan: 'one_time',
+          promo_code: appliedCoupon || undefined
+        }
+      });
+
+      if (error) throw error;
+      
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('No checkout URL returned');
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert('❌ Error al procesar el pago. Por favor intenta de nuevo.');
+      setLoading(false);
+    }
   };
 
   return (
