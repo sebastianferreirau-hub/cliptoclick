@@ -66,12 +66,12 @@ const Dashboard = () => {
     loadProfile();
   }, [navigate, toast]);
 
-  // Extract verticals from profile
+  // Extract verticals from profile - with null safety
   const verticals: ContentCore[] = profile?.content_cores?.verticals || [];
-  const hasVerticals = verticals.length > 0;
+  const hasVerticals = verticals.length > 0 && profile?.onboarding_completed;
   const userName = profile?.full_name || "Creador";
 
-  // Calculate trial days remaining
+  // Calculate trial days remaining - with null safety
   const trialDaysRemaining = profile?.trial_ends_at 
     ? Math.max(0, Math.ceil((new Date(profile.trial_ends_at).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))
     : 0;
@@ -278,7 +278,7 @@ const Dashboard = () => {
                         Ideas para empezar:
                       </p>
                       <ul className="text-xs text-gray-600 space-y-1">
-                        {vertical.examples.map((example, idx) => (
+                        {(vertical.examples || []).map((example, idx) => (
                           <li key={idx}>• {example}</li>
                         ))}
                       </ul>
