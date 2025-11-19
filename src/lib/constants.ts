@@ -1,7 +1,7 @@
 // Brand configuration - single source of truth
 export const BRAND = {
-  name: "ClipCrafters",
-  fullName: "ClipCrafters - Sistema para creadores",
+  name: "Clip to Click",
+  fullName: "Sistema para creadores",
   tagline: "El Arte de Verse Real",
   principles: [
     "Relatable > Perfecto",

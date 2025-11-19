@@ -50,7 +50,7 @@ const Checkout = () => {
             <p className="text-sm text-gray-600">{BRAND.fullName}</p>
           </div>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-            Finalizar inscripción a {BRAND.name}
+            Finalizar inscripción
           </h2>
           <p className="text-lg text-gray-600">
             Completa tu pago seguro y empieza hoy mismo
