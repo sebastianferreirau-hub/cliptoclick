@@ -50,7 +50,7 @@ const Thanks = () => {
           </div>
           
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            ¡Bienvenido a {BRAND.name}! 🎉
+            ¡Bienvenido! 🎉
           </h1>
           
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
