@@ -31,25 +31,40 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-purple-50">
       
-      {/* ==================== HERO SECTION - FIXED HIERARCHY ==================== */}
-      <section className="relative overflow-hidden">
-        <div className="page-container pt-20 pb-16 md:pt-32 md:pb-24">
+      {/* ==================== HERO SECTION - IMPROVED HIERARCHY ==================== */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-purple-50 via-white to-transparent">
+        {/* Background decoration */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob" />
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000" />
+        </div>
+
+        <div className="page-container pt-20 pb-16 md:pt-32 md:pb-24 relative z-10">
           
-          {/* Brand badge - small, subtle */}
-          <div className="flex justify-center mb-8">
-            <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 text-sm">
+          {/* Subtle brand badge */}
+          <div className="flex justify-center mb-6">
+            <Badge className="bg-white border-2 border-purple-200 text-purple-700 px-4 py-1.5 text-xs font-medium shadow-sm">
               {BRAND.fullName}
             </Badge>
           </div>
 
-          {/* Main headline - TRUE H1 with gradient */}
-          <h1 className={cn(
-            TYPOGRAPHY.pageTitle,
-            TYPOGRAPHY.gradientText,
-            "text-center mb-6 max-w-5xl mx-auto"
-          )}>
-            {COPY.hero.headline}
-          </h1>
+          {/* Brand name + Main headline combined */}
+          <div className="text-center mb-6 max-w-5xl mx-auto">
+            {/* Brand name - small, above headline */}
+            <div className="mb-4">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
+                {BRAND.name}
+              </h1>
+              <div className="h-1 w-24 bg-gradient-to-r from-purple-600 to-pink-600 mx-auto rounded-full" />
+            </div>
+
+            {/* Main headline - THE H1 */}
+            <h2 className={cn(
+              "text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6"
+            )}>
+              {COPY.hero.headline}
+            </h2>
+          </div>
 
           {/* Subheadline */}
           <p className={cn(
@@ -59,75 +74,89 @@ const Index = () => {
             {COPY.hero.subheadline}
           </p>
 
-          {/* PRIMARY CTA - Single, dominant */}
-          <div className="flex flex-col items-center gap-6 mb-12">
+          {/* PRIMARY CTA - Single, unmissable */}
+          <div className="flex flex-col items-center gap-4 mb-8">
             <Button
               size="lg"
               onClick={() => window.location.href = "/checkout"}
               className={cn(
-                BUTTON_STYLES.primary,
-                "text-xl px-12 py-8 rounded-2xl"
+                "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700",
+                "text-white text-lg md:text-xl px-10 md:px-14 py-6 md:py-8",
+                "rounded-2xl shadow-xl hover:shadow-2xl",
+                "transform hover:scale-105 transition-all duration-200",
+                "font-bold"
               )}
             >
               <Sparkles className="w-6 h-6 mr-3" />
               {COPY.cta.primary}
             </Button>
 
-            {/* Urgency badge - BELOW primary CTA */}
-            <Badge className="bg-amber-100 text-amber-900 border-2 border-amber-300 px-4 py-2 text-sm animate-pulse">
+            {/* Urgency badge - animated, below CTA */}
+            <Badge className="bg-gradient-to-r from-amber-400 to-orange-400 text-white px-6 py-2.5 text-sm font-semibold shadow-lg animate-pulse border-2 border-amber-300">
               🔥 {COPY.cta.primaryUrgency}
             </Badge>
+          </div>
 
-            {/* Secondary CTA - subtle, ghost style */}
+          {/* Secondary CTA - ghost style, low priority */}
+          <div className="flex justify-center mb-16">
             <Button
               variant="ghost"
               size="lg"
               onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
-              className="text-gray-600 hover:text-gray-900 text-base"
+              className="text-gray-600 hover:text-gray-900 text-base hover:bg-gray-100 group"
             >
               {COPY.cta.secondary}
-              <ChevronDown className="w-5 h-5 ml-2" />
+              <ChevronDown className="w-5 h-5 ml-2 group-hover:translate-y-1 transition-transform" />
             </Button>
           </div>
 
           {/* Social proof numbers - AFTER CTAs */}
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+          <div className="grid grid-cols-3 gap-6 md:gap-12 max-w-4xl mx-auto mb-16">
             <div className="text-center">
-              <div className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+              <div className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
                 363M
               </div>
-              <p className={cn(TYPOGRAPHY.body, "text-gray-600")}>
+              <p className={cn(TYPOGRAPHY.bodySmall, "text-gray-600 font-medium")}>
                 Impresiones en 90 días
               </p>
             </div>
             <div className="text-center">
-              <div className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+              <div className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
                 150+
               </div>
-              <p className={cn(TYPOGRAPHY.body, "text-gray-600")}>
+              <p className={cn(TYPOGRAPHY.bodySmall, "text-gray-600 font-medium")}>
                 Creadores activos
               </p>
             </div>
             <div className="text-center">
-              <div className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+              <div className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
                 8h
               </div>
-              <p className={cn(TYPOGRAPHY.body, "text-gray-600")}>
-                Ahorradas por semana
+              <p className={cn(TYPOGRAPHY.bodySmall, "text-gray-600 font-medium")}>
+                Ahorradas/semana
               </p>
             </div>
           </div>
 
-          {/* Founder quote - tertiary */}
-          <div className="max-w-3xl mx-auto mt-16">
-            <Card className={CARD_STYLES.tertiary}>
+          {/* Founder quote - tertiary, subtle */}
+          <div className="max-w-3xl mx-auto">
+            <Card className="border border-gray-200 bg-white/80 backdrop-blur shadow-md">
               <CardContent className="pt-6">
-                <p className={cn(TYPOGRAPHY.body, "italic text-gray-700 mb-3")}>
-                  "{COPY.hero.founderQuote.text}"
-                </p>
-                <p className={cn(TYPOGRAPHY.bodySmall, "text-gray-600 font-medium")}>
-                  — {COPY.hero.founderQuote.author}
-                </p>
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center">
+                      <span className="text-white font-bold text-lg">S</span>
+                    </div>
+                  </div>
+                  <div>
+                    <p className={cn(TYPOGRAPHY.body, "italic text-gray-700 mb-2")}>
+                      "{COPY.hero.founderQuote.text}"
+                    </p>
+                    <p className={cn(TYPOGRAPHY.bodySmall, "text-gray-600 font-medium")}>
+                      — {COPY.hero.founderQuote.author}
+                    </p>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
