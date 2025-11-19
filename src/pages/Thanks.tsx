@@ -15,27 +15,14 @@ import Confetti from "react-confetti";
 
 const Thanks = () => {
   const [showConfetti, setShowConfetti] = useState(true);
-  const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
     const confettiTimer = setTimeout(() => {
       setShowConfetti(false);
     }, 5000);
 
-    const countdownInterval = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(countdownInterval);
-          window.location.href = "/onboarding";
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
     return () => {
       clearTimeout(confettiTimer);
-      clearInterval(countdownInterval);
     };
   }, []);
 
@@ -121,12 +108,6 @@ const Thanks = () => {
                 <Sparkles className="w-5 h-5 mr-2" />
                 Empezar mi onboarding ahora
               </Button>
-              
-              {countdown > 0 && (
-                <p className="text-center text-sm text-gray-600 mt-3">
-                  Redirigiendo automáticamente en {countdown} segundos...
-                </p>
-              )}
             </div>
           </CardContent>
         </Card>
