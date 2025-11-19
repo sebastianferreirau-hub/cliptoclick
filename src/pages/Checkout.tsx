@@ -1,20 +1,22 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { Card } from "@/components/ui/card";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { Shield, CreditCard } from "lucide-react";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { 
+  Shield, 
+  CheckCircle2, 
+  Sparkles, 
+  Lock,
+  CreditCard
+} from "lucide-react";
+import { BRAND, PRICING } from "@/lib/constants";
 
 const Checkout = () => {
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
   const [discount, setDiscount] = useState(0);
   const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
 
   const basePrice = PRICING.course.price;
   const finalPrice = basePrice - discount;
@@ -23,173 +25,248 @@ const Checkout = () => {
     if (couponCode.toUpperCase() === "LATAM30") {
       setDiscount(Math.round(basePrice * 0.3));
       setAppliedCoupon("LATAM30");
-      toast({
-        title: "✅ Beca LATAM aplicada",
-        description: "30% de descuento agregado",
-      });
+      alert("✅ Beca LATAM aplicada - 30% de descuento");
     } else {
-      toast({
-        title: "❌ Código inválido",
-        description: "El código no existe o ya expiró",
-        variant: "destructive",
-      });
+      alert("❌ Código inválido");
     }
   };
 
   const handleCheckout = async () => {
     setLoading(true);
-    
-    try {
-      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-        body: { 
-          plan: 'one_time',
-          promo_code: couponCode || null,
-        },
-      });
-
-      if (error) throw error;
-
-      if (data?.url) {
-        window.location.href = data.url;
-      }
-    } catch (error) {
-      toast({
-        title: "❌ Error al procesar el pago",
-        description: "Por favor intenta nuevamente.",
-        variant: "destructive",
-      });
-      setLoading(false);
-    }
+    setTimeout(() => {
+      window.location.href = "/thanks";
+    }, 2000);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-purple-50 py-12 px-4">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-heading gradient-text mb-4">
-            Finalizar inscripción
-          </h1>
-          <p className="text-muted-foreground">
-            Elige tu plan y completa el pago seguro
+      <div className="max-w-5xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <div className="mb-6">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+              {BRAND.name}
+            </h1>
+            <p className="text-sm text-gray-600">{BRAND.fullName}</p>
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+            Finalizar inscripción a {BRAND.name}
+          </h2>
+          <p className="text-lg text-gray-600">
+            Completa tu pago seguro y empieza hoy mismo
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
-          <Card className="glass-card p-8">
-            <h2 className="text-2xl font-heading mb-6">Plan de pago</h2>
-            
-            <RadioGroup value={plan} onValueChange={setPlan} className="space-y-4">
-              <Card className={`p-6 cursor-pointer transition-all ${plan === "one_time" ? "border-primary shadow-glow" : ""}`}>
-                <div className="flex items-start gap-4">
-                  <RadioGroupItem value="one_time" id="one_time" />
-                  <Label htmlFor="one_time" className="flex-1 cursor-pointer">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="font-semibold text-lg">Pago único</span>
-                      <Shield className="w-4 h-4 text-success" />
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Left Column - Plan */}
+          <div className="lg:col-span-2 space-y-6">
+            <Card className="border-2 border-purple-400 bg-gradient-to-br from-white to-purple-50 shadow-lg">
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+                        Recomendado
+                      </Badge>
+                      <Shield className="w-5 h-5 text-green-600" />
                     </div>
-                    <p className="text-2xl font-bold text-primary mb-2">
-                      USD {prices.one_time}
+                    <CardTitle className="text-2xl text-gray-900 mb-2">
+                      Acceso completo
+                    </CardTitle>
+                    <p className="text-gray-600 text-sm">
+                      Todo incluido. Sin sorpresas.
                     </p>
-                    <p className="text-sm text-success font-medium">
-                      ✓ Con garantía de resultados
-                    </p>
-                  </Label>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-4xl font-bold text-purple-600">
+                      ${basePrice}
+                    </div>
+                    <p className="text-sm text-gray-600">Pago único</p>
+                  </div>
                 </div>
-              </Card>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-700">Curso completo (8 módulos, 12 horas)</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-700">Quiz IA + Plan de 7 días generado</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-700">Dashboard operativo (90 días gratis, después $19/mes opcional)</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-700">Plantilla Notion + recursos descargables</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-700">Comunidad Discord (acceso de por vida)</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-700">Sesiones grupales de feedback (&lt;48h response)</span>
+                  </div>
+                </div>
 
-              <Card className={`p-6 cursor-pointer transition-all ${plan === "two_pay" ? "border-primary shadow-glow" : ""}`}>
-                <div className="flex items-start gap-4">
-                  <RadioGroupItem value="two_pay" id="two_pay" />
-                  <Label htmlFor="two_pay" className="flex-1 cursor-pointer">
-                    <div className="font-semibold text-lg mb-2">2 pagos</div>
-                    <p className="text-2xl font-bold text-primary mb-2">
-                      USD {prices.two_pay} × 2
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Sin garantía de reembolso
-                    </p>
-                  </Label>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3">
+                  <Sparkles className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <p className="text-sm text-blue-800">
+                    <strong>Dashboard gratis 90 días:</strong> Después puedes continuar con $19/mes (opcional) 
+                    o usar solo el curso + Notion gratis.
+                  </p>
                 </div>
-              </Card>
-            </RadioGroup>
+              </CardContent>
+            </Card>
 
-            <div className="mt-6">
-              <Label className="text-sm mb-2 block">¿Tienes un código de descuento?</Label>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Ej: LATAM30"
-                  value={coupon}
-                  onChange={(e) => setCoupon(e.target.value)}
-                  className="rounded-xl"
-                />
-                <Button onClick={applyCoupon} variant="outline" className="rounded-xl">
-                  Aplicar
-                </Button>
-              </div>
-            </div>
-          </Card>
-
-          <div>
-            <Card className="glass-card p-8 mb-6">
-              <h2 className="text-2xl font-heading mb-6">Resumen</h2>
-              
-              <div className="space-y-3 mb-6">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Plan seleccionado:</span>
-                  <span className="font-semibold">
-                    {plan === "one_time" ? "Pago único" : "2 pagos"}
-                  </span>
+            {/* Coupon */}
+            <Card className="border-2 border-gray-200">
+              <CardHeader>
+                <CardTitle className="text-lg text-gray-900 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-purple-600" />
+                  ¿Tienes un código promocional?
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex gap-3">
+                  <Input 
+                    type="text"
+                    placeholder="Ingresa tu código"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                    className="flex-1"
+                    disabled={appliedCoupon !== null}
+                  />
+                  <Button 
+                    onClick={handleApplyCoupon}
+                    disabled={appliedCoupon !== null || !couponCode}
+                    variant={appliedCoupon ? "secondary" : "default"}
+                  >
+                    {appliedCoupon ? "Aplicado ✓" : "Aplicar"}
+                  </Button>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Precio base:</span>
-                  <span>USD {plan === "one_time" ? prices.one_time : prices.two_pay}</span>
-                </div>
-                {discount > 0 && (
-                  <div className="flex justify-between text-success">
-                    <span>Descuento ({discount * 100}%):</span>
-                    <span>-USD {Math.round((plan === "one_time" ? prices.one_time : prices.two_pay) * discount)}</span>
+                {appliedCoupon && (
+                  <div className="mt-3 flex items-center gap-2 text-green-700 text-sm">
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>Código <strong>{appliedCoupon}</strong> aplicado exitosamente</span>
                   </div>
                 )}
-                <div className="border-t pt-3 flex justify-between text-xl font-bold">
-                  <span>Total:</span>
-                  <span className="text-primary">USD {calculatePrice()}</span>
-                </div>
-                {plan === "two_pay" && (
-                  <p className="text-xs text-muted-foreground">
-                    * Primer pago hoy, segundo pago en 30 días
-                  </p>
-                )}
-              </div>
-
-              <Button
-                size="lg"
-                className="w-full bg-gradient-primary hover:opacity-90 text-white rounded-xl mb-4"
-                onClick={handleCheckout}
-                disabled={loading}
-              >
-                <CreditCard className="mr-2 w-5 h-5" />
-                {loading ? "Procesando..." : "Proceder al pago"}
-              </Button>
-
-              {plan === "one_time" && (
-                <div className="bg-success/10 rounded-lg p-4 flex items-start gap-3">
-                  <Shield className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-muted-foreground">
-                    Este plan incluye nuestra garantía de resultados
-                  </p>
-                </div>
-              )}
+              </CardContent>
             </Card>
 
-            <Card className="glass-card p-6 text-sm text-muted-foreground">
-              <p className="font-semibold mb-2">Términos importantes:</p>
-              <ul className="space-y-1 list-disc list-inside">
-                <li>La garantía aplica solo al plan de pago único</li>
-                <li>El plan en 2 pagos no es elegible a reembolso</li>
-                <li>Acceso inmediato tras confirmación de pago</li>
-              </ul>
+            {/* Guarantee */}
+            <Card className="border-2 border-green-200 bg-green-50">
+              <CardContent className="pt-6">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                    <Shield className="w-6 h-6 text-green-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-2">
+                      Garantía de 30 días incluida
+                    </h4>
+                    <p className="text-sm text-gray-700">
+                      Completa el 70% del curso en 30 días y no estás satisfecho? 
+                      Reembolso del 100%. Sin preguntas complicadas.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
             </Card>
           </div>
+
+          {/* Right Column - Summary */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-6 space-y-6">
+              <Card className="border-2 border-gray-200">
+                <CardHeader>
+                  <CardTitle className="text-xl text-gray-900">
+                    Resumen del pedido
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900">
+                        {PRICING.course.name}
+                      </p>
+                      <p className="text-xs text-gray-600 mt-1">
+                        {PRICING.course.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-gray-200 pt-4 space-y-3">
+                    <div className="flex justify-between text-gray-700">
+                      <span>Subtotal</span>
+                      <span className="font-medium">${basePrice}</span>
+                    </div>
+
+                    {discount > 0 && (
+                      <div className="flex justify-between text-green-600">
+                        <span>Descuento ({appliedCoupon})</span>
+                        <span className="font-medium">-${discount}</span>
+                      </div>
+                    )}
+
+                    <div className="flex justify-between text-lg font-bold text-gray-900 pt-3 border-t border-gray-200">
+                      <span>Total</span>
+                      <span className="text-purple-600">${finalPrice}</span>
+                    </div>
+                  </div>
+
+                  <Button
+                    size="lg"
+                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-6 text-lg font-semibold shadow-lg"
+                    onClick={handleCheckout}
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2" />
+                        Procesando...
+                      </>
+                    ) : (
+                      <>
+                        <Lock className="w-5 h-5 mr-2" />
+                        Proceder al pago seguro
+                      </>
+                    )}
+                  </Button>
+
+                  <div className="flex items-center justify-center gap-4 pt-4 border-t border-gray-200">
+                    <div className="flex items-center gap-2 text-xs text-gray-600">
+                      <Lock className="w-4 h-4" />
+                      <span>SSL Seguro</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-gray-600">
+                      <CreditCard className="w-4 h-4" />
+                      <span>Stripe</span>
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-center text-gray-500">
+                    Procesado de forma segura por Stripe
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+
+        {/* Back Link */}
+        <div className="mt-12 text-center">
+          <Button 
+            variant="ghost" 
+            onClick={() => window.location.href = "/"}
+            className="text-gray-600 hover:text-gray-900"
+          >
+            ← Volver a la página principal
+          </Button>
         </div>
       </div>
     </div>
