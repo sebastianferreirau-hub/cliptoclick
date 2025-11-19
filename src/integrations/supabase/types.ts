@@ -286,6 +286,33 @@ export type Database = {
           },
         ]
       }
+      content_plans: {
+        Row: {
+          created_at: string
+          id: string
+          plan_text: string
+          used_at: string | null
+          user_id: string
+          verticals_used: Json
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          plan_text: string
+          used_at?: string | null
+          user_id: string
+          verticals_used?: Json
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          plan_text?: string
+          used_at?: string | null
+          user_id?: string
+          verticals_used?: Json
+        }
+        Relationships: []
+      }
       creators: {
         Row: {
           country_code: string | null
@@ -904,6 +931,7 @@ export type Database = {
           created_at: string
           email: string | null
           facebook_connected: boolean | null
+          full_name: string | null
           goal_primary: string | null
           google_drive_connected: boolean | null
           handle: string | null
@@ -919,6 +947,7 @@ export type Database = {
           snapchat_connected: boolean
           tiktok_connected: boolean
           time_commitment: string | null
+          trial_ends_at: string | null
           updated_at: string
         }
         Insert: {
@@ -928,6 +957,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           facebook_connected?: boolean | null
+          full_name?: string | null
           goal_primary?: string | null
           google_drive_connected?: boolean | null
           handle?: string | null
@@ -943,6 +973,7 @@ export type Database = {
           snapchat_connected?: boolean
           tiktok_connected?: boolean
           time_commitment?: string | null
+          trial_ends_at?: string | null
           updated_at?: string
         }
         Update: {
@@ -952,6 +983,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           facebook_connected?: boolean | null
+          full_name?: string | null
           goal_primary?: string | null
           google_drive_connected?: boolean | null
           handle?: string | null
@@ -967,6 +999,7 @@ export type Database = {
           snapchat_connected?: boolean
           tiktok_connected?: boolean
           time_commitment?: string | null
+          trial_ends_at?: string | null
           updated_at?: string
         }
         Relationships: []

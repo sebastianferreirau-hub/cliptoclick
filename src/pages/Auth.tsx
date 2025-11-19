@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -6,28 +7,94 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Lock, Mail, AlertCircle } from "lucide-react";
 import { BRAND } from "@/lib/constants";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      alert("✅ Sesión iniciada");
-      window.location.href = "/dashboard";
-    }, 1500);
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        toast({
+          title: "✅ Sesión iniciada",
+          description: "Redirigiendo al dashboard...",
+        });
+        navigate("/dashboard");
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error al iniciar sesión",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      alert("✅ Cuenta creada - Revisa tu email");
+
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/dashboard`,
+        }
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        // Create profile with 90-day trial
+        const trialEnd = new Date();
+        trialEnd.setDate(trialEnd.getDate() + 90);
+
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({
+            full_name: email.split('@')[0],
+            trial_ends_at: trialEnd.toISOString(),
+            has_access: true,
+          })
+          .eq('id', data.user.id);
+
+        if (profileError) {
+          console.error('Profile creation error:', profileError);
+        }
+
+        toast({
+          title: "✅ Cuenta creada",
+          description: "Completa tu onboarding para comenzar",
+        });
+        navigate("/onboarding");
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error al crear cuenta",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
       setLoading(false);
-    }, 1500);
+    }
   };
 
   return (
