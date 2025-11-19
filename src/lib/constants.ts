@@ -12,6 +12,8 @@ export const BRAND = {
   adminDomain: "admin.cliptoclic.com",
   email: "hola@cliptoclic.com",
   discord: "https://discord.gg/cliptoclickxxx",
+  notionTemplateUrl: "https://cliptoclik.notion.site/",
+  googleDriveGuideUrl: "https://drive.google.com/drive/my-drive",
 } as const;
 
 export const PRICING = {

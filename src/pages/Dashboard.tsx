@@ -20,12 +20,15 @@ import {
   CheckCircle2
 } from "lucide-react";
 import { BRAND, PRICING } from "@/lib/constants";
+import { SetupInstructionsModal } from "@/components/SetupInstructionsModal";
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [generatingPlan, setGeneratingPlan] = useState(false);
   const [planGenerated, setPlanGenerated] = useState(false);
   const [copiedToClipboard, setCopiedToClipboard] = useState(false);
+  const [notionModalOpen, setNotionModalOpen] = useState(false);
+  const [driveModalOpen, setDriveModalOpen] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [planText, setPlanText] = useState("");
   const navigate = useNavigate();
@@ -145,6 +148,83 @@ const Dashboard = () => {
       });
     }
   };
+
+  // Notion Template Instructions
+  const notionInstructions = [
+    {
+      step: 1,
+      text: "Se abrirá la plantilla de Clip To Click en una nueva pestaña"
+    },
+    {
+      step: 2,
+      text: "En la esquina superior derecha, busca el botón 'Duplicate' (o 'Duplicar' si está en español)"
+    },
+    {
+      step: 3,
+      text: "Haz click en 'Duplicate' - esto creará una copia completa en tu workspace de Notion"
+    },
+    {
+      step: 4,
+      text: "La plantilla incluye: Calendario de contenido, Banco de clips, Sistema de inspiraciones, y Tracker de analytics"
+    },
+    {
+      step: 5,
+      text: "Empieza a usarla inmediatamente - toda la estructura ya está lista para que la personalices"
+    }
+  ];
+
+  const notionTips = [
+    "NO edites la plantilla original - siempre haz tu propia copia con 'Duplicate'",
+    "Puedes personalizar los colores, agregar más campos o eliminar secciones que no uses",
+    "Sincroniza esta plantilla con tu plan de 7 días generado por IA",
+    "Revisa la plantilla cada domingo para planear tu próxima semana"
+  ];
+
+  // Google Drive Instructions
+  const driveInstructions = [
+    {
+      step: 1,
+      text: "Crea una carpeta principal llamada 'Clip To Click' en tu Google Drive"
+    },
+    {
+      step: 2,
+      text: "Dentro de esa carpeta, crea estas subcarpetas: 'Clips Raw', 'Editados', 'B-Roll', 'Inspiración'"
+    },
+    {
+      step: 3,
+      text: "En 'Clips Raw': guarda todos tus videos sin editar, organizados por semana (Ej: Semana 1, Semana 2)"
+    },
+    {
+      step: 4,
+      text: "En 'Editados': guarda los videos finales listos para publicar, separados por plataforma (IG, TikTok, YT)"
+    },
+    {
+      step: 5,
+      text: "Activa backup automático desde tu teléfono para que los clips se suban automáticamente a Drive"
+    }
+  ];
+
+  const driveTips = [
+    "Instala Google Drive app en tu teléfono y activa 'Backup automático' para la carpeta de clips",
+    "Nombra tus archivos con fecha: 2024-01-19_clip1.mp4 para mantener orden cronológico",
+    "Usa 'B-Roll' para material extra que puedes reutilizar (paisajes, transiciones, texturas)",
+    "La carpeta 'Inspiración' es para screenshots de contenido que te guste - úsala como referencia",
+    "Borra clips antiguos cada 3 meses para no llenar tu espacio de Drive"
+  ];
+
+  const driveStructureExample = `📁 Clip To Click/
+  ├── 📁 Clips Raw/
+  │   ├── 📁 Semana 1/
+  │   ├── 📁 Semana 2/
+  │   └── 📁 Semana 3/
+  │
+  ├── 📁 Editados/
+  │   ├── 📁 Instagram/
+  │   ├── 📁 TikTok/
+  │   └── 📁 YouTube/
+  │
+  ├── 📁 B-Roll/
+  └── 📁 Inspiración/`;
 
   if (loading) {
     return (
@@ -363,9 +443,11 @@ const Dashboard = () => {
         <div className="mb-8">
           <h2 className="text-xl font-bold text-gray-900 mb-4">Acciones rápidas</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            {/* Course Access */}
             <Card
               className="border-2 border-gray-200 hover:border-purple-400 hover:shadow-lg transition-all cursor-pointer"
-              onClick={() => (window.location.href = "/curso")}
+              onClick={() => navigate("/curso")}
             >
               <CardContent className="pt-6 text-center">
                 <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-3">
@@ -380,21 +462,28 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            <Card className="border-2 border-gray-200 opacity-60 cursor-not-allowed">
+            {/* Google Drive Setup */}
+            <Card
+              className="border-2 border-gray-200 hover:border-purple-400 hover:shadow-lg transition-all cursor-pointer"
+              onClick={() => setDriveModalOpen(true)}
+            >
               <CardContent className="pt-6 text-center">
-                <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
-                  <Cloud className="w-6 h-6 text-gray-400" />
+                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-3">
+                  <Cloud className="w-6 h-6 text-blue-600" />
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-1">
-                  Google Drive
+                  Configurar Drive
                 </h3>
-                <p className="text-xs text-gray-600">Próximamente</p>
+                <p className="text-xs text-gray-600">
+                  Organiza tus clips
+                </p>
               </CardContent>
             </Card>
 
+            {/* Notion Template */}
             <Card
               className="border-2 border-gray-200 hover:border-purple-400 hover:shadow-lg transition-all cursor-pointer"
-              onClick={() => alert("Plantilla Notion próximamente")}
+              onClick={() => setNotionModalOpen(true)}
             >
               <CardContent className="pt-6 text-center">
                 <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-3">
@@ -408,6 +497,7 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
+            {/* Recursos (Coming Soon) */}
             <Card className="border-2 border-gray-200 opacity-60 cursor-not-allowed">
               <CardContent className="pt-6 text-center">
                 <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
@@ -421,6 +511,34 @@ const Dashboard = () => {
             </Card>
           </div>
         </div>
+
+        {/* Modals */}
+        <SetupInstructionsModal
+          open={notionModalOpen}
+          onOpenChange={setNotionModalOpen}
+          title="📋 Plantilla Notion - Setup"
+          description="Duplica la plantilla completa de Clip To Click a tu workspace"
+          instructions={notionInstructions}
+          tips={notionTips}
+          primaryButton={{
+            text: "Abrir plantilla de Notion",
+            url: BRAND.notionTemplateUrl
+          }}
+        />
+
+        <SetupInstructionsModal
+          open={driveModalOpen}
+          onOpenChange={setDriveModalOpen}
+          title="📁 Google Drive - Setup Recomendado"
+          description="Organiza tus clips con esta estructura probada por +150 creadores"
+          instructions={driveInstructions}
+          tips={driveTips}
+          folderStructure={driveStructureExample}
+          primaryButton={{
+            text: "Abrir Google Drive",
+            url: BRAND.googleDriveGuideUrl
+          }}
+        />
 
         {/* Footer */}
         <div className="text-center">
