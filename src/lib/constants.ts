@@ -16,6 +16,9 @@ export const BRAND = {
   googleDriveGuideUrl: "https://drive.google.com/drive/my-drive",
 } as const;
 
+// Export design system
+export { TYPOGRAPHY, SPACING, CARD_STYLES, BUTTON_STYLES } from './design-system';
+
 export const PRICING = {
   course: {
     price: 297,
