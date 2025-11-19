@@ -1,272 +1,380 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import VerticalsDisplay from "@/components/dashboard/VerticalsDisplay";
-import { QuickActionCard } from "@/components/dashboard/QuickActionCard";
-import { supabase } from "@/integrations/supabase/client";
-import { LogOut, PlayCircle, ShoppingBag, Cloud, Cpu } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { toast } from "sonner";
-
-interface Profile {
-  name: string | null;
-  handle: string | null;
-  content_cores: any;
-  onboarding_completed: boolean | null;
-  has_access: boolean;
-  notion_connected: boolean;
-  google_drive_connected: boolean;
-  instagram_connected: boolean;
-  tiktok_connected: boolean;
-  snapchat_connected: boolean;
-  facebook_connected: boolean;
-}
+import { Badge } from "@/components/ui/badge";
+import { 
+  Sparkles, 
+  TrendingUp,
+  Clock,
+  Target,
+  GraduationCap,
+  Cloud,
+  FileText,
+  Wrench,
+  Copy,
+  CheckCircle2
+} from "lucide-react";
+import { BRAND, PRICING } from "@/lib/constants";
 
 const Dashboard = () => {
-  const navigate = useNavigate();
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [generatingPlan, setGeneratingPlan] = useState(false);
+  const [planGenerated, setPlanGenerated] = useState(false);
+  const [copiedToClipboard, setCopiedToClipboard] = useState(false);
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        navigate("/auth");
-        return;
-      }
+  // Mock user data
+  const userName = "Creador";
+  const hasVerticals = true; // Change to false to see empty state
+  const trialDaysRemaining = 85;
 
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("name, handle, content_cores, onboarding_completed, has_access, notion_connected, google_drive_connected, instagram_connected, tiktok_connected, snapchat_connected, facebook_connected")
-        .eq("id", user.id)
-        .single();
+  // Mock verticals (normally from AI/database)
+  const verticals = [
+    {
+      name: "Inmigrante en USA",
+      confidence: 95,
+      why: "Tu historia de mudarte a otro país y adaptarte es contenido gold. La gente se conecta con luchas reales.",
+      examples: [
+        "Day in the life como inmigrante",
+        "Cosas que extraño de mi país",
+        "Errores que cometí al llegar"
+      ]
+    },
+    {
+      name: "Vida con mascota",
+      confidence: 88,
+      why: "Tu perro es parte de tu día a día. Pet content + lifestyle = engagement alto.",
+      examples: [
+        "Rutina matutina con mi perro",
+        "Gastos mensuales de tener perro en USA",
+        "Cómo mi perro me ayudó con la soledad"
+      ]
+    },
+    {
+      name: "Emprender desde cero",
+      confidence: 82,
+      why: "Tu trabajo actual vs. tus proyectos = contraste que genera empatía y aspiración.",
+      examples: [
+        "Trabajando full-time mientras buildo mi proyecto",
+        "Primeros $100 de mi side hustle",
+        "Por qué renuncié a la estabilidad"
+      ]
+    }
+  ];
 
-      if (error) {
-        console.error("Error fetching profile:", error);
-        toast.error("Error cargando perfil");
-        return;
-      }
-
-      // Redirect to onboarding if not completed
-      if (!data?.onboarding_completed) {
-        navigate("/onboarding");
-        return;
-      }
-
-      setProfile(data);
-      setLoading(false);
-    };
-
-    fetchProfile();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) {
-        navigate("/auth");
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    navigate("/auth");
+  const handleGeneratePlan = () => {
+    setGeneratingPlan(true);
+    setTimeout(() => {
+      setGeneratingPlan(false);
+      setPlanGenerated(true);
+    }, 2000);
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse text-lg">Cargando...</div>
-      </div>
-    );
-  }
+  const handleCopyToNotion = () => {
+    const planText = `
+# Mi Plan de 7 Días - Clip To Click
 
-  const verticals = profile?.content_cores?.verticals || [];
-  const summary = profile?.content_cores?.summary || "";
-  const hasVerticalsData = verticals.length > 0 && verticals[0]?.name;
+## Lunes
+- Grabar 5 clips sobre: ${verticals[0].name}
+- Tema: ${verticals[0].examples[0]}
+
+## Martes  
+- Editar clips del lunes (ritmo 0.6s)
+- Publicar 2 piezas en IG + TikTok
+
+## Miércoles
+- Grabar 5 clips sobre: ${verticals[1].name}
+- Tema: ${verticals[1].examples[0]}
+
+## Jueves
+- Editar clips del miércoles
+- Publicar 2 piezas + analizar engagement
+
+## Viernes
+- Grabar 5 clips sobre: ${verticals[2].name}
+- Tema: ${verticals[2].examples[0]}
+
+## Sábado
+- Batch editing: 10 clips listos para la semana
+- Revisar métricas en Dashboard
+
+## Domingo
+- Descanso activo: guardar inspos en Notion
+- Planear temas para próxima semana
+    `.trim();
+
+    navigator.clipboard.writeText(planText);
+    setCopiedToClipboard(true);
+    setTimeout(() => setCopiedToClipboard(false), 3000);
+  };
 
   return (
-    <div className="min-h-screen p-4 md:p-8">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-purple-50 py-8 px-4">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div>
-            <h1 className="text-4xl font-heading gradient-text mb-2">
-              Hola, {profile?.name || profile?.handle || 'Creator'}
-            </h1>
-            <p className="text-muted-foreground">
-              Shorts primero. Velocidad &gt; Complejidad.
-            </p>
-          </div>
-          <Button variant="outline" onClick={handleSignOut} className="gap-2">
-            <LogOut className="w-4 h-4" />
-            Salir
-          </Button>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Hola, {userName} 👋
+          </h1>
+          <p className="text-gray-600">
+            Tu centro operativo. Velocidad &gt; Complejidad.
+          </p>
         </div>
+
+        {/* Trial Banner */}
+        {trialDaysRemaining > 0 && (
+          <Card className="border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-pink-50 mb-8">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
+                  <Sparkles className="w-6 h-6 text-purple-600" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-gray-900 mb-1">
+                    Dashboard gratis por 90 días
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Quedan <strong>{trialDaysRemaining} días</strong>. Después puedes continuar con 
+                    ${PRICING.dashboardPro.price}/mes (opcional) o usar solo el curso + Notion gratis.
+                  </p>
+                </div>
+                <Button variant="outline" size="sm">
+                  Ver detalles
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* KPI Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="glass-card">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
+          <Card className="border-2 border-gray-200">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">
                 Output Semana
               </CardTitle>
+              <TrendingUp className="w-4 h-4 text-gray-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-heading gradient-text">0 / 14</div>
-              <p className="text-xs text-muted-foreground mt-2">
-                Meta: 2 cortos/día · 1 largo opcional
+              <div className="text-3xl font-bold text-gray-900">0 / 14</div>
+              <p className="text-xs text-gray-600 mt-2">
+                Clips publicados esta semana (meta: 14)
               </p>
             </CardContent>
           </Card>
 
-          <Card className="glass-card">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Score Verde
+          <Card className="border-2 border-gray-200">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">
+                Impresiones Totales
               </CardTitle>
+              <Target className="w-4 h-4 text-gray-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-heading text-success">0%</div>
-              <p className="text-xs text-muted-foreground mt-2">
-                Ret3s ≥75% (cortos) · Ret50 ≥35% (largos)
+              <div className="text-3xl font-bold text-gray-900">0</div>
+              <p className="text-xs text-gray-600 mt-2">
+                Últimos 7 días (conecta IG/TikTok para ver)
               </p>
             </CardContent>
           </Card>
 
-          <Card className="glass-card">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                SLA Vencidos
+          <Card className="border-2 border-gray-200">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">
+                Engagement Rate
               </CardTitle>
+              <Clock className="w-4 h-4 text-gray-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-heading text-destructive">0</div>
-              <p className="text-xs text-muted-foreground mt-2">
-                to_publish ≤24h · editing ≤48h
+              <div className="text-3xl font-bold text-gray-900">0%</div>
+              <p className="text-xs text-gray-600 mt-2">
+                Promedio de interacciones / impresiones
               </p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Verticals Display */}
-        {hasVerticalsData ? (
-          <VerticalsDisplay verticals={verticals} summary={summary} />
+        {/* Content Cores Section */}
+        {hasVerticals ? (
+          <Card className="border-2 border-purple-200 bg-gradient-to-br from-white to-purple-50 mb-8">
+            <CardHeader>
+              <CardTitle className="text-2xl text-gray-900 flex items-center gap-2">
+                <Sparkles className="w-6 h-6 text-purple-600" />
+                Tus Content Cores
+              </CardTitle>
+              <p className="text-gray-600">
+                Verticales generadas por IA basadas en tu perfil
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid md:grid-cols-3 gap-6">
+                {verticals.map((vertical, index) => (
+                  <div
+                    key={index}
+                    className="p-6 bg-white rounded-lg border-2 border-purple-100"
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <h3 className="font-bold text-lg text-gray-900">
+                        {vertical.name}
+                      </h3>
+                      <Badge className="bg-green-100 text-green-700 border-green-300">
+                        {vertical.confidence}%
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-4">
+                      <strong>Por qué funciona:</strong> {vertical.why}
+                    </p>
+                    <div className="space-y-2">
+                      <p className="text-xs font-semibold text-gray-700">
+                        Ideas para empezar:
+                      </p>
+                      <ul className="text-xs text-gray-600 space-y-1">
+                        {vertical.examples.map((example, idx) => (
+                          <li key={idx}>• {example}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex gap-4">
+                <Button
+                  size="lg"
+                  onClick={handleGeneratePlan}
+                  disabled={generatingPlan}
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                >
+                  {generatingPlan ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                      Generando plan con IA...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      Generar plan de 7 días
+                    </>
+                  )}
+                </Button>
+
+                {planGenerated && (
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    onClick={handleCopyToNotion}
+                    className="border-2 border-purple-300"
+                  >
+                    {copiedToClipboard ? (
+                      <>
+                        <CheckCircle2 className="w-4 h-4 mr-2 text-green-600" />
+                        ¡Copiado!
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-4 h-4 mr-2" />
+                        Copiar plan a Notion
+                      </>
+                    )}
+                  </Button>
+                )}
+              </div>
+
+              {planGenerated && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <p className="text-sm text-green-800">
+                    ✅ <strong>Plan generado exitosamente.</strong> Cópialo a Notion y empieza a ejecutar hoy.
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         ) : (
-          <Card className="glass-card">
-            <CardContent className="py-8 text-center text-muted-foreground">
-              Completa el onboarding para descubrir tus verticales de contenido
+          <Card className="border-2 border-gray-200 mb-8">
+            <CardContent className="pt-6 text-center py-12">
+              <Sparkles className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
+                Aún no tienes Content Cores
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Completa el onboarding para descubrir tus verticales de contenido
+              </p>
+              <Button
+                onClick={() => (window.location.href = "/onboarding")}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+              >
+                Completar onboarding
+              </Button>
             </CardContent>
           </Card>
         )}
 
         {/* Quick Actions */}
-        <div>
-          <h2 className="text-2xl font-heading mb-4">Acciones rápidas</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* 1. Curso completo - Vimeo Pro */}
-            <QuickActionCard
-              icon={<PlayCircle className="w-6 h-6 text-primary" />}
-              title="Curso completo"
-              description="Metodología 8 semanas integrada con Vimeo Pro"
-              primaryAction={{
-                label: profile?.has_access ? "Ir al curso" : "Ver planes",
-                onClick: () => navigate(profile?.has_access ? '/curso' : '/checkout')
-              }}
-            />
+        <div className="mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Acciones rápidas</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card
+              className="border-2 border-gray-200 hover:border-purple-400 hover:shadow-lg transition-all cursor-pointer"
+              onClick={() => (window.location.href = "/curso")}
+            >
+              <CardContent className="pt-6 text-center">
+                <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-3">
+                  <GraduationCap className="w-6 h-6 text-purple-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-1">
+                  Acceder al curso
+                </h3>
+                <p className="text-xs text-gray-600">
+                  8 módulos completos
+                </p>
+              </CardContent>
+            </Card>
 
-            {/* 2. Google Drive */}
-            <QuickActionCard
-              icon={<Cloud className="w-6 h-6 text-blue-500" />}
-              title="Google Drive"
-              description="Recursos del curso sincronizados en tu Drive"
-              isConnected={profile?.google_drive_connected || false}
-              primaryAction={{
-                label: profile?.google_drive_connected ? "Ver archivos" : "Conectar Drive",
-                onClick: async () => {
-                  if (profile?.google_drive_connected) {
-                    toast.info("Explorador de archivos - próximamente");
-                  } else {
-                    try {
-                      const { data, error } = await supabase.functions.invoke('google-drive-connect');
-                      if (error) throw error;
-                      if (data.authUrl) {
-                        window.location.href = data.authUrl;
-                      }
-                    } catch (error) {
-                      toast.error("Error al conectar con Google Drive");
-                    }
-                  }
-                }
-              }}
-            />
+            <Card className="border-2 border-gray-200 opacity-60 cursor-not-allowed">
+              <CardContent className="pt-6 text-center">
+                <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
+                  <Cloud className="w-6 h-6 text-gray-400" />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-1">
+                  Google Drive
+                </h3>
+                <p className="text-xs text-gray-600">Próximamente</p>
+              </CardContent>
+            </Card>
 
-            {/* 3. Accede al Template Scheduler (Notion) */}
-            <QuickActionCard
-              icon={
-                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M4.459 4.208c.746.606 1.026.56 2.428.466l13.215-.793c.28 0 .047-.28-.046-.326L17.86 1.968c-.42-.326-.981-.7-2.055-.607L3.01 2.295c-.466.046-.56.28-.374.466zm.793 3.08v13.904c0 .747.373 1.027 1.214.98l14.523-.84c.841-.046.935-.56.935-1.167V6.354c0-.606-.233-.933-.748-.887l-15.177.887c-.56.047-.747.327-.747.933zm14.337.745c.093.42 0 .84-.42.888l-.7.14v10.264c-.608.327-1.168.514-1.635.514-.748 0-.935-.233-1.495-.933l-4.577-7.186v6.952L12.21 19s0 .84-1.168.84l-3.222.186c-.093-.186 0-.653.327-.746l.84-.233V9.854L7.822 9.76c-.094-.42.14-1.026.793-1.073l3.456-.233 4.764 7.279v-6.44l-1.215-.139c-.093-.514.28-.887.747-.933zM1.936 1.035l13.31-.98c1.634-.14 2.055-.047 3.082.7l4.249 2.986c.7.513.934.653.934 1.213v16.378c0 1.026-.373 1.634-1.68 1.726l-15.458.934c-.98.047-1.448-.093-1.962-.747l-3.129-4.06c-.56-.747-.793-1.306-.793-1.96V2.667c0-.839.374-1.54 1.447-1.632z"/>
-                </svg>
-              }
-              title="Template Scheduler"
-              description="Plan de 7 días listo para copiar a Notion"
-              isConnected={profile?.notion_connected || false}
-              primaryAction={{
-                label: "Conectar Notion",
-                onClick: () => toast.info("OAuth de Notion - próximamente")
-              }}
-              secondaryAction={profile?.notion_connected ? {
-                label: "Abrir plantilla",
-                onClick: () => toast.info("Abrir plantilla - próximamente")
-              } : undefined}
-            />
+            <Card
+              className="border-2 border-gray-200 hover:border-purple-400 hover:shadow-lg transition-all cursor-pointer"
+              onClick={() => alert("Plantilla Notion próximamente")}
+            >
+              <CardContent className="pt-6 text-center">
+                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-3">
+                  <FileText className="w-6 h-6 text-blue-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-1">
+                  Plantilla Notion
+                </h3>
+                <p className="text-xs text-gray-600">Sistema completo</p>
+                <Badge className="mt-2 bg-green-100 text-green-700">Nuevo</Badge>
+              </CardContent>
+            </Card>
 
-            {/* 4. Equipo esencial */}
-            <QuickActionCard
-              icon={<Cpu className="w-6 h-6 text-purple-500" />}
-              title="Equipo esencial"
-              description="Herramientas y gear de los top creators"
-              primaryAction={{
-                label: "Ver recomendaciones",
-                onClick: () => toast.info("Próximamente: equipos con descuentos exclusivos")
-              }}
-            />
+            <Card className="border-2 border-gray-200 opacity-60 cursor-not-allowed">
+              <CardContent className="pt-6 text-center">
+                <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
+                  <Wrench className="w-6 h-6 text-gray-400" />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-1">
+                  Recursos
+                </h3>
+                <p className="text-xs text-gray-600">Próximamente</p>
+              </CardContent>
+            </Card>
           </div>
         </div>
 
-        {/* Coming Soon */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="glass-card border-accent/30">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <PlayCircle className="w-5 h-5 text-accent" />
-                Próximamente
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>· Pipeline Kanban visual (Idea → Editing → Published)</li>
-                <li>· Calendario de publicaciones con vista mensual</li>
-                <li>· 24h Review con decisiones (Empujar, Recortar, Kill)</li>
-                <li>· Import CSV de analytics de plataformas</li>
-                <li>· Sistema de inspiración con estado de material</li>
-              </ul>
-            </CardContent>
-          </Card>
-
-          <Card className="glass-card border-muted/30 opacity-60">
-            <CardHeader>
-              <CardTitle className="text-lg">Long videos workflow</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-heading gradient-text mb-2">Coming soon</div>
-              <p className="text-sm text-muted-foreground">
-                Enfoque actual: shorts de alto impacto. Long-form en desarrollo.
-              </p>
-            </CardContent>
-          </Card>
+        {/* Footer */}
+        <div className="text-center">
+          <p className="text-sm text-gray-500">
+            {BRAND.fullName} · {BRAND.principles.join(" · ")}
+          </p>
         </div>
       </div>
     </div>
