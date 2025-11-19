@@ -1,5 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,6 +20,21 @@ import { BRAND } from "@/lib/constants";
 const Onboarding = () => {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate("/auth");
+      } else {
+        setUserId(user.id);
+      }
+    };
+    checkAuth();
+  }, [navigate]);
   
   // Step 1: Basics
   const [fullName, setFullName] = useState("");
@@ -102,13 +120,73 @@ const Onboarding = () => {
   };
 
   const handleSubmit = async () => {
+    if (!userId) {
+      toast({
+        title: "Error",
+        description: "Usuario no autenticado",
+        variant: "destructive",
+      });
+      navigate("/auth");
+      return;
+    }
+
     setLoading(true);
-    
-    // Simulate AI processing
-    setTimeout(() => {
-      alert("✅ Perfil creado! Tus Content Cores están listos");
-      window.location.href = "/dashboard";
-    }, 3000);
+
+    try {
+      // Call AI function to analyze answers and generate Content Cores
+      const { data: aiData, error: aiError } = await supabase.functions.invoke('analyze-cores', {
+        body: {
+          answers,
+          fullName,
+          handle,
+          country,
+          format,
+          goal,
+        }
+      });
+
+      if (aiError) throw aiError;
+
+      // Save to profile
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({
+          full_name: fullName,
+          handle: handle,
+          country: country,
+          lang: language,
+          content_cores: {
+            verticals: aiData.verticals,
+            quiz_answers: answers,
+            format: format,
+            goal: goal,
+            generated_at: new Date().toISOString(),
+          },
+          onboarding_completed: true,
+        })
+        .eq('id', userId);
+
+      if (updateError) throw updateError;
+
+      toast({
+        title: "✅ Content Cores generados",
+        description: "Tu perfil está listo. Redirigiendo al dashboard...",
+      });
+      
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1500);
+
+    } catch (error: any) {
+      console.error('Onboarding error:', error);
+      toast({
+        title: "Error procesando onboarding",
+        description: error.message || "Intenta de nuevo",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const canProceedStep1 = fullName && handle && country && language;

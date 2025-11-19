@@ -1,8 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import type { Profile, ContentCore } from "@/types/supabase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
+  Loader2,
   Sparkles, 
   TrendingUp,
   Clock,
@@ -17,94 +22,140 @@ import {
 import { BRAND, PRICING } from "@/lib/constants";
 
 const Dashboard = () => {
+  const [loading, setLoading] = useState(true);
   const [generatingPlan, setGeneratingPlan] = useState(false);
   const [planGenerated, setPlanGenerated] = useState(false);
   const [copiedToClipboard, setCopiedToClipboard] = useState(false);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [planText, setPlanText] = useState("");
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
-  // Mock user data
-  const userName = "Creador";
-  const hasVerticals = true; // Change to false to see empty state
-  const trialDaysRemaining = 85;
+  // Load user profile and data
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) {
+          navigate("/auth");
+          return;
+        }
 
-  // Mock verticals (normally from AI/database)
-  const verticals = [
-    {
-      name: "Inmigrante en USA",
-      confidence: 95,
-      why: "Tu historia de mudarte a otro país y adaptarte es contenido gold. La gente se conecta con luchas reales.",
-      examples: [
-        "Day in the life como inmigrante",
-        "Cosas que extraño de mi país",
-        "Errores que cometí al llegar"
-      ]
-    },
-    {
-      name: "Vida con mascota",
-      confidence: 88,
-      why: "Tu perro es parte de tu día a día. Pet content + lifestyle = engagement alto.",
-      examples: [
-        "Rutina matutina con mi perro",
-        "Gastos mensuales de tener perro en USA",
-        "Cómo mi perro me ayudó con la soledad"
-      ]
-    },
-    {
-      name: "Emprender desde cero",
-      confidence: 82,
-      why: "Tu trabajo actual vs. tus proyectos = contraste que genera empatía y aspiración.",
-      examples: [
-        "Trabajando full-time mientras buildo mi proyecto",
-        "Primeros $100 de mi side hustle",
-        "Por qué renuncié a la estabilidad"
-      ]
+        const { data: profileData, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        if (error) throw error;
+
+        setProfile(profileData as any as Profile);
+      } catch (error: any) {
+        console.error('Error loading profile:', error);
+        toast({
+          title: "Error cargando perfil",
+          description: error.message,
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProfile();
+  }, [navigate, toast]);
+
+  // Extract verticals from profile
+  const verticals: ContentCore[] = profile?.content_cores?.verticals || [];
+  const hasVerticals = verticals.length > 0;
+  const userName = profile?.full_name || "Creador";
+
+  // Calculate trial days remaining
+  const trialDaysRemaining = profile?.trial_ends_at 
+    ? Math.max(0, Math.ceil((new Date(profile.trial_ends_at).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))
+    : 0;
+
+  const handleGeneratePlan = async () => {
+    if (!verticals.length) {
+      toast({
+        title: "Completa el onboarding primero",
+        description: "Necesitas tus Content Cores antes de generar un plan",
+      });
+      navigate("/onboarding");
+      return;
     }
-  ];
 
-  const handleGeneratePlan = () => {
+    if (!profile) {
+      toast({
+        title: "Error",
+        description: "No se pudo cargar el perfil",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setGeneratingPlan(true);
-    setTimeout(() => {
-      setGeneratingPlan(false);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-plan', {
+        body: {
+          verticals,
+          userId: profile.id,
+        }
+      });
+
+      if (error) throw error;
+
+      setPlanText(data.plan);
       setPlanGenerated(true);
-    }, 2000);
+      
+      toast({
+        title: "✅ Plan generado",
+        description: "Tu plan de 7 días está listo",
+      });
+    } catch (error: any) {
+      console.error('Plan generation error:', error);
+      toast({
+        title: "Error generando el plan",
+        description: error.message || "Intenta de nuevo",
+        variant: "destructive",
+      });
+    } finally {
+      setGeneratingPlan(false);
+    }
   };
 
-  const handleCopyToNotion = () => {
-    const planText = `
-# Mi Plan de 7 Días - Clip To Click
-
-## Lunes
-- Grabar 5 clips sobre: ${verticals[0].name}
-- Tema: ${verticals[0].examples[0]}
-
-## Martes  
-- Editar clips del lunes (ritmo 0.6s)
-- Publicar 2 piezas en IG + TikTok
-
-## Miércoles
-- Grabar 5 clips sobre: ${verticals[1].name}
-- Tema: ${verticals[1].examples[0]}
-
-## Jueves
-- Editar clips del miércoles
-- Publicar 2 piezas + analizar engagement
-
-## Viernes
-- Grabar 5 clips sobre: ${verticals[2].name}
-- Tema: ${verticals[2].examples[0]}
-
-## Sábado
-- Batch editing: 10 clips listos para la semana
-- Revisar métricas en Dashboard
-
-## Domingo
-- Descanso activo: guardar inspos en Notion
-- Planear temas para próxima semana
-    `.trim();
-
-    navigator.clipboard.writeText(planText);
-    setCopiedToClipboard(true);
-    setTimeout(() => setCopiedToClipboard(false), 3000);
+  const handleCopyToNotion = async () => {
+    try {
+      await navigator.clipboard.writeText(planText);
+      setCopiedToClipboard(true);
+      
+      toast({
+        title: "✅ Copiado al portapapeles",
+        description: "Pega el plan en tu página de Notion",
+      });
+      
+      setTimeout(() => setCopiedToClipboard(false), 3000);
+    } catch (error) {
+      toast({
+        title: "Error al copiar",
+        description: "Intenta de nuevo",
+        variant: "destructive",
+      });
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-purple-600 mx-auto mb-4" />
+          <p className="text-gray-600">Cargando dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-purple-50 py-8 px-4">
@@ -278,13 +329,14 @@ const Dashboard = () => {
                 )}
               </div>
 
-              {planGenerated && (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <p className="text-sm text-green-800">
-                    ✅ <strong>Plan generado exitosamente.</strong> Cópialo a Notion y empieza a ejecutar hoy.
-                  </p>
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <p className="text-sm text-green-800">
+                  ✅ <strong>Plan generado exitosamente.</strong> Cópialo a Notion y empieza a ejecutar hoy.
+                </p>
+                <div className="mt-3 max-h-96 overflow-y-auto bg-white p-4 rounded border border-green-300">
+                  <pre className="text-xs whitespace-pre-wrap font-mono">{planText}</pre>
                 </div>
-              )}
+              </div>
             </CardContent>
           </Card>
         ) : (

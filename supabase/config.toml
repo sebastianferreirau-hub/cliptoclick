@@ -48,5 +48,11 @@ verify_jwt = true
 [functions.generate-7day-plan]
 verify_jwt = true
 
+[functions.generate-plan]
+verify_jwt = true
+
+[functions.analyze-cores]
+verify_jwt = true
+
 [functions.send-purchase-confirmation]
 verify_jwt = false
