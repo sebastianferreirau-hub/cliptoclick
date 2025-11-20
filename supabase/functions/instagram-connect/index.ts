@@ -11,26 +11,35 @@ serve(async (req) => {
   }
 
   try {
-    const FB_APP_ID = Deno.env.get('FB_APP_ID');
+    const FB_APP_ID = Deno.env.get('FB_APP_ID') || '1361999862058324';
+    const REDIRECT_URI = Deno.env.get('REDIRECT_URI') || 'https://cliptoclick.lovable.app/api/instagram/callback';
     
-    if (!FB_APP_ID) {
-      return new Response(JSON.stringify({ error: 'Instagram OAuth not configured', demo: true }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
+    console.log('Instagram OAuth initiate request');
+    console.log('FB_APP_ID:', FB_APP_ID);
+    console.log('REDIRECT_URI:', REDIRECT_URI);
 
-    const redirectUri = 'https://cliptoclick.lovable.app/api/instagram/callback';
-    const scope = 'instagram_basic,pages_show_list,pages_read_engagement,instagram_manage_insights';
+    // Instagram OAuth scopes for Instagram Business Account access
+    const scope = 'pages_show_list,instagram_basic,instagram_manage_insights,pages_read_engagement';
     
-    const authUrl = `https://www.facebook.com/v18.0/dialog/oauth?client_id=${FB_APP_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}&response_type=code`;
+    // Construct Facebook OAuth URL (Instagram uses Facebook's OAuth)
+    const authUrl = `https://www.facebook.com/v21.0/dialog/oauth?client_id=${FB_APP_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(scope)}&response_type=code&state=${Math.random().toString(36).substring(7)}`;
 
-    return new Response(JSON.stringify({ authUrl }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    console.log('Redirecting to:', authUrl);
+
+    // Redirect user to Facebook OAuth
+    return new Response(null, {
+      status: 302,
+      headers: {
+        ...corsHeaders,
+        'Location': authUrl,
+      },
     });
   } catch (error) {
     console.error('Error in instagram-connect:', error);
-    return new Response(JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }), {
+    return new Response(JSON.stringify({ 
+      error: error instanceof Error ? error.message : 'Unknown error',
+      details: 'Failed to initiate Instagram OAuth flow'
+    }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
