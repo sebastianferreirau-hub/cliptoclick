@@ -355,8 +355,8 @@ const Privacy = () => {
 
               <p className="mt-4 text-sm bg-primary/10 p-3 rounded">
                 Para ejercer estos derechos, contáctanos en{" "}
-                <a href="mailto:hola@cliptoclic.com" className="text-primary hover:underline font-medium">
-                  hola@cliptoclic.com
+                <a href="mailto:hola@cliptoclick.com" className="text-primary hover:underline font-medium">
+                  hola@cliptoclick.com
                 </a>
               </p>
             </CardContent>
@@ -449,10 +449,10 @@ const Privacy = () => {
                 o el manejo de tus datos personales, contáctanos:
               </p>
               <a 
-                href="mailto:hola@cliptoclic.com" 
+                href="mailto:hola@cliptoclick.com" 
                 className="text-primary hover:underline font-medium"
               >
-                hola@cliptoclic.com
+                hola@cliptoclick.com
               </a>
               
               <div className="mt-6 pt-6 border-t border-border">

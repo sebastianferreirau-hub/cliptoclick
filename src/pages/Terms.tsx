@@ -272,10 +272,10 @@ const Terms = () => {
                 Si tienes preguntas sobre estos términos, contáctanos en:
               </p>
               <a 
-                href="mailto:hola@cliptoclic.com" 
+                href="mailto:hola@cliptoclick.com" 
                 className="text-primary hover:underline font-medium"
               >
-                hola@cliptoclic.com
+                hola@cliptoclick.com
               </a>
               
               <div className="mt-6 pt-6 border-t border-border">
