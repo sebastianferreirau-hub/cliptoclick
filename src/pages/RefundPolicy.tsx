@@ -175,8 +175,8 @@ const RefundPolicy = () => {
                     <h4 className="font-semibold mb-1">Envía un email</h4>
                     <p className="text-sm text-muted-foreground">
                       Escribe a{" "}
-                      <a href="mailto:hola@cliptoclic.com" className="text-primary hover:underline">
-                        hola@cliptoclic.com
+                      <a href="mailto:hola@cliptoclick.com" className="text-primary hover:underline">
+                        hola@cliptoclick.com
                       </a>{" "}
                       con el asunto "Solicitud de Reembolso"
                     </p>
@@ -398,10 +398,10 @@ const RefundPolicy = () => {
                 aclaramos cualquier duda:
               </p>
               <a 
-                href="mailto:hola@cliptoclic.com" 
+                href="mailto:hola@cliptoclick.com" 
                 className="text-primary hover:underline font-medium"
               >
-                hola@cliptoclic.com
+                hola@cliptoclick.com
               </a>
               
               <div className="mt-6 pt-6 border-t border-border">

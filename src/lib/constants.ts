@@ -8,9 +8,9 @@ export const BRAND = {
     "Ritmo > Efectos", 
     "Velocidad > Complejidad"
   ],
-  domain: "cliptoclic.com",
-  adminDomain: "admin.cliptoclic.com",
-  email: "hola@cliptoclic.com",
+  domain: "cliptoclick.com",
+  adminDomain: "admin.cliptoclick.com",
+  email: "hola@cliptoclick.com",
   discord: "https://discord.gg/cliptoclickxxx",
   notionTemplateUrl: "https://cliptoclik.notion.site/",
   googleDriveGuideUrl: "https://drive.google.com/drive/my-drive",
@@ -262,7 +262,7 @@ export const COPY = {
       "✓ Debes completar 6 de 8 módulos (demuestra que intentaste)",
       "✓ Debes completar el quiz de Content Cores",
       "✓ Solicitud dentro de 30 días de compra",
-      "✓ Un email a reembolsos@cliptoclic.com y listo"
+      "✓ Un email a reembolsos@cliptoclick.com y listo"
     ],
     reasoning: "No queremos tu dinero si el método no te sirve. Pero si no lo aplicas, no podemos ayudarte. Por eso pedimos demostrar esfuerzo.",
     disclaimer: "No ofrecemos reembolsos a quienes compran y nunca entran. El método funciona si lo sigues."
