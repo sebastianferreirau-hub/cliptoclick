@@ -73,7 +73,7 @@ export const COPY = {
       metric: "+11.5K seguidores en 60 días"
     },
     {
-      name: "Fernando",
+      name: "Fernanda",
       handle: "@ferenloscielos",
       avatar: "/avatars/fernando.jpg",
       quote: "De <strong>15K a 40K seguidores</strong> en 90 días usando el método de batching. Mi secreto: 30 clips grabados un domingo = contenido para 2 semanas. <strong>50K+ views/reel</strong> consistente.",
