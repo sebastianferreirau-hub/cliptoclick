@@ -347,15 +347,12 @@ const Dashboard = () => {
         {/* Social Media Connections */}
         <div className="mb-8">
           <h2 className="text-xl font-bold text-gray-900 mb-4">Conexiones</h2>
+          <p className="text-sm text-gray-600 mb-4">
+            Conecta tus redes sociales para importar automáticamente analytics y métricas
+          </p>
           <div className="grid md:grid-cols-3 gap-4">
             <Card 
-              className={`border-2 ${profile?.instagram_connected ? 'border-green-300 bg-green-50' : 'border-gray-200'} cursor-pointer hover:shadow-md transition-all`}
-              onClick={async () => {
-                const { data } = await supabase.functions.invoke('instagram-connect');
-                if (data?.authUrl) {
-                  window.location.href = data.authUrl;
-                }
-              }}
+              className={`border-2 ${profile?.instagram_connected ? 'border-green-300 bg-green-50' : 'border-gray-200'}`}
             >
               <CardContent className="pt-6 text-center">
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mx-auto mb-3">
@@ -363,19 +360,18 @@ const Dashboard = () => {
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-1">Instagram</h3>
                 <Badge variant={profile?.instagram_connected ? "default" : "outline"}>
-                  {profile?.instagram_connected ? "✅ Conectado" : "⚪ No conectado"}
+                  {profile?.instagram_connected ? "✅ Conectado" : "🔒 OAuth requerido"}
                 </Badge>
+                {!profile?.instagram_connected && (
+                  <p className="text-xs text-gray-500 mt-2">
+                    Requiere configurar credenciales de Instagram API
+                  </p>
+                )}
               </CardContent>
             </Card>
             
             <Card 
-              className={`border-2 ${profile?.tiktok_connected ? 'border-green-300 bg-green-50' : 'border-gray-200'} cursor-pointer hover:shadow-md transition-all`}
-              onClick={async () => {
-                const { data } = await supabase.functions.invoke('tiktok-connect');
-                if (data?.authUrl) {
-                  window.location.href = data.authUrl;
-                }
-              }}
+              className={`border-2 ${profile?.tiktok_connected ? 'border-green-300 bg-green-50' : 'border-gray-200'}`}
             >
               <CardContent className="pt-6 text-center">
                 <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center mx-auto mb-3">
@@ -383,19 +379,18 @@ const Dashboard = () => {
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-1">TikTok</h3>
                 <Badge variant={profile?.tiktok_connected ? "default" : "outline"}>
-                  {profile?.tiktok_connected ? "✅ Conectado" : "⚪ No conectado"}
+                  {profile?.tiktok_connected ? "✅ Conectado" : "🔒 OAuth requerido"}
                 </Badge>
+                {!profile?.tiktok_connected && (
+                  <p className="text-xs text-gray-500 mt-2">
+                    Requiere configurar credenciales de TikTok API
+                  </p>
+                )}
               </CardContent>
             </Card>
 
             <Card 
-              className={`border-2 ${profile?.snapchat_connected ? 'border-green-300 bg-green-50' : 'border-gray-200'} cursor-pointer hover:shadow-md transition-all`}
-              onClick={async () => {
-                const { data } = await supabase.functions.invoke('snapchat-connect');
-                if (data?.authUrl) {
-                  window.location.href = data.authUrl;
-                }
-              }}
+              className={`border-2 ${profile?.snapchat_connected ? 'border-green-300 bg-green-50' : 'border-gray-200'}`}
             >
               <CardContent className="pt-6 text-center">
                 <div className="w-12 h-12 rounded-full bg-yellow-400 flex items-center justify-center mx-auto mb-3">
@@ -403,8 +398,13 @@ const Dashboard = () => {
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-1">Snapchat</h3>
                 <Badge variant={profile?.snapchat_connected ? "default" : "outline"}>
-                  {profile?.snapchat_connected ? "✅ Conectado" : "⚪ No conectado"}
+                  {profile?.snapchat_connected ? "✅ Conectado" : "🔒 OAuth requerido"}
                 </Badge>
+                {!profile?.snapchat_connected && (
+                  <p className="text-xs text-gray-500 mt-2">
+                    Requiere configurar credenciales de Snapchat API
+                  </p>
+                )}
               </CardContent>
             </Card>
           </div>
