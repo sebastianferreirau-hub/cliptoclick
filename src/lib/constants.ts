@@ -81,7 +81,7 @@ export const COPY = {
     },
     {
       name: "Sebastián",
-      handle: "@sebasferreirauu",
+      handle: "@sebasferreirau",
       avatar: "/avatars/sebastian.jpg",
       quote: "Fundador del método. <strong>+120M impresiones</strong> en Q1 2025 aplicando estos principios. No es magia—es sistema + constancia + datos.",
       metric: "+120M impresiones en 3 meses"
