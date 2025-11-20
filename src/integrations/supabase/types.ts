@@ -431,6 +431,51 @@ export type Database = {
         }
         Relationships: []
       }
+      instagram_accounts: {
+        Row: {
+          access_token: string
+          connected_at: string
+          followers_count: number | null
+          id: string
+          instagram_id: string
+          instagram_username: string
+          page_id: string
+          page_name: string
+          profile_picture_url: string | null
+          token_expires_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token: string
+          connected_at?: string
+          followers_count?: number | null
+          id?: string
+          instagram_id: string
+          instagram_username: string
+          page_id: string
+          page_name: string
+          profile_picture_url?: string | null
+          token_expires_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string
+          connected_at?: string
+          followers_count?: number | null
+          id?: string
+          instagram_id?: string
+          instagram_username?: string
+          page_id?: string
+          page_name?: string
+          profile_picture_url?: string | null
+          token_expires_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       integration_tokens: {
         Row: {
           access_token: string
