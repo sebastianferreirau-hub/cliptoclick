@@ -1,27 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { 
-  CheckCircle2, 
-  XCircle, 
-  Clock, 
-  Shield,
-  TrendingUp,
-  GraduationCap,
-  Sparkles,
-  LayoutDashboard,
-  PlayCircle,
-  Zap,
-  Calendar,
-  FileText,
-  Users as UsersIcon
-} from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { CheckCircle2, XCircle, Clock, Shield, TrendingUp, GraduationCap, Sparkles, LayoutDashboard, PlayCircle, Zap, Calendar, FileText, Users as UsersIcon } from "lucide-react";
 import { BRAND, PRICING, COPY } from "@/lib/constants";
 import Hero from "@/components/landing/Hero";
 import SocialProof from "@/components/landing/SocialProof";
@@ -32,10 +13,8 @@ import PricingBox from "@/components/landing/PricingBox";
 import GuaranteeBox from "@/components/landing/GuaranteeBox";
 import FAQ from "@/components/landing/FAQ";
 import FinalCTA from "@/components/landing/FinalCTA";
-
 const Index = () => {
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-muted/20 to-background">
+  return <div className="min-h-screen bg-gradient-to-b from-background via-muted/20 to-background">
       {/* Hero Section */}
       <section className="relative px-4 py-16 md:py-24">
         <div className="max-w-5xl mx-auto text-center">
@@ -72,19 +51,12 @@ const Index = () => {
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
-            <Button 
-              size="lg" 
-              className="bg-gradient-primary hover:opacity-90 text-white px-10 py-6 text-lg font-semibold shadow-glow w-full sm:w-auto"
-              onClick={() => window.location.href = "/checkout"}
-            >
+            <Button size="lg" className="bg-gradient-primary hover:opacity-90 text-white px-10 py-6 text-lg font-semibold shadow-glow w-full sm:w-auto" onClick={() => window.location.href = "/checkout"}>
               {COPY.cta.primary}
             </Button>
-            <Button 
-              size="lg" 
-              variant="outline"
-              className="border-2 px-10 py-6 text-lg font-semibold w-full sm:w-auto"
-              onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
-            >
+            <Button size="lg" variant="outline" className="border-2 px-10 py-6 text-lg font-semibold w-full sm:w-auto" onClick={() => document.getElementById('how-it-works')?.scrollIntoView({
+            behavior: 'smooth'
+          })}>
               {COPY.cta.secondary}
             </Button>
           </div>
@@ -136,7 +108,7 @@ const Index = () => {
                   <PlayCircle className="w-16 h-16 text-primary/60" />
                 </div>
                 <p className="text-foreground text-sm leading-relaxed">
-                  De <strong>15K a 40K seguidores</strong> en 90 días. <strong>50K+ views/reel</strong> promedio.
+                  De 3K a 24K seguidores en 30 días. 50K+ views/reel promedio. <strong>3K a 24K seguidores</strong> en 90 días. <strong>50K+ views/reel</strong> promedio.
                 </p>
               </CardContent>
             </Card>
@@ -147,14 +119,14 @@ const Index = () => {
                   <span>TikTok</span>
                   <TrendingUp className="w-5 h-5 text-success" />
                 </CardTitle>
-                <p className="text-muted-foreground text-sm">@mariaclaudiaql</p>
+                <p className="text-muted-foreground text-sm">@mariaclaudiaql2</p>
               </CardHeader>
               <CardContent>
                 <div className="aspect-video bg-gradient-to-br from-accent/10 to-primary/10 rounded-lg mb-4 flex items-center justify-center relative group-hover:scale-105 transition-transform overflow-hidden">
                   <PlayCircle className="w-16 h-16 text-accent/60" />
                 </div>
                 <p className="text-foreground text-sm leading-relaxed">
-                  De <strong>500 a 12K seguidores</strong> en 60 días. Cuenta fantasma → audiencia real.
+                  De 0 a 24K seguidores en 90 días. Cuenta invisible → audiencia real. <strong>500 a 12K seguidores</strong> en 60 días. Cuenta fantasma → audiencia real.
                 </p>
               </CardContent>
             </Card>
@@ -165,7 +137,7 @@ const Index = () => {
                   <span>Multi-canal</span>
                   <TrendingUp className="w-5 h-5 text-success" />
                 </CardTitle>
-                <p className="text-muted-foreground text-sm">@sebasferreirauu</p>
+                <p className="text-muted-foreground text-sm">@sebasferreirau</p>
               </CardHeader>
               <CardContent>
                 <div className="aspect-video bg-gradient-to-br from-success/10 to-accent/10 rounded-lg mb-4 flex items-center justify-center relative group-hover:scale-105 transition-transform overflow-hidden">
@@ -188,8 +160,7 @@ const Index = () => {
           </h3>
           
           <div className="grid md:grid-cols-3 gap-8">
-            {COPY.testimonials.map((testimonial, index) => (
-              <Card key={index} className="border-2 border-border hover:border-primary/50 hover:shadow-elegant transition-all">
+            {COPY.testimonials.map((testimonial, index) => <Card key={index} className="border-2 border-border hover:border-primary/50 hover:shadow-elegant transition-all">
                 <CardContent className="pt-6">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-12 h-12 rounded-full bg-gradient-primary flex items-center justify-center text-white font-bold">
@@ -201,18 +172,16 @@ const Index = () => {
                     </div>
                   </div>
                   
-                  <blockquote 
-                    className="text-foreground/90 mb-4 text-sm leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: testimonial.quote }}
-                  />
+                  <blockquote className="text-foreground/90 mb-4 text-sm leading-relaxed" dangerouslySetInnerHTML={{
+                __html: testimonial.quote
+              }} />
                   
                   <div className="flex items-center gap-2 text-sm text-primary font-medium">
                     <TrendingUp className="w-4 h-4" />
                     <span>{testimonial.metric}</span>
                   </div>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </div>
       </section>
@@ -230,8 +199,7 @@ const Index = () => {
           </div>
 
           <div className="space-y-16">
-            {COPY.howItWorks.steps.map((step, index) => (
-              <div key={index} className="grid md:grid-cols-2 gap-12 items-center">
+            {COPY.howItWorks.steps.map((step, index) => <div key={index} className="grid md:grid-cols-2 gap-12 items-center">
                 <div className={index % 2 === 0 ? "order-1" : "order-1 md:order-2"}>
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0 w-14 h-14 rounded-full bg-gradient-primary flex items-center justify-center text-white font-bold text-2xl shadow-glow">
@@ -256,8 +224,7 @@ const Index = () => {
                     <Zap className="w-20 h-20 text-primary/40" />
                   </div>
                 </div>
-              </div>
-            ))}
+              </div>)}
           </div>
         </div>
       </section>
@@ -275,11 +242,7 @@ const Index = () => {
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
-            {COPY.includes.items.map((item, index) => (
-              <Card 
-                key={index} 
-                className="border-2 border-border hover:border-primary/50 hover:shadow-elegant transition-all group"
-              >
+            {COPY.includes.items.map((item, index) => <Card key={index} className="border-2 border-border hover:border-primary/50 hover:shadow-elegant transition-all group">
                 <CardHeader>
                   <div className="flex items-start justify-between mb-3">
                     <div className="w-12 h-12 rounded-full bg-primary/10 group-hover:bg-primary/20 transition flex items-center justify-center flex-shrink-0">
@@ -303,8 +266,7 @@ const Index = () => {
                     {item.description}
                   </p>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
 
           {/* Total Value */}
@@ -337,11 +299,7 @@ const Index = () => {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {COPY.agenda.modules.map((module, index) => (
-              <Card 
-                key={index} 
-                className="glass-card hover:border-success/50 transition-all group cursor-pointer"
-              >
+            {COPY.agenda.modules.map((module, index) => <Card key={index} className="glass-card hover:border-success/50 transition-all group cursor-pointer">
                 <CardHeader>
                   <div className="flex items-start justify-between mb-2">
                     <Badge variant="outline" className="border-success/50 text-success">
@@ -352,8 +310,7 @@ const Index = () => {
                     {module.title}
                   </CardTitle>
                 </CardHeader>
-              </Card>
-            ))}
+              </Card>)}
           </div>
 
           <p className="text-center text-sm text-muted-foreground mt-8">
@@ -436,14 +393,12 @@ const Index = () => {
                 </p>
                 
                 <div className="space-y-3 pt-4">
-                  {COPY.finalCTA.option1.timeline.map((item, index) => (
-                    <div key={index} className="flex items-start gap-2">
+                  {COPY.finalCTA.option1.timeline.map((item, index) => <div key={index} className="flex items-start gap-2">
                       <Clock className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
                       <p className="text-sm text-destructive/80">
                         <strong>{item.period}</strong> {item.outcome}
                       </p>
-                    </div>
-                  ))}
+                    </div>)}
                 </div>
               </CardContent>
             </Card>
@@ -472,21 +427,15 @@ const Index = () => {
                 </p>
                 
                 <div className="space-y-3">
-                  {COPY.finalCTA.option2.timeline.map((item, index) => (
-                    <div key={index} className="flex items-start gap-2">
+                  {COPY.finalCTA.option2.timeline.map((item, index) => <div key={index} className="flex items-start gap-2">
                       <Zap className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                       <p className="text-sm text-foreground/80">
                         <strong>{item.period}</strong> {item.outcome}
                       </p>
-                    </div>
-                  ))}
+                    </div>)}
                 </div>
                 
-                <Button
-                  size="lg"
-                  className="w-full bg-gradient-primary hover:opacity-90 text-white py-6 text-lg font-semibold shadow-glow"
-                  onClick={() => window.location.href = "/checkout"}
-                >
+                <Button size="lg" className="w-full bg-gradient-primary hover:opacity-90 text-white py-6 text-lg font-semibold shadow-glow" onClick={() => window.location.href = "/checkout"}>
                   {COPY.finalCTA.option2.cta}
                 </Button>
 
@@ -532,8 +481,6 @@ const Index = () => {
           </div>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
