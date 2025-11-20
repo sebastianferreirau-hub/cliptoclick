@@ -18,6 +18,12 @@ export interface Profile {
   updated_at: string;
   email?: string;
   name?: string;
+  instagram_connected?: boolean;
+  tiktok_connected?: boolean;
+  snapchat_connected?: boolean;
+  google_drive_connected?: boolean;
+  facebook_connected?: boolean;
+  notion_connected?: boolean;
 }
 
 export interface ContentCore {

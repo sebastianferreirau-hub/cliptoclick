@@ -17,10 +17,20 @@ import {
   FileText,
   Wrench,
   Copy,
-  CheckCircle2
+  CheckCircle2,
+  Instagram,
+  Music,
+  Camera
 } from "lucide-react";
 import { BRAND, PRICING } from "@/lib/constants";
 import { SetupInstructionsModal } from "@/components/SetupInstructionsModal";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
@@ -29,8 +39,13 @@ const Dashboard = () => {
   const [copiedToClipboard, setCopiedToClipboard] = useState(false);
   const [notionModalOpen, setNotionModalOpen] = useState(false);
   const [driveModalOpen, setDriveModalOpen] = useState(false);
+  const [trialDetailsOpen, setTrialDetailsOpen] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [planText, setPlanText] = useState("");
+  const [weeklyOutput, setWeeklyOutput] = useState(0);
+  const [totalImpressions, setTotalImpressions] = useState(0);
+  const [engagementRate, setEngagementRate] = useState(0);
+  const [metricsLoading, setMetricsLoading] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -68,6 +83,56 @@ const Dashboard = () => {
 
     loadProfile();
   }, [navigate, toast]);
+
+  // Load real metrics from database
+  useEffect(() => {
+    const loadMetrics = async () => {
+      if (!profile?.id) return;
+      
+      try {
+        // Get posts from this week
+        const weekStart = new Date();
+        weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+        weekStart.setHours(0, 0, 0, 0);
+        
+        const { data: weeklyPosts } = await supabase
+          .from('posts')
+          .select('id')
+          .eq('user_id', profile.id)
+          .gte('created_at', weekStart.toISOString())
+          .eq('status', 'published');
+        
+        setWeeklyOutput(weeklyPosts?.length || 0);
+        
+        // Get analytics from last 7 days
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        
+        const { data: recentAnalytics } = await supabase
+          .from('analytics')
+          .select('views, likes, comments, shares, saves, impressions')
+          .eq('user_id', profile.id)
+          .gte('captured_at', sevenDaysAgo.toISOString());
+        
+        if (recentAnalytics && recentAnalytics.length > 0) {
+          const totalViews = recentAnalytics.reduce((sum, a) => sum + (a.views || 0), 0);
+          const totalImpressionsSum = recentAnalytics.reduce((sum, a) => sum + (a.impressions || 0), 0);
+          const totalEngagement = recentAnalytics.reduce((sum, a) => 
+            sum + (a.likes || 0) + (a.comments || 0) + (a.shares || 0) + (a.saves || 0), 0
+          );
+          
+          setTotalImpressions(totalImpressionsSum);
+          setEngagementRate(totalViews > 0 ? Number((totalEngagement / totalViews * 100).toFixed(1)) : 0);
+        }
+      } catch (error) {
+        console.error('Error loading metrics:', error);
+      } finally {
+        setMetricsLoading(false);
+      }
+    };
+    
+    loadMetrics();
+  }, [profile]);
 
   // Extract verticals from profile - with null safety
   const verticals: ContentCore[] = profile?.content_cores?.verticals || [];
@@ -267,13 +332,83 @@ const Dashboard = () => {
                     ${PRICING.dashboardPro.price}/mes (opcional) o usar solo el curso + Notion gratis.
                   </p>
                 </div>
-                <Button variant="outline" size="sm">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setTrialDetailsOpen(true)}
+                >
                   Ver detalles
                 </Button>
               </div>
             </CardContent>
           </Card>
         )}
+
+        {/* Social Media Connections */}
+        <div className="mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Conexiones</h2>
+          <div className="grid md:grid-cols-3 gap-4">
+            <Card 
+              className={`border-2 ${profile?.instagram_connected ? 'border-green-300 bg-green-50' : 'border-gray-200'} cursor-pointer hover:shadow-md transition-all`}
+              onClick={async () => {
+                const { data } = await supabase.functions.invoke('instagram-connect');
+                if (data?.authUrl) {
+                  window.location.href = data.authUrl;
+                }
+              }}
+            >
+              <CardContent className="pt-6 text-center">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mx-auto mb-3">
+                  <Instagram className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-1">Instagram</h3>
+                <Badge variant={profile?.instagram_connected ? "default" : "outline"}>
+                  {profile?.instagram_connected ? "✅ Conectado" : "⚪ No conectado"}
+                </Badge>
+              </CardContent>
+            </Card>
+            
+            <Card 
+              className={`border-2 ${profile?.tiktok_connected ? 'border-green-300 bg-green-50' : 'border-gray-200'} cursor-pointer hover:shadow-md transition-all`}
+              onClick={async () => {
+                const { data } = await supabase.functions.invoke('tiktok-connect');
+                if (data?.authUrl) {
+                  window.location.href = data.authUrl;
+                }
+              }}
+            >
+              <CardContent className="pt-6 text-center">
+                <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center mx-auto mb-3">
+                  <Music className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-1">TikTok</h3>
+                <Badge variant={profile?.tiktok_connected ? "default" : "outline"}>
+                  {profile?.tiktok_connected ? "✅ Conectado" : "⚪ No conectado"}
+                </Badge>
+              </CardContent>
+            </Card>
+
+            <Card 
+              className={`border-2 ${profile?.snapchat_connected ? 'border-green-300 bg-green-50' : 'border-gray-200'} cursor-pointer hover:shadow-md transition-all`}
+              onClick={async () => {
+                const { data } = await supabase.functions.invoke('snapchat-connect');
+                if (data?.authUrl) {
+                  window.location.href = data.authUrl;
+                }
+              }}
+            >
+              <CardContent className="pt-6 text-center">
+                <div className="w-12 h-12 rounded-full bg-yellow-400 flex items-center justify-center mx-auto mb-3">
+                  <Camera className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-1">Snapchat</h3>
+                <Badge variant={profile?.snapchat_connected ? "default" : "outline"}>
+                  {profile?.snapchat_connected ? "✅ Conectado" : "⚪ No conectado"}
+                </Badge>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
 
         {/* KPI Cards */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
@@ -285,10 +420,19 @@ const Dashboard = () => {
               <TrendingUp className="w-4 h-4 text-gray-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-gray-900">0 / 14</div>
-              <p className="text-xs text-gray-600 mt-2">
-                Clips publicados esta semana (meta: 14)
-              </p>
+              {metricsLoading ? (
+                <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+              ) : (
+                <>
+                  <div className="text-3xl font-bold text-gray-900">{weeklyOutput} / 14</div>
+                  <p className="text-xs text-gray-600 mt-2">
+                    {weeklyOutput === 0 
+                      ? "Aún no has publicado esta semana" 
+                      : `Clips publicados esta semana (meta: 14)`
+                    }
+                  </p>
+                </>
+              )}
             </CardContent>
           </Card>
 
@@ -300,10 +444,21 @@ const Dashboard = () => {
               <Target className="w-4 h-4 text-gray-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-gray-900">0</div>
-              <p className="text-xs text-gray-600 mt-2">
-                Últimos 7 días (conecta IG/TikTok para ver)
-              </p>
+              {metricsLoading ? (
+                <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+              ) : (
+                <>
+                  <div className="text-3xl font-bold text-gray-900">
+                    {totalImpressions.toLocaleString()}
+                  </div>
+                  <p className="text-xs text-gray-600 mt-2">
+                    {totalImpressions === 0 
+                      ? "Conecta IG/TikTok para ver impresiones" 
+                      : "Últimos 7 días"
+                    }
+                  </p>
+                </>
+              )}
             </CardContent>
           </Card>
 
@@ -315,10 +470,19 @@ const Dashboard = () => {
               <Clock className="w-4 h-4 text-gray-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-gray-900">0%</div>
-              <p className="text-xs text-gray-600 mt-2">
-                Promedio de interacciones / impresiones
-              </p>
+              {metricsLoading ? (
+                <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+              ) : (
+                <>
+                  <div className="text-3xl font-bold text-gray-900">{engagementRate}%</div>
+                  <p className="text-xs text-gray-600 mt-2">
+                    {engagementRate === 0 
+                      ? "Publica clips para ver tu engagement" 
+                      : "Promedio de interacciones / vistas"
+                    }
+                  </p>
+                </>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -547,6 +711,59 @@ const Dashboard = () => {
           </p>
         </div>
       </div>
+
+      {/* Trial Details Modal */}
+      <Dialog open={trialDetailsOpen} onOpenChange={setTrialDetailsOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Detalles del Trial Dashboard</DialogTitle>
+            <DialogDescription>
+              Información sobre tu período de prueba gratuito
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+              <h4 className="font-semibold text-gray-900 mb-2">📅 Tu Trial</h4>
+              <ul className="text-sm text-gray-700 space-y-2">
+                <li>• <strong>Inicio:</strong> {profile?.created_at ? new Date(profile.created_at).toLocaleDateString('es-ES') : 'N/A'}</li>
+                <li>• <strong>Expira:</strong> {profile?.trial_ends_at ? new Date(profile.trial_ends_at).toLocaleDateString('es-ES') : 'N/A'}</li>
+                <li>• <strong>Días restantes:</strong> {trialDaysRemaining} días</li>
+              </ul>
+            </div>
+
+            <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+              <h4 className="font-semibold text-gray-900 mb-2">✅ Qué incluye</h4>
+              <ul className="text-sm text-gray-700 space-y-1">
+                <li>• Dashboard completo con métricas</li>
+                <li>• Generación de planes con IA</li>
+                <li>• Conexión con redes sociales</li>
+                <li>• Analytics en tiempo real</li>
+                <li>• Acceso al curso completo</li>
+              </ul>
+            </div>
+
+            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+              <h4 className="font-semibold text-gray-900 mb-2">🔄 Después del trial</h4>
+              <p className="text-sm text-gray-700 mb-2">
+                Puedes continuar con el Dashboard Pro por <strong>${PRICING.dashboardPro.price}/mes</strong> (opcional).
+              </p>
+              <p className="text-sm text-gray-700">
+                O seguir usando el <strong>curso + plantilla Notion gratis</strong> para siempre.
+              </p>
+            </div>
+
+            <Button 
+              onClick={() => {
+                setTrialDetailsOpen(false);
+                navigate('/checkout');
+              }}
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+            >
+              Ver planes de pago
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
