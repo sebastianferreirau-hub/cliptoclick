@@ -69,8 +69,8 @@ export const COPY = {
       name: "María Claudia",
       handle: "@mariaclaudiaql",
       avatar: "/avatars/maria.jpg",
-      quote: "Pasé de tener <strong>500 seguidores</strong> a <strong>12K en 60 días</strong>. Antes grababa cuando 'me inspiraba'. Ahora tengo un sistema: grabo 20 clips los domingos, edito en batches, publico toda la semana. <strong>Cero burnout.</strong>",
-      metric: "+11.5K seguidores en 60 días"
+      quote: "Pasé de tener <strong>0 seguidores a 24K en 90 días</strong>. Antes grababa cuando 'me inspiraba'. Ahora tengo un sistema: grabo 20 clips los domingos, edito en batches, publico toda la semana. <strong>Cero burnout.</strong>",
+      metric: "+24K seguidores en 90 días"
     },
     {
       name: "Fernanda",
