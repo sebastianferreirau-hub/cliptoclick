@@ -30,12 +30,12 @@ serve(async (req) => {
       throw new Error('Missing required field: fullName');
     }
 
-    // Get API key
-    const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY');
-    console.log('API key exists:', !!ANTHROPIC_API_KEY);
+    // Get Lovable AI API key (automatically configured)
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    console.log('Lovable AI key exists:', !!LOVABLE_API_KEY);
     
-    if (!ANTHROPIC_API_KEY) {
-      throw new Error('ANTHROPIC_API_KEY not configured in Supabase secrets');
+    if (!LOVABLE_API_KEY) {
+      throw new Error('LOVABLE_API_KEY not configured');
     }
 
     // Build questions mapping
@@ -92,19 +92,17 @@ CRITICAL RULES:
 - Verticals should be complementary but distinct
 - Return ONLY valid JSON with NO markdown formatting, NO backticks, NO extra text`;
 
-    console.log('Calling Claude API...');
+    console.log('Calling Lovable AI...');
 
-    // Call Claude API
-    const claudeResponse = await fetch('https://api.anthropic.com/v1/messages', {
+    // Call Lovable AI Gateway
+    const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
+        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-5',
-        max_tokens: 1024,
+        model: 'google/gemini-2.5-flash',
         messages: [
           {
             role: 'user',
@@ -114,24 +112,32 @@ CRITICAL RULES:
       })
     });
 
-    console.log('Claude API response status:', claudeResponse.status);
+    console.log('Lovable AI response status:', aiResponse.status);
 
-    if (!claudeResponse.ok) {
-      const errorText = await claudeResponse.text();
-      console.error('Claude API error response:', errorText);
-      throw new Error(`Claude API error: ${claudeResponse.status} - ${errorText}`);
+    if (!aiResponse.ok) {
+      const errorText = await aiResponse.text();
+      console.error('Lovable AI error response:', errorText);
+      
+      if (aiResponse.status === 429) {
+        throw new Error('Rate limit exceeded. Please try again in a moment.');
+      }
+      if (aiResponse.status === 402) {
+        throw new Error('AI credits depleted. Please add credits in Settings.');
+      }
+      
+      throw new Error(`Lovable AI error: ${aiResponse.status} - ${errorText}`);
     }
 
-    const claudeData = await claudeResponse.json();
-    console.log('Claude API response received');
+    const aiData = await aiResponse.json();
+    console.log('Lovable AI response received');
 
-    if (!claudeData.content || !claudeData.content[0]) {
-      console.error('Invalid Claude response structure:', claudeData);
-      throw new Error('Invalid response from Claude API');
+    if (!aiData.choices || !aiData.choices[0] || !aiData.choices[0].message) {
+      console.error('Invalid AI response structure:', aiData);
+      throw new Error('Invalid response from Lovable AI');
     }
 
-    let content = claudeData.content[0].text;
-    console.log('Raw Claude content (first 200 chars):', content.substring(0, 200));
+    let content = aiData.choices[0].message.content;
+    console.log('Raw AI content (first 200 chars):', content.substring(0, 200));
 
     // Parse JSON (handle potential markdown wrapping)
     let jsonContent = content.trim();
