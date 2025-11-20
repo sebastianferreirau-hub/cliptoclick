@@ -120,34 +120,58 @@ const Onboarding = () => {
   };
 
   const handleSubmit = async () => {
-    if (!userId) {
-      toast({
-        title: "Error",
-        description: "Usuario no autenticado",
-        variant: "destructive",
-      });
-      navigate("/auth");
-      return;
-    }
-
     setLoading(true);
-
+    
     try {
-      // Call AI function to analyze answers and generate Content Cores
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "No estás autenticado",
+          variant: "destructive",
+        });
+        navigate("/auth");
+        return;
+      }
+
+      console.log('Starting onboarding submission...');
+      console.log('User ID:', user.id);
+      console.log('Answers:', answers);
+
+      // Call Claude AI function
+      console.log('Calling analyze-cores edge function...');
+      
       const { data: aiData, error: aiError } = await supabase.functions.invoke('analyze-cores', {
-        body: {
+        body: { 
           answers,
           fullName,
           handle,
           country,
+          language,
           format,
-          goal,
+          goal
         }
       });
 
-      if (aiError) throw aiError;
+      if (aiError) {
+        console.error('Edge function error:', aiError);
+        throw new Error(`Edge function error: ${aiError.message || JSON.stringify(aiError)}`);
+      }
+
+      if (!aiData) {
+        throw new Error('No data returned from edge function');
+      }
+
+      console.log('AI generated verticals:', aiData);
+
+      if (!aiData.verticals || !Array.isArray(aiData.verticals)) {
+        throw new Error('Invalid AI response: missing verticals array');
+      }
 
       // Save to profile
+      console.log('Saving to profile...');
+      
       const { error: updateError } = await supabase
         .from('profiles')
         .update({
@@ -160,28 +184,36 @@ const Onboarding = () => {
             quiz_answers: answers,
             format: format,
             goal: goal,
-            generated_at: new Date().toISOString(),
+            generated_at: new Date().toISOString()
           },
-          onboarding_completed: true,
+          onboarding_completed: true
         })
-        .eq('id', userId);
+        .eq('id', user.id);
 
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error('Database update error:', updateError);
+        throw updateError;
+      }
 
+      console.log('Profile updated successfully');
       toast({
-        title: "✅ Content Cores generados",
+        title: "✅ Content Cores generados con IA!",
         description: "Tu perfil está listo. Redirigiendo al dashboard...",
       });
       
       setTimeout(() => {
         navigate("/dashboard");
-      }, 1500);
+      }, 1000);
 
     } catch (error: any) {
-      console.error('Onboarding error:', error);
+      console.error('=== ONBOARDING ERROR ===');
+      console.error('Error:', error);
+      
+      // Show detailed error to user
+      const errorMessage = error.message || 'Error desconocido';
       toast({
         title: "Error procesando onboarding",
-        description: error.message || "Intenta de nuevo",
+        description: `${errorMessage}\n\nRevisa la consola para más detalles.`,
         variant: "destructive",
       });
     } finally {

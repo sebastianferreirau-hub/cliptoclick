@@ -1,6 +1,5 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.76.0';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -8,19 +7,38 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
+  console.log('=== analyze-cores function called ===');
+
   try {
-    const { answers, fullName, handle, country, format, goal } = await req.json();
-    
-    const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY');
-    if (!ANTHROPIC_API_KEY) {
-      throw new Error('ANTHROPIC_API_KEY not configured');
+    // Parse request body
+    const body = await req.json();
+    console.log('Request body received:', JSON.stringify(body, null, 2));
+
+    const { answers, fullName, handle, country, format, goal } = body;
+
+    // Validate required fields
+    if (!answers) {
+      throw new Error('Missing required field: answers');
     }
 
-    // Build questions array for prompt
+    if (!fullName) {
+      throw new Error('Missing required field: fullName');
+    }
+
+    // Get API key
+    const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY');
+    console.log('API key exists:', !!ANTHROPIC_API_KEY);
+    
+    if (!ANTHROPIC_API_KEY) {
+      throw new Error('ANTHROPIC_API_KEY not configured in Supabase secrets');
+    }
+
+    // Build questions mapping
     const questions = {
       q1: "¿De dónde eres y dónde estás viviendo ahora?",
       q2: "¿Cómo describirías tus raíces o tu identidad cultural?",
@@ -35,6 +53,9 @@ serve(async (req) => {
       .map(([q, a]) => `Q: ${questions[q as keyof typeof questions]}\nA: ${a}`)
       .join('\n\n');
 
+    console.log('Answers formatted for prompt');
+
+    // Construct prompt
     const prompt = `You are an expert content strategist. Analyze these quiz answers from a creator:
 
 ${answersText}
@@ -42,9 +63,9 @@ ${answersText}
 Additional context:
 - Name: ${fullName}
 - Handle: ${handle || 'Not provided'}
-- Country: ${country}
-- Content format: ${format}
-- Goal: ${goal}
+- Country: ${country || 'Not provided'}
+- Content format: ${format || 'shorts'}
+- Goal: ${goal || 'Not specified'}
 
 Generate exactly 3 Content Cores (content verticals) in this JSON format:
 
@@ -63,17 +84,18 @@ Generate exactly 3 Content Cores (content verticals) in this JSON format:
   ]
 }
 
-Rules:
-- Be HYPER-SPECIFIC to their actual life situation
+CRITICAL RULES:
+- Be HYPER-SPECIFIC to their actual life situation from the answers
 - Use their exact language/tone from answers
 - Examples must be actionable ("Day in my life as X" not "lifestyle content")
 - Confidence scores: 85-100 (you're confident in your analysis)
 - Verticals should be complementary but distinct
-- Return ONLY valid JSON, no markdown formatting`;
+- Return ONLY valid JSON with NO markdown formatting, NO backticks, NO extra text`;
 
-    console.log('Calling Anthropic API for content cores analysis...');
+    console.log('Calling Claude API...');
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    // Call Claude API
+    const claudeResponse = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -92,38 +114,69 @@ Rules:
       })
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Anthropic API error:', response.status, errorText);
-      throw new Error(`Anthropic API error: ${response.status}`);
+    console.log('Claude API response status:', claudeResponse.status);
+
+    if (!claudeResponse.ok) {
+      const errorText = await claudeResponse.text();
+      console.error('Claude API error response:', errorText);
+      throw new Error(`Claude API error: ${claudeResponse.status} - ${errorText}`);
     }
 
-    const data = await response.json();
-    console.log('Anthropic response received');
+    const claudeData = await claudeResponse.json();
+    console.log('Claude API response received');
 
-    const content = data.content[0].text;
+    if (!claudeData.content || !claudeData.content[0]) {
+      console.error('Invalid Claude response structure:', claudeData);
+      throw new Error('Invalid response from Claude API');
+    }
+
+    let content = claudeData.content[0].text;
+    console.log('Raw Claude content (first 200 chars):', content.substring(0, 200));
+
+    // Parse JSON (handle potential markdown wrapping)
+    let jsonContent = content.trim();
     
-    // Parse JSON from response (handle potential markdown wrapping)
-    let jsonContent = content;
-    if (content.includes('```json')) {
-      jsonContent = content.split('```json')[1].split('```')[0].trim();
-    } else if (content.includes('```')) {
-      jsonContent = content.split('```')[1].split('```')[0].trim();
+    // Remove markdown code blocks if present
+    if (jsonContent.includes('```json')) {
+      jsonContent = jsonContent.split('```json')[1].split('```')[0].trim();
+      console.log('Removed ```json wrapper');
+    } else if (jsonContent.includes('```')) {
+      jsonContent = jsonContent.split('```')[1].split('```')[0].trim();
+      console.log('Removed ``` wrapper');
     }
 
+    console.log('Attempting to parse JSON...');
     const result = JSON.parse(jsonContent);
+    console.log('JSON parsed successfully:', JSON.stringify(result, null, 2));
+
+    // Validate result structure
+    if (!result.verticals || !Array.isArray(result.verticals)) {
+      throw new Error('Invalid result structure: missing verticals array');
+    }
+
+    if (result.verticals.length !== 3) {
+      console.warn(`Expected 3 verticals, got ${result.verticals.length}`);
+    }
+
+    console.log('=== analyze-cores function completed successfully ===');
 
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 200,
     });
 
-  } catch (error) {
-    console.error('Error in analyze-cores function:', error);
+  } catch (error: unknown) {
+    console.error('=== ERROR in analyze-cores function ===');
+    console.error('Error type:', error instanceof Error ? error.constructor.name : typeof error);
+    console.error('Error message:', error instanceof Error ? error.message : String(error));
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+
     return new Response(
       JSON.stringify({ 
         error: error instanceof Error ? error.message : 'Unknown error',
-        details: 'Failed to analyze content cores'
-      }), 
+        details: 'Failed to analyze content cores',
+        type: error instanceof Error ? error.constructor.name : typeof error
+      }),
       {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
