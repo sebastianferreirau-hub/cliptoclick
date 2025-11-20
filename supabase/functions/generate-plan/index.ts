@@ -23,9 +23,9 @@ serve(async (req) => {
       throw new Error('User ID required');
     }
 
-    const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY');
-    if (!ANTHROPIC_API_KEY) {
-      throw new Error('ANTHROPIC_API_KEY not configured');
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    if (!LOVABLE_API_KEY) {
+      throw new Error('LOVABLE_API_KEY not configured');
     }
 
     const verticalsText = verticals.map((v: any) => `
@@ -105,18 +105,16 @@ Generate a detailed 7-day content creation plan following this structure:
 
 Make the plan HYPER-SPECIFIC with actual hooks and actionable steps. No generic advice.`;
 
-    console.log('Calling Anthropic API for plan generation...');
+    console.log('Calling Lovable AI for plan generation...');
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
+        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'claude-3-5-sonnet-20241022',
-        max_tokens: 2048,
+        model: 'google/gemini-2.5-flash',
         messages: [
           {
             role: 'user',
@@ -128,14 +126,27 @@ Make the plan HYPER-SPECIFIC with actual hooks and actionable steps. No generic 
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Anthropic API error:', response.status, errorText);
-      throw new Error(`Anthropic API error: ${response.status}`);
+      console.error('Lovable AI error:', response.status, errorText);
+      
+      if (response.status === 429) {
+        throw new Error('Rate limit exceeded. Please try again in a moment.');
+      }
+      if (response.status === 402) {
+        throw new Error('AI credits depleted. Please add credits in Settings.');
+      }
+      
+      throw new Error(`Lovable AI error: ${response.status}`);
     }
 
     const data = await response.json();
-    console.log('Anthropic response received');
+    console.log('Lovable AI response received');
 
-    const planText = data.content[0].text;
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      console.error('Invalid AI response structure:', data);
+      throw new Error('Invalid response from Lovable AI');
+    }
+
+    const planText = data.choices[0].message.content;
 
     // Save plan to database
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
