@@ -768,6 +768,30 @@ export type Database = {
         }
         Relationships: []
       }
+      oauth_states: {
+        Row: {
+          created_at: string
+          expires_at: string
+          provider: string
+          state: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          provider?: string
+          state: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          provider?: string
+          state?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       offers: {
         Row: {
           campaign_id: string
@@ -1123,6 +1147,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_expired_oauth_states: { Args: never; Returns: undefined }
       decrypt_tax_id: { Args: { encrypted_tax_id: string }; Returns: string }
       encrypt_tax_id: { Args: { plaintext_tax_id: string }; Returns: string }
       has_role: {
