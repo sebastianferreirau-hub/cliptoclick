@@ -40,45 +40,38 @@ serve(async (req) => {
       });
     }
 
-    // Generate secure random state
-    const state = crypto.randomUUID();
-    
-    // Store state in database with user_id
-    const { error: stateError } = await supabaseClient
-      .from('oauth_states')
-      .insert({
-        state,
-        user_id: user.id,
-        provider: 'instagram'
-      });
-
-    if (stateError) {
-      console.error('Error storing OAuth state:', stateError);
-      return new Response(JSON.stringify({ error: 'Failed to initiate OAuth' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
-    }
+    // Create state parameter with user_id encoded
+    const stateData = {
+      user_id: user.id,
+      timestamp: Date.now(),
+      nonce: crypto.randomUUID()
+    };
+    const state = btoa(JSON.stringify(stateData));
     
     console.log('Instagram OAuth initiate request');
     console.log('FB_APP_ID:', FB_APP_ID);
     console.log('REDIRECT_URI:', REDIRECT_URI);
+    console.log('User ID:', user.id);
 
     // Instagram OAuth scopes for Instagram Business Account access
     const scope = 'pages_show_list,instagram_basic,instagram_manage_insights,pages_read_engagement';
     
-    // Construct Facebook OAuth URL with secure state parameter
-    const authUrl = `https://www.facebook.com/v21.0/dialog/oauth?client_id=${FB_APP_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(scope)}&response_type=code&state=${state}`;
+    // Build OAuth URL
+    const authUrl = new URL('https://www.facebook.com/v21.0/dialog/oauth');
+    authUrl.searchParams.set('client_id', FB_APP_ID);
+    authUrl.searchParams.set('redirect_uri', REDIRECT_URI);
+    authUrl.searchParams.set('scope', scope);
+    authUrl.searchParams.set('response_type', 'code');
+    authUrl.searchParams.set('state', state);
 
-    console.log('Instagram OAuth initiated for user:', user.id);
-    console.log('State generated:', state);
+    console.log('Instagram OAuth initiated successfully');
 
     // Redirect user to Facebook OAuth
     return new Response(null, {
       status: 302,
       headers: {
         ...corsHeaders,
-        'Location': authUrl,
+        'Location': authUrl.toString(),
       },
     });
   } catch (error) {
