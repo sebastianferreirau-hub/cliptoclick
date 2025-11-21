@@ -39,28 +39,28 @@ export const useInstagramMetrics = () => {
     mutationFn: async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        console.error('No active session for Instagram metrics refresh');
+        console.error('❌ No active session for Instagram metrics refresh');
         throw new Error('Not authenticated');
       }
 
-      console.log('Calling fetch-instagram-insights edge function...');
+      console.log('📡 Calling fetch-instagram-insights edge function...');
       const response = await supabase.functions.invoke('fetch-instagram-insights', {
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
       });
 
-      console.log('Instagram insights response:', response);
+      console.log('📥 Instagram insights response:', response);
 
       if (response.error) {
-        console.error('Instagram insights error:', response.error);
+        console.error('❌ Instagram insights error:', response.error);
         throw new Error(response.error.message || 'Failed to fetch insights');
       }
 
       return response.data;
     },
     onSuccess: () => {
-      console.log('Instagram metrics refreshed successfully');
+      console.log('✅ Instagram metrics refreshed successfully');
       queryClient.invalidateQueries({ queryKey: ['instagram-metrics'] });
       toast({
         title: 'Métricas actualizadas',
@@ -68,7 +68,7 @@ export const useInstagramMetrics = () => {
       });
     },
     onError: (error) => {
-      console.error('Failed to refresh Instagram metrics:', error);
+      console.error('❌ Failed to refresh Instagram metrics:', error);
       toast({
         title: 'Error al actualizar',
         description: error.message,

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -50,21 +50,23 @@ const Dashboard = () => {
   const [metricsLoading, setMetricsLoading] = useState(true);
   const [isConnecting, setIsConnecting] = useState(false);
   const [instagramAccounts, setInstagramAccounts] = useState<any[]>([]);
+  const hasRequestedRefresh = useRef(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { metrics, isLoading: igMetricsLoading, refreshMetrics, isRefreshing } = useInstagramMetrics();
 
-  // Auto-fetch metrics when Instagram is connected but no metrics exist
+  // Auto-fetch metrics when Instagram is connected - ALWAYS on first load
   useEffect(() => {
-    if (instagramAccounts.length > 0 && !metrics && !igMetricsLoading && !isRefreshing) {
-      console.log('Auto-fetching Instagram metrics on dashboard load...');
+    if (instagramAccounts.length > 0 && !hasRequestedRefresh.current && !isRefreshing) {
+      console.log('🔄 Auto-fetching Instagram metrics on dashboard load...');
+      hasRequestedRefresh.current = true;
       toast({
         title: 'Obteniendo métricas de Instagram',
         description: 'Cargando tus datos...',
       });
       refreshMetrics();
     }
-  }, [instagramAccounts.length, metrics, igMetricsLoading, isRefreshing]);
+  }, [instagramAccounts.length, isRefreshing]);
 
   // Load user profile and data
   useEffect(() => {
@@ -427,7 +429,10 @@ const Dashboard = () => {
           </div>
           {instagramAccounts.length > 0 && (
             <Button
-              onClick={() => refreshMetrics()}
+              onClick={() => {
+                console.log('🔘 User clicked "Actualizar métricas" button');
+                refreshMetrics();
+              }}
               disabled={isRefreshing}
               variant="outline"
               size="sm"
@@ -624,37 +629,59 @@ const Dashboard = () => {
         </div>
 
         {/* KPI Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <Card className="border-2 border-gray-200">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">
-                Output Semana
-              </CardTitle>
-              <TrendingUp className="w-4 h-4 text-gray-600" />
-            </CardHeader>
-            <CardContent>
-              {igMetricsLoading ? (
-                <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
-              ) : metrics ? (
-                <>
-                  <div className="text-3xl font-bold text-gray-900">{metrics.posts_this_week}</div>
-                  <p className="text-xs text-gray-600 mt-2">
-                    posts publicados (últimos 7 días)
-                  </p>
-                </>
-              ) : (
-                <>
-                  <div className="text-3xl font-bold text-gray-900">{weeklyOutput} / 14</div>
-                  <p className="text-xs text-gray-600 mt-2">
-                    {weeklyOutput === 0 
-                      ? "Conecta Instagram para ver métricas" 
-                      : `Clips publicados esta semana (meta: 14)`
-                    }
-                  </p>
-                </>
-              )}
-            </CardContent>
-          </Card>
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-gray-900">Métricas de Instagram</h2>
+            {metrics && (
+              <p className="text-xs text-gray-500">
+                Última actualización: {new Date(metrics.last_updated).toLocaleString('es-ES', { 
+                  day: '2-digit', 
+                  month: 'short', 
+                  hour: '2-digit', 
+                  minute: '2-digit' 
+                })}
+              </p>
+            )}
+          </div>
+          <p className="text-sm text-gray-600 mb-4">
+            📊 Incluye posts y reels del feed. Stories no incluidas todavía.
+          </p>
+          <div className="grid md:grid-cols-3 gap-6">
+            <Card className="border-2 border-gray-200">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-gray-600">
+                  Output Semana
+                </CardTitle>
+                <TrendingUp className="w-4 h-4 text-gray-600" />
+              </CardHeader>
+              <CardContent>
+                {igMetricsLoading ? (
+                  <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+                ) : metrics ? (
+                  <>
+                    <div className="text-3xl font-bold text-gray-900">{metrics.posts_this_week}</div>
+                    <p className="text-xs text-gray-600 mt-2">
+                      posts publicados (últimos 7 días)
+                    </p>
+                    {metrics.posts_this_week === 0 && (
+                      <p className="text-xs text-amber-600 mt-1">
+                        ⚠️ No hay posts recientes en los últimos 7 días
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <div className="text-3xl font-bold text-gray-900">{weeklyOutput} / 14</div>
+                    <p className="text-xs text-gray-600 mt-2">
+                      {weeklyOutput === 0 
+                        ? "Conecta Instagram para ver métricas" 
+                        : `Clips publicados esta semana (meta: 14)`
+                      }
+                    </p>
+                  </>
+                )}
+              </CardContent>
+            </Card>
 
           <Card className="border-2 border-gray-200">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -722,6 +749,7 @@ const Dashboard = () => {
             </CardContent>
           </Card>
         </div>
+      </div>
 
         {/* Content Cores Section */}
         {hasVerticals ? (
