@@ -17,6 +17,7 @@ serve(async (req) => {
 
   try {
     const url = new URL(req.url);
+    const state = url.searchParams.get('state');
     
     // Handle data deletion callback (required by Facebook/Instagram)
     const hub_mode = url.searchParams.get('hub.mode');
@@ -34,7 +35,7 @@ serve(async (req) => {
         status: 302,
         headers: {
           ...corsHeaders,
-          'Location': 'https://cliptoclick.lovable.app/dashboard?instagram_error=cancelled',
+          'Location': 'https://cliptoclick.lovable.app/dashboard?instagram_error=user_denied',
         },
       });
     }
@@ -42,16 +43,71 @@ serve(async (req) => {
     // Get authorization code
     const code = url.searchParams.get('code');
     if (!code) {
-      throw new Error('No authorization code provided');
+      console.error('No authorization code received');
+      return new Response(null, {
+        status: 302,
+        headers: {
+          ...corsHeaders,
+          'Location': 'https://cliptoclick.lovable.app/dashboard?instagram_error=no_code',
+        },
+      });
+    }
+
+    if (!state) {
+      console.error('No state parameter received');
+      return new Response(null, {
+        status: 302,
+        headers: {
+          ...corsHeaders,
+          'Location': 'https://cliptoclick.lovable.app/dashboard?instagram_error=invalid_state',
+        },
+      });
     }
 
     const FB_APP_ID = Deno.env.get('FB_APP_ID') || '1361999862058324';
     const FB_APP_SECRET = Deno.env.get('FB_APP_SECRET');
-    const REDIRECT_URI = Deno.env.get('REDIRECT_URI') || 'https://cliptoclick.lovable.app/api/instagram/callback';
+    const REDIRECT_URI = 'https://fkyzmwpkdrorocyosbyh.supabase.co/functions/v1/instagram-callback';
     
     if (!FB_APP_SECRET) {
       throw new Error('FB_APP_SECRET not configured');
     }
+
+    // Validate state and get user_id
+    const { data: stateData, error: stateError } = await supabase
+      .from('oauth_states')
+      .select('user_id, expires_at')
+      .eq('state', state)
+      .eq('provider', 'instagram')
+      .maybeSingle();
+
+    if (stateError || !stateData) {
+      console.error('Invalid or expired state:', stateError);
+      return new Response(null, {
+        status: 302,
+        headers: {
+          ...corsHeaders,
+          'Location': 'https://cliptoclick.lovable.app/dashboard?instagram_error=invalid_state',
+        },
+      });
+    }
+
+    // Check if state is expired
+    if (new Date(stateData.expires_at) < new Date()) {
+      console.error('State expired');
+      await supabase.from('oauth_states').delete().eq('state', state);
+      return new Response(null, {
+        status: 302,
+        headers: {
+          ...corsHeaders,
+          'Location': 'https://cliptoclick.lovable.app/dashboard?instagram_error=state_expired',
+        },
+      });
+    }
+
+    const userId = stateData.user_id;
+    
+    // Delete state (one-time use)
+    await supabase.from('oauth_states').delete().eq('state', state);
 
     console.log('Instagram OAuth callback received');
     console.log('Exchanging code for access token...');
@@ -119,41 +175,18 @@ serve(async (req) => {
 
     if (instagramAccounts.length === 0) {
       console.error('No Instagram Business Accounts found');
+      await supabase.from('oauth_states').delete().eq('state', state);
       return new Response(null, {
         status: 302,
         headers: {
           ...corsHeaders,
-          'Location': 'https://cliptoclick.lovable.app/dashboard?instagram_error=no_business_account',
+          'Location': 'https://cliptoclick.lovable.app/dashboard?instagram_error=no_instagram_account',
         },
       });
     }
 
-    // Get authenticated user from cookie/session
-    // Since this is a redirect flow, we need to get the user from the session
-    const authCookie = req.headers.get('Cookie');
-    console.log('Auth cookie present:', !!authCookie);
-    
-    let userId: string | null = null;
-    
-    // Try to get user from session
-    if (authCookie) {
-      const { data: { user } } = await supabase.auth.getUser();
-      userId = user?.id || null;
-    }
-    
-    // If no user from session, redirect to login with return URL
-    if (!userId) {
-      console.log('No authenticated user found, redirecting to auth');
-      return new Response(null, {
-        status: 302,
-        headers: {
-          ...corsHeaders,
-          'Location': `https://cliptoclick.lovable.app/auth?redirect=instagram-connect&error=not_authenticated`,
-        },
-      });
-    }
-
-    console.log('Storing Instagram accounts for user:', userId);
+    console.log('Found Instagram accounts:', instagramAccounts.length);
+    console.log('User ID from state:', userId);
 
     // Store all Instagram accounts
     for (const account of instagramAccounts) {
@@ -176,7 +209,13 @@ serve(async (req) => {
 
       if (insertError) {
         console.error('Error storing Instagram account:', insertError);
-        throw new Error(`Failed to store Instagram account: ${insertError.message}`);
+        return new Response(null, {
+          status: 302,
+          headers: {
+            ...corsHeaders,
+            'Location': 'https://cliptoclick.lovable.app/dashboard?instagram_error=save_failed',
+          },
+        });
       }
     }
 
@@ -211,7 +250,7 @@ serve(async (req) => {
       status: 302,
       headers: {
         ...corsHeaders,
-        'Location': `https://cliptoclick.lovable.app/dashboard?instagram_error=${encodeURIComponent(error instanceof Error ? error.message : 'Unknown error')}`,
+        'Location': 'https://cliptoclick.lovable.app/dashboard?instagram_error=token_exchange_failed',
       },
     });
   }

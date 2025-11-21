@@ -46,6 +46,8 @@ const Dashboard = () => {
   const [totalImpressions, setTotalImpressions] = useState(0);
   const [engagementRate, setEngagementRate] = useState(0);
   const [metricsLoading, setMetricsLoading] = useState(true);
+  const [connectingInstagram, setConnectingInstagram] = useState(false);
+  const [instagramAccounts, setInstagramAccounts] = useState<any[]>([]);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -69,6 +71,14 @@ const Dashboard = () => {
         if (error) throw error;
 
         setProfile(profileData as any as Profile);
+
+        // Load Instagram accounts
+        const { data: igAccounts } = await supabase
+          .from('instagram_accounts')
+          .select('*')
+          .eq('user_id', user.id);
+        
+        setInstagramAccounts(igAccounts || []);
       } catch (error: any) {
         console.error('Error loading profile:', error);
         toast({
@@ -83,6 +93,51 @@ const Dashboard = () => {
 
     loadProfile();
   }, [navigate, toast]);
+
+  // Handle OAuth callback
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    
+    if (params.get('connected') === 'instagram') {
+      const accountsCount = params.get('accounts') || '1';
+      toast({
+        title: "✅ Instagram conectado",
+        description: `${accountsCount} cuenta(s) conectada(s) exitosamente`,
+      });
+      // Clean URL
+      window.history.replaceState({}, '', '/dashboard');
+      // Reload accounts
+      if (profile) {
+        supabase
+          .from('instagram_accounts')
+          .select('*')
+          .eq('user_id', profile.id)
+          .then(({ data }) => setInstagramAccounts(data || []));
+      }
+    }
+    
+    if (params.get('instagram_error')) {
+      const errorMap: Record<string, string> = {
+        'user_denied': 'Cancelaste la conexión',
+        'no_code': 'No se recibió código de autorización',
+        'invalid_state': 'Sesión inválida o expirada',
+        'state_expired': 'La sesión expiró, intenta de nuevo',
+        'not_authenticated': 'Debes iniciar sesión primero',
+        'token_exchange_failed': 'Error al intercambiar token',
+        'no_instagram_account': 'No se encontró cuenta de Instagram Business',
+        'save_failed': 'Error al guardar la cuenta'
+      };
+      
+      const errorMsg = errorMap[params.get('instagram_error') || ''] || 'Error desconocido';
+      toast({
+        title: "Error conectando Instagram",
+        description: errorMsg,
+        variant: "destructive",
+      });
+      // Clean URL
+      window.history.replaceState({}, '', '/dashboard');
+    }
+  }, [profile, toast]);
 
   // Load real metrics from database
   useEffect(() => {
@@ -352,20 +407,157 @@ const Dashboard = () => {
           </p>
           <div className="grid md:grid-cols-3 gap-4">
             <Card 
-              className={`border-2 ${profile?.instagram_connected ? 'border-green-300 bg-green-50' : 'border-gray-200'}`}
+              className={`border-2 ${instagramAccounts.length > 0 ? 'border-green-300 bg-green-50' : 'border-gray-200'}`}
             >
-              <CardContent className="pt-6 text-center">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mx-auto mb-3">
-                  <Instagram className="w-6 h-6 text-white" />
+              <CardContent className="pt-6">
+                <div className="text-center mb-4">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mx-auto mb-3">
+                    <Instagram className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="font-semibold text-gray-900 mb-1">Instagram</h3>
+                  <Badge variant={instagramAccounts.length > 0 ? "default" : "outline"} className="mb-3">
+                    {instagramAccounts.length > 0 ? `✅ ${instagramAccounts.length} cuenta(s)` : "No conectado"}
+                  </Badge>
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-1">Instagram</h3>
-                <Badge variant={profile?.instagram_connected ? "default" : "outline"}>
-                  {profile?.instagram_connected ? "✅ Conectado" : "🔒 OAuth requerido"}
-                </Badge>
-                {!profile?.instagram_connected && (
-                  <p className="text-xs text-gray-500 mt-2">
-                    Requiere configurar credenciales de Instagram API
-                  </p>
+
+                {instagramAccounts.length > 0 ? (
+                  <div className="space-y-2">
+                    {instagramAccounts.map((account) => (
+                      <div key={account.id} className="flex items-center justify-between p-2 bg-white rounded border">
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                          {account.profile_picture_url && (
+                            <img 
+                              src={account.profile_picture_url} 
+                              alt={account.instagram_username}
+                              className="w-8 h-8 rounded-full"
+                            />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-900 truncate">
+                              @{account.instagram_username}
+                            </p>
+                            {account.followers_count && (
+                              <p className="text-xs text-gray-500">
+                                {account.followers_count.toLocaleString()} seguidores
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={async () => {
+                            if (confirm('¿Desconectar esta cuenta de Instagram?')) {
+                              const { error } = await supabase
+                                .from('instagram_accounts')
+                                .delete()
+                                .eq('id', account.id);
+                              
+                              if (error) {
+                                toast({
+                                  title: "Error",
+                                  description: "No se pudo desconectar la cuenta",
+                                  variant: "destructive"
+                                });
+                              } else {
+                                setInstagramAccounts(prev => prev.filter(a => a.id !== account.id));
+                                if (instagramAccounts.length === 1) {
+                                  await supabase
+                                    .from('profiles')
+                                    .update({ instagram_connected: false })
+                                    .eq('id', profile?.id);
+                                }
+                                toast({
+                                  title: "✅ Cuenta desconectada",
+                                  description: "La cuenta de Instagram fue desconectada"
+                                });
+                              }
+                            }
+                          }}
+                          className="text-xs"
+                        >
+                          Desconectar
+                        </Button>
+                      </div>
+                    ))}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full mt-2"
+                      disabled={connectingInstagram}
+                      onClick={async () => {
+                        setConnectingInstagram(true);
+                        try {
+                          const { data: { session } } = await supabase.auth.getSession();
+                          if (!session) {
+                            toast({
+                              title: "Error",
+                              description: "Debes iniciar sesión primero",
+                              variant: "destructive"
+                            });
+                            return;
+                          }
+                          
+                          window.location.href = 'https://fkyzmwpkdrorocyosbyh.supabase.co/functions/v1/instagram-connect';
+                        } catch (error) {
+                          console.error('Error connecting Instagram:', error);
+                          toast({
+                            title: "Error",
+                            description: "No se pudo iniciar la conexión",
+                            variant: "destructive"
+                          });
+                          setConnectingInstagram(false);
+                        }
+                      }}
+                    >
+                      {connectingInstagram ? <Loader2 className="w-4 h-4 animate-spin" /> : "Agregar otra cuenta"}
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="text-center">
+                    <p className="text-xs text-gray-500 mb-3">
+                      Conecta tu cuenta de Instagram Business para importar analytics
+                    </p>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      disabled={connectingInstagram}
+                      onClick={async () => {
+                        setConnectingInstagram(true);
+                        try {
+                          const { data: { session } } = await supabase.auth.getSession();
+                          if (!session) {
+                            toast({
+                              title: "Error",
+                              description: "Debes iniciar sesión primero",
+                              variant: "destructive"
+                            });
+                            navigate('/auth');
+                            return;
+                          }
+                          
+                          window.location.href = 'https://fkyzmwpkdrorocyosbyh.supabase.co/functions/v1/instagram-connect';
+                        } catch (error) {
+                          console.error('Error connecting Instagram:', error);
+                          toast({
+                            title: "Error",
+                            description: "No se pudo iniciar la conexión",
+                            variant: "destructive"
+                          });
+                          setConnectingInstagram(false);
+                        }
+                      }}
+                    >
+                      {connectingInstagram ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Conectando...
+                        </>
+                      ) : (
+                        "Conectar Instagram"
+                      )}
+                    </Button>
+                  </div>
                 )}
               </CardContent>
             </Card>
