@@ -143,8 +143,49 @@ serve(async (req) => {
       throw new Error(`Facebook API error: ${pagesData.error.message} (code: ${pagesData.error.code})`);
     }
     
-    if (!pagesData.data || pagesData.data.length === 0) {
-      console.error('No pages returned. This could mean:');
+    let pages = pagesData.data || [];
+    
+    // GRANULAR_SCOPES FALLBACK: If no pages from /me/accounts, try direct fetch
+    if (pages.length === 0) {
+      console.log('No pages from /me/accounts, trying granular_scopes fallback');
+      
+      const granularScopes = inspectData.data?.granular_scopes || [];
+      const pageScope = granularScopes.find((s: any) => 
+        s.scope === 'pages_show_list' && s.target_ids && s.target_ids.length > 0
+      );
+      
+      if (pageScope && pageScope.target_ids) {
+        console.log('Found page IDs in granular_scopes:', pageScope.target_ids);
+        
+        // Fetch each page directly by ID
+        for (const pageId of pageScope.target_ids) {
+          try {
+            console.log(`Fetching page ${pageId} directly`);
+            const pageUrl = `https://graph.facebook.com/v21.0/${pageId}?fields=id,name,access_token&access_token=${accessToken}`;
+            const pageResponse = await fetch(pageUrl);
+            
+            if (pageResponse.ok) {
+              const pageData = await pageResponse.json();
+              console.log(`Page ${pageId} data:`, pageData);
+              pages.push(pageData);
+            } else {
+              const errorText = await pageResponse.text();
+              console.error(`Failed to fetch page ${pageId}:`, pageResponse.status, errorText);
+            }
+          } catch (error) {
+            console.error(`Error fetching page ${pageId}:`, error);
+          }
+        }
+        
+        console.log(`Granular scopes fallback: ${pages.length} pages found`);
+      } else {
+        console.log('No page IDs found in granular_scopes');
+      }
+    }
+    
+    if (pages.length === 0) {
+      console.error('No pages found after both /me/accounts and granular_scopes attempts');
+      console.error('This could mean:');
       console.error('1. User has no Facebook Pages');
       console.error('2. Missing pages_show_list permission');
       console.error('3. User did not grant page access during OAuth');
@@ -153,7 +194,7 @@ serve(async (req) => {
 
     // Get Instagram Business Accounts for each page
     const instagramAccounts = [];
-    for (const page of pagesData.data) {
+    for (const page of pages) {
       console.log(`Checking page: ${page.name} (${page.id})`);
       
       const igResponse = await fetch(
