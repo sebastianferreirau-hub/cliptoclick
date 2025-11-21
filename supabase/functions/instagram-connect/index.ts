@@ -47,27 +47,26 @@ serve(async (req) => {
       )
     }
 
-    // Build Facebook OAuth URL with ALL required permissions
-    const authUrl = new URL('https://www.facebook.com/v21.0/dialog/oauth')
-    authUrl.searchParams.set('client_id', FB_APP_ID)
-    authUrl.searchParams.set('redirect_uri', REDIRECT_URI)
-    
-    // CRITICAL: Include ALL required scopes for Instagram Business Account access
+    // Build OAuth URL with ALL required scopes
     const scopes = [
       'public_profile',
       'email',
-      'pages_show_list',              // REQUIRED to fetch user's Facebook Pages
-      'pages_read_engagement',        // Read engagement metrics from pages
-      'instagram_basic',              // Basic Instagram account access
-      'instagram_manage_insights',    // Access to Instagram insights/analytics
-      'pages_manage_metadata'         // Manage page metadata
+      'pages_show_list',              // CRITICAL - was missing
+      'pages_manage_metadata',
+      'instagram_basic',
+      'pages_read_engagement',
+      'instagram_manage_insights'
     ].join(',')
-    
+
+    const authUrl = new URL('https://www.facebook.com/v21.0/dialog/oauth')
+    authUrl.searchParams.set('client_id', FB_APP_ID)
+    authUrl.searchParams.set('redirect_uri', REDIRECT_URI)
     authUrl.searchParams.set('scope', scopes)
     authUrl.searchParams.set('response_type', 'code')
-    authUrl.searchParams.set('state', state) // Pass state to Facebook
-    
-    console.log('Redirecting to Facebook OAuth with scopes:', scopes)
+    authUrl.searchParams.set('state', state)
+    authUrl.searchParams.set('auth_type', 'rerequest')  // Force re-requesting permissions
+
+    console.log('OAuth URL:', authUrl.toString())  // For debugging
 
     return Response.redirect(authUrl.toString(), 302)
 
