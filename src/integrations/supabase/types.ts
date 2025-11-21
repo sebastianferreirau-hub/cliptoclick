@@ -476,6 +476,102 @@ export type Database = {
         }
         Relationships: []
       }
+      instagram_metrics: {
+        Row: {
+          engagement_rate: number | null
+          id: string
+          instagram_account_id: string
+          last_updated: string
+          posts_this_week: number | null
+          total_engagement: number | null
+          total_impressions: number | null
+          total_reach: number | null
+          user_id: string
+        }
+        Insert: {
+          engagement_rate?: number | null
+          id?: string
+          instagram_account_id: string
+          last_updated?: string
+          posts_this_week?: number | null
+          total_engagement?: number | null
+          total_impressions?: number | null
+          total_reach?: number | null
+          user_id: string
+        }
+        Update: {
+          engagement_rate?: number | null
+          id?: string
+          instagram_account_id?: string
+          last_updated?: string
+          posts_this_week?: number | null
+          total_engagement?: number | null
+          total_impressions?: number | null
+          total_reach?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      instagram_posts: {
+        Row: {
+          caption: string | null
+          comments_count: number | null
+          created_at: string
+          engagement: number | null
+          id: string
+          impressions: number | null
+          instagram_account_id: string
+          like_count: number | null
+          media_id: string
+          media_type: string | null
+          media_url: string | null
+          permalink: string | null
+          reach: number | null
+          saved: number | null
+          shares: number | null
+          timestamp: string | null
+          user_id: string
+        }
+        Insert: {
+          caption?: string | null
+          comments_count?: number | null
+          created_at?: string
+          engagement?: number | null
+          id?: string
+          impressions?: number | null
+          instagram_account_id: string
+          like_count?: number | null
+          media_id: string
+          media_type?: string | null
+          media_url?: string | null
+          permalink?: string | null
+          reach?: number | null
+          saved?: number | null
+          shares?: number | null
+          timestamp?: string | null
+          user_id: string
+        }
+        Update: {
+          caption?: string | null
+          comments_count?: number | null
+          created_at?: string
+          engagement?: number | null
+          id?: string
+          impressions?: number | null
+          instagram_account_id?: string
+          like_count?: number | null
+          media_id?: string
+          media_type?: string | null
+          media_url?: string | null
+          permalink?: string | null
+          reach?: number | null
+          saved?: number | null
+          shares?: number | null
+          timestamp?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       integration_tokens: {
         Row: {
           access_token: string

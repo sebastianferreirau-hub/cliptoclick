@@ -287,6 +287,21 @@ serve(async (req) => {
 
     console.log('Instagram OAuth completed successfully');
 
+    // Trigger analytics fetch in the background (don't wait for it)
+    console.log('Triggering Instagram insights fetch...');
+    const authHeader = `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`;
+    fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/fetch-instagram-insights`, {
+      method: 'POST',
+      headers: {
+        'Authorization': authHeader,
+        'Content-Type': 'application/json',
+      },
+    }).then(() => {
+      console.log('Instagram insights fetch initiated');
+    }).catch((error) => {
+      console.error('Failed to trigger insights fetch:', error);
+    });
+
     // Redirect back to dashboard with success
     return new Response(null, {
       status: 302,
