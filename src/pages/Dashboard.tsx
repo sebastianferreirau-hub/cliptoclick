@@ -54,6 +54,18 @@ const Dashboard = () => {
   const { toast } = useToast();
   const { metrics, isLoading: igMetricsLoading, refreshMetrics, isRefreshing } = useInstagramMetrics();
 
+  // Auto-fetch metrics when Instagram is connected but no metrics exist
+  useEffect(() => {
+    if (instagramAccounts.length > 0 && !metrics && !igMetricsLoading && !isRefreshing) {
+      console.log('Auto-fetching Instagram metrics on dashboard load...');
+      toast({
+        title: 'Obteniendo métricas de Instagram',
+        description: 'Cargando tus datos...',
+      });
+      refreshMetrics();
+    }
+  }, [instagramAccounts.length, metrics, igMetricsLoading, isRefreshing]);
+
   // Load user profile and data
   useEffect(() => {
     const loadProfile = async () => {
@@ -413,7 +425,7 @@ const Dashboard = () => {
               Tu centro operativo. Velocidad &gt; Complejidad.
             </p>
           </div>
-          {metrics && (
+          {instagramAccounts.length > 0 && (
             <Button
               onClick={() => refreshMetrics()}
               disabled={isRefreshing}
