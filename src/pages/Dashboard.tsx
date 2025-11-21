@@ -46,7 +46,7 @@ const Dashboard = () => {
   const [totalImpressions, setTotalImpressions] = useState(0);
   const [engagementRate, setEngagementRate] = useState(0);
   const [metricsLoading, setMetricsLoading] = useState(true);
-  const [connectingInstagram, setConnectingInstagram] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
   const [instagramAccounts, setInstagramAccounts] = useState<any[]>([]);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -116,7 +116,9 @@ const Dashboard = () => {
       }
     }
     
-    if (params.get('instagram_error')) {
+    const instagramError = params.get('instagram_error') || params.get('error');
+    
+    if (instagramError) {
       const errorMap: Record<string, string> = {
         'user_denied': 'Cancelaste la conexión',
         'no_code': 'No se recibió código de autorización',
@@ -125,10 +127,11 @@ const Dashboard = () => {
         'not_authenticated': 'Debes iniciar sesión primero',
         'token_exchange_failed': 'Error al intercambiar token',
         'no_instagram_account': 'No se encontró cuenta de Instagram Business',
-        'save_failed': 'Error al guardar la cuenta'
+        'save_failed': 'Error al guardar la cuenta',
+        'missing_parameters': 'Faltan parámetros en la respuesta de Instagram',
       };
       
-      const errorMsg = errorMap[params.get('instagram_error') || ''] || 'Error desconocido';
+      const errorMsg = errorMap[instagramError] || instagramError || 'Error desconocido';
       toast({
         title: "Error conectando Instagram",
         description: errorMsg,
@@ -198,6 +201,43 @@ const Dashboard = () => {
   const trialDaysRemaining = profile?.trial_ends_at 
     ? Math.max(0, Math.ceil((new Date(profile.trial_ends_at).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))
     : 0;
+
+  const handleConnectInstagram = async () => {
+    setIsConnecting(true);
+    
+    try {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError || !session?.user) {
+        toast({
+          title: "Autenticación requerida",
+          description: "Inicia sesión para conectar tu cuenta de Instagram",
+          variant: "destructive"
+        });
+        setIsConnecting(false);
+        return;
+      }
+  
+      const stateData = {
+        user_id: session.user.id,
+        timestamp: Date.now(),
+        nonce: crypto.randomUUID()
+      };
+      
+      const state = btoa(JSON.stringify(stateData));
+      const connectUrl = `https://fkyzmwpkdrorocyosbyh.supabase.co/functions/v1/instagram-connect?state=${encodeURIComponent(state)}`;
+      
+      window.location.href = connectUrl;
+    } catch (error) {
+      console.error('Instagram connect error:', error);
+      toast({
+        title: "Conexión fallida",
+        description: "No se pudo iniciar la conexión con Instagram",
+        variant: "destructive"
+      });
+      setIsConnecting(false);
+    }
+  };
 
   const handleGeneratePlan = async () => {
     if (!verticals.length) {
@@ -484,57 +524,10 @@ const Dashboard = () => {
                       variant="outline"
                       size="sm"
                       className="w-full mt-2"
-                      disabled={connectingInstagram}
-                      onClick={async () => {
-                        setConnectingInstagram(true);
-                        try {
-                          const { data: { session } } = await supabase.auth.getSession();
-                          if (!session) {
-                            toast({
-                              title: "Error",
-                              description: "Debes iniciar sesión primero",
-                              variant: "destructive"
-                            });
-                            setConnectingInstagram(false);
-                            return;
-                          }
-                          
-                          // Fetch with auth token, then follow redirect
-                          const connectUrl = 'https://fkyzmwpkdrorocyosbyh.supabase.co/functions/v1/instagram-connect';
-                          
-                          const response = await fetch(connectUrl, {
-                            headers: {
-                              'Authorization': `Bearer ${session.access_token}`
-                            },
-                            redirect: 'manual'
-                          });
-                          
-                          if (response.status === 302 || response.status === 0) {
-                            const location = response.headers.get('Location');
-                            if (location) {
-                              window.location.href = location;
-                            }
-                          } else {
-                            const error = await response.json();
-                            toast({
-                              title: "Error",
-                              description: error.error || 'No se pudo conectar Instagram',
-                              variant: "destructive"
-                            });
-                            setConnectingInstagram(false);
-                          }
-                        } catch (error) {
-                          console.error('Error connecting Instagram:', error);
-                          toast({
-                            title: "Error",
-                            description: "No se pudo iniciar la conexión",
-                            variant: "destructive"
-                          });
-                          setConnectingInstagram(false);
-                        }
-                      }}
+                      disabled={isConnecting}
+                      onClick={handleConnectInstagram}
                     >
-                      {connectingInstagram ? <Loader2 className="w-4 h-4 animate-spin" /> : "Agregar otra cuenta"}
+                      {isConnecting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Agregar otra cuenta"}
                     </Button>
                   </div>
                 ) : (
@@ -545,58 +538,10 @@ const Dashboard = () => {
                     <Button
                       variant="default"
                       size="sm"
-                      disabled={connectingInstagram}
-                      onClick={async () => {
-                        setConnectingInstagram(true);
-                        try {
-                          const { data: { session } } = await supabase.auth.getSession();
-                          if (!session) {
-                            toast({
-                              title: "Error",
-                              description: "Debes iniciar sesión primero",
-                              variant: "destructive"
-                            });
-                            setConnectingInstagram(false);
-                            navigate('/auth');
-                            return;
-                          }
-                          
-                          // Fetch with auth token, then follow redirect
-                          const connectUrl = 'https://fkyzmwpkdrorocyosbyh.supabase.co/functions/v1/instagram-connect';
-                          
-                          const response = await fetch(connectUrl, {
-                            headers: {
-                              'Authorization': `Bearer ${session.access_token}`
-                            },
-                            redirect: 'manual'
-                          });
-                          
-                          if (response.status === 302 || response.status === 0) {
-                            const location = response.headers.get('Location');
-                            if (location) {
-                              window.location.href = location;
-                            }
-                          } else {
-                            const error = await response.json();
-                            toast({
-                              title: "Error",
-                              description: error.error || 'No se pudo conectar Instagram',
-                              variant: "destructive"
-                            });
-                            setConnectingInstagram(false);
-                          }
-                        } catch (error) {
-                          console.error('Error connecting Instagram:', error);
-                          toast({
-                            title: "Error",
-                            description: "No se pudo iniciar la conexión",
-                            variant: "destructive"
-                          });
-                          setConnectingInstagram(false);
-                        }
-                      }}
+                      disabled={isConnecting}
+                      onClick={handleConnectInstagram}
                     >
-                      {connectingInstagram ? (
+                      {isConnecting ? (
                         <>
                           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                           Conectando...
