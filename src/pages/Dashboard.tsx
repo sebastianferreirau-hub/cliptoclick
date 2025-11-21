@@ -521,15 +521,29 @@ const Dashboard = () => {
                           size="sm"
                           onClick={async () => {
                             if (confirm('¿Desconectar esta cuenta de Instagram?')) {
-                              const { error } = await supabase
+                              const { data: { user } } = await supabase.auth.getUser();
+                              if (!user) return;
+
+                              // Eliminar datos relacionados en orden
+                              const { error: postsError } = await supabase
+                                .from('instagram_posts')
+                                .delete()
+                                .eq('user_id', user.id);
+                              
+                              const { error: metricsError } = await supabase
+                                .from('instagram_metrics')
+                                .delete()
+                                .eq('user_id', user.id);
+                              
+                              const { error: accountError } = await supabase
                                 .from('instagram_accounts')
                                 .delete()
                                 .eq('id', account.id);
                               
-                              if (error) {
+                              if (accountError || postsError || metricsError) {
                                 toast({
                                   title: "Error",
-                                  description: "No se pudo desconectar la cuenta",
+                                  description: "No se pudo desconectar la cuenta completamente",
                                   variant: "destructive"
                                 });
                               } else {
@@ -542,7 +556,7 @@ const Dashboard = () => {
                                 }
                                 toast({
                                   title: "✅ Cuenta desconectada",
-                                  description: "La cuenta de Instagram fue desconectada"
+                                  description: "Todos los datos de Instagram fueron eliminados"
                                 });
                               }
                             }
