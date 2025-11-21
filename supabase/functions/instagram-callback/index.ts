@@ -64,24 +64,18 @@ serve(async (req) => {
       });
     }
 
-    const FB_APP_ID = Deno.env.get('FB_APP_ID') || '1361999862058324';
-    const FB_APP_SECRET = Deno.env.get('FB_APP_SECRET');
-    const REDIRECT_URI = 'https://fkyzmwpkdrorocyosbyh.supabase.co/functions/v1/instagram-callback';
-    
-    if (!FB_APP_SECRET) {
-      throw new Error('FB_APP_SECRET not configured');
-    }
-
-    // Validate state and get user_id
-    const { data: stateData, error: stateError } = await supabase
-      .from('oauth_states')
-      .select('user_id, expires_at')
-      .eq('state', state)
-      .eq('provider', 'instagram')
-      .maybeSingle();
-
-    if (stateError || !stateData) {
-      console.error('Invalid or expired state:', stateError);
+    // Decode state parameter to get user_id
+    let userId: string;
+    try {
+      const stateData = JSON.parse(atob(state));
+      userId = stateData.user_id;
+      
+      // Validate timestamp (state should be used within 10 minutes)
+      if (Date.now() - stateData.timestamp > 10 * 60 * 1000) {
+        throw new Error('State expired');
+      }
+    } catch (error) {
+      console.error('Invalid state parameter:', error);
       return new Response(null, {
         status: 302,
         headers: {
@@ -91,23 +85,13 @@ serve(async (req) => {
       });
     }
 
-    // Check if state is expired
-    if (new Date(stateData.expires_at) < new Date()) {
-      console.error('State expired');
-      await supabase.from('oauth_states').delete().eq('state', state);
-      return new Response(null, {
-        status: 302,
-        headers: {
-          ...corsHeaders,
-          'Location': 'https://cliptoclick.lovable.app/dashboard?instagram_error=state_expired',
-        },
-      });
-    }
-
-    const userId = stateData.user_id;
+    const FB_APP_ID = Deno.env.get('FB_APP_ID') || '1361999862058324';
+    const FB_APP_SECRET = Deno.env.get('FB_APP_SECRET');
+    const REDIRECT_URI = 'https://fkyzmwpkdrorocyosbyh.supabase.co/functions/v1/instagram-callback';
     
-    // Delete state (one-time use)
-    await supabase.from('oauth_states').delete().eq('state', state);
+    if (!FB_APP_SECRET) {
+      throw new Error('FB_APP_SECRET not configured');
+    }
 
     console.log('Instagram OAuth callback received');
     console.log('Exchanging code for access token...');

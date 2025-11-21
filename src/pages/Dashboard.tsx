@@ -495,10 +495,34 @@ const Dashboard = () => {
                               description: "Debes iniciar sesión primero",
                               variant: "destructive"
                             });
+                            setConnectingInstagram(false);
                             return;
                           }
                           
-                          window.location.href = 'https://fkyzmwpkdrorocyosbyh.supabase.co/functions/v1/instagram-connect';
+                          // Fetch with auth token, then follow redirect
+                          const connectUrl = 'https://fkyzmwpkdrorocyosbyh.supabase.co/functions/v1/instagram-connect';
+                          
+                          const response = await fetch(connectUrl, {
+                            headers: {
+                              'Authorization': `Bearer ${session.access_token}`
+                            },
+                            redirect: 'manual'
+                          });
+                          
+                          if (response.status === 302 || response.status === 0) {
+                            const location = response.headers.get('Location');
+                            if (location) {
+                              window.location.href = location;
+                            }
+                          } else {
+                            const error = await response.json();
+                            toast({
+                              title: "Error",
+                              description: error.error || 'No se pudo conectar Instagram',
+                              variant: "destructive"
+                            });
+                            setConnectingInstagram(false);
+                          }
                         } catch (error) {
                           console.error('Error connecting Instagram:', error);
                           toast({
@@ -532,11 +556,35 @@ const Dashboard = () => {
                               description: "Debes iniciar sesión primero",
                               variant: "destructive"
                             });
+                            setConnectingInstagram(false);
                             navigate('/auth');
                             return;
                           }
                           
-                          window.location.href = 'https://fkyzmwpkdrorocyosbyh.supabase.co/functions/v1/instagram-connect';
+                          // Fetch with auth token, then follow redirect
+                          const connectUrl = 'https://fkyzmwpkdrorocyosbyh.supabase.co/functions/v1/instagram-connect';
+                          
+                          const response = await fetch(connectUrl, {
+                            headers: {
+                              'Authorization': `Bearer ${session.access_token}`
+                            },
+                            redirect: 'manual'
+                          });
+                          
+                          if (response.status === 302 || response.status === 0) {
+                            const location = response.headers.get('Location');
+                            if (location) {
+                              window.location.href = location;
+                            }
+                          } else {
+                            const error = await response.json();
+                            toast({
+                              title: "Error",
+                              description: error.error || 'No se pudo conectar Instagram',
+                              variant: "destructive"
+                            });
+                            setConnectingInstagram(false);
+                          }
                         } catch (error) {
                           console.error('Error connecting Instagram:', error);
                           toast({
