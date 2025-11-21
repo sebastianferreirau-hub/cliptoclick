@@ -658,7 +658,7 @@ const Dashboard = () => {
             )}
           </div>
           <p className="text-sm text-gray-600 mb-4">
-            📊 Incluye posts y reels del feed. Stories no incluidas todavía.
+            📊 Incluye posts y reels publicados directamente por ti. Posts colaborativos y stories no incluidos (limitación de Instagram API).
           </p>
           <div className="grid md:grid-cols-3 gap-6">
             <Card className="border-2 border-gray-200">
