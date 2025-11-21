@@ -79,19 +79,27 @@ serve(async (req) => {
     const FB_APP_SECRET = Deno.env.get('FB_APP_SECRET');
     const REDIRECT_URI = 'https://fkyzmwpkdrorocyosbyh.supabase.co/functions/v1/instagram-callback';
     
+    // Verify FB_APP_SECRET is loaded
+    console.log('FB_APP_SECRET loaded:', !!FB_APP_SECRET);
+    console.log('FB_APP_ID:', FB_APP_ID);
+    
     if (!FB_APP_SECRET) {
       throw new Error('FB_APP_SECRET not configured');
     }
 
     console.log('Instagram OAuth callback received');
     console.log('Exchanging code for access token...');
+    console.log('Request parameters:', { code: code?.substring(0, 10) + '...', state: state?.substring(0, 20) + '...' });
 
     // Exchange code for access token
-    const tokenResponse = await fetch(
-      `https://graph.facebook.com/v21.0/oauth/access_token?client_id=${FB_APP_ID}&client_secret=${FB_APP_SECRET}&code=${code}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`
-    );
+    const tokenUrl = `https://graph.facebook.com/v21.0/oauth/access_token?client_id=${FB_APP_ID}&client_secret=${FB_APP_SECRET}&code=${code}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
+    console.log('Token exchange URL (without secret):', tokenUrl.replace(FB_APP_SECRET, 'REDACTED'));
     
+    const tokenResponse = await fetch(tokenUrl);
+    
+    console.log('Token exchange HTTP status:', tokenResponse.status);
     const tokenData = await tokenResponse.json();
+    console.log('Token exchange full response:', JSON.stringify(tokenData, null, 2));
     console.log('Token exchange response:', { success: !!tokenData.access_token });
     
     if (!tokenData.access_token) {
@@ -100,16 +108,46 @@ serve(async (req) => {
 
     const accessToken = tokenData.access_token;
 
+    // Get token inspection to see granted scopes
+    console.log('Inspecting access token for granted scopes...');
+    const inspectResponse = await fetch(
+      `https://graph.facebook.com/v21.0/debug_token?input_token=${accessToken}&access_token=${FB_APP_ID}|${FB_APP_SECRET}`
+    );
+    const inspectData = await inspectResponse.json();
+    console.log('Token inspection response:', JSON.stringify(inspectData, null, 2));
+    
+    if (inspectData.data?.scopes) {
+      console.log('Granted scopes:', inspectData.data.scopes);
+      console.log('Has pages_show_list:', inspectData.data.scopes.includes('pages_show_list'));
+      console.log('Has pages_read_engagement:', inspectData.data.scopes.includes('pages_read_engagement'));
+      console.log('Has instagram_basic:', inspectData.data.scopes.includes('instagram_basic'));
+      console.log('Has instagram_manage_insights:', inspectData.data.scopes.includes('instagram_manage_insights'));
+    } else {
+      console.log('Could not retrieve granted scopes');
+    }
+
     // Get user's Facebook Pages
     console.log('Fetching Facebook Pages...');
-    const pagesResponse = await fetch(
-      `https://graph.facebook.com/v21.0/me/accounts?access_token=${accessToken}`
-    );
+    const pagesUrl = `https://graph.facebook.com/v21.0/me/accounts?access_token=${accessToken}`;
+    console.log('Pages API URL:', pagesUrl.replace(accessToken, 'REDACTED'));
+    
+    const pagesResponse = await fetch(pagesUrl);
+    console.log('Pages API HTTP status:', pagesResponse.status);
     
     const pagesData = await pagesResponse.json();
+    console.log('Pages API FULL response:', JSON.stringify(pagesData, null, 2));
     console.log('Pages found:', pagesData.data?.length || 0);
     
+    if (pagesData.error) {
+      console.error('Facebook API error:', JSON.stringify(pagesData.error));
+      throw new Error(`Facebook API error: ${pagesData.error.message} (code: ${pagesData.error.code})`);
+    }
+    
     if (!pagesData.data || pagesData.data.length === 0) {
+      console.error('No pages returned. This could mean:');
+      console.error('1. User has no Facebook Pages');
+      console.error('2. Missing pages_show_list permission');
+      console.error('3. User did not grant page access during OAuth');
       throw new Error('No Facebook Pages found. You need a Facebook Page connected to an Instagram Business Account.');
     }
 
