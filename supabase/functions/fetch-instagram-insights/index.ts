@@ -101,21 +101,30 @@ Deno.serve(async (req) => {
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
     for (const post of mediaData.data) {
-      console.log(`Fetching insights for post ${post.id}`);
+      console.log(`Fetching insights for post ${post.id} (type: ${post.media_type})`);
       
       try {
-        const insightsUrl = `https://graph.facebook.com/v21.0/${post.id}/insights?metric=impressions,reach,engagement,saved&access_token=${accessToken}`;
+        // Different metrics for different media types
+        let metricsToFetch = 'impressions,reach,engagement,saved';
+        
+        // For reels, use compatible metrics
+        if (post.media_type === 'VIDEO' || post.media_type === 'REELS') {
+          metricsToFetch = 'reach,saved';
+        }
+        
+        const insightsUrl = `https://graph.facebook.com/v21.0/${post.id}/insights?metric=${metricsToFetch}&access_token=${accessToken}`;
         const insightsResponse = await fetch(insightsUrl);
+        
+        let insights = {
+          impressions: 0,
+          reach: 0,
+          engagement: 0,
+          saved: 0,
+        };
         
         if (insightsResponse.ok) {
           const insightsData = await insightsResponse.json();
-          
-          const insights = {
-            impressions: 0,
-            reach: 0,
-            engagement: 0,
-            saved: 0,
-          };
+          console.log(`Insights for ${post.id}:`, JSON.stringify(insightsData));
 
           if (insightsData.data) {
             for (const metric of insightsData.data) {
@@ -125,13 +134,56 @@ Deno.serve(async (req) => {
               if (metric.name === 'saved') insights.saved = metric.values?.[0]?.value || 0;
             }
           }
+        } else {
+          const errorText = await insightsResponse.text();
+          console.error(`Failed to fetch insights for post ${post.id}:`, {
+            status: insightsResponse.status,
+            statusText: insightsResponse.statusText,
+            error: errorText,
+            mediaType: post.media_type,
+            metricsRequested: metricsToFetch
+          });
+        }
 
-          postsWithInsights.push({
-            ...post,
-            ...insights,
+        // Always store post data, even if insights fail
+        // Use like_count and comments_count as basic engagement if insights unavailable
+        const postWithData = {
+          ...post,
+          ...insights,
+        };
+        
+        postsWithInsights.push(postWithData);
+
+        // Always store in database (even with 0 insights)
+        await supabase
+          .from('instagram_posts')
+          .upsert({
+            user_id: user.id,
+            instagram_account_id: instagramBusinessAccountId,
+            media_id: post.id,
+            caption: post.caption || null,
+            media_type: post.media_type,
+            media_url: post.media_url || post.thumbnail_url || null,
+            permalink: post.permalink,
+            timestamp: post.timestamp,
+            like_count: post.like_count || 0,
+            comments_count: post.comments_count || 0,
+            impressions: insights.impressions,
+            reach: insights.reach,
+            engagement: insights.engagement,
+            saved: insights.saved,
+            shares: 0, // Instagram API doesn't provide shares directly
+          }, {
+            onConflict: 'media_id'
           });
 
-          // Store in database
+      } catch (error) {
+        console.error(`Error processing post ${post.id}:`, error);
+        // Still push the post to count it
+        postsWithInsights.push(post);
+        
+        // Store basic post data even on error
+        try {
           await supabase
             .from('instagram_posts')
             .upsert({
@@ -145,22 +197,17 @@ Deno.serve(async (req) => {
               timestamp: post.timestamp,
               like_count: post.like_count || 0,
               comments_count: post.comments_count || 0,
-              impressions: insights.impressions,
-              reach: insights.reach,
-              engagement: insights.engagement,
-              saved: insights.saved,
-              shares: 0, // Instagram API doesn't provide shares directly
+              impressions: 0,
+              reach: 0,
+              engagement: 0,
+              saved: 0,
+              shares: 0,
             }, {
               onConflict: 'media_id'
             });
-
-        } else {
-          console.error(`Failed to fetch insights for post ${post.id}`);
-          postsWithInsights.push(post);
+        } catch (dbError) {
+          console.error(`Failed to store post ${post.id} in database:`, dbError);
         }
-      } catch (error) {
-        console.error(`Error fetching insights for post ${post.id}:`, error);
-        postsWithInsights.push(post);
       }
     }
 
