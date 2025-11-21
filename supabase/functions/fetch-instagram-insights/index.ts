@@ -47,19 +47,49 @@ Deno.serve(async (req) => {
     const accessToken = instagramAccount.access_token;
     const instagramBusinessAccountId = instagramAccount.instagram_id;
 
-    // Fetch user's media (posts)
-    console.log('Fetching media from Instagram API...');
-    const mediaUrl = `https://graph.facebook.com/v21.0/${instagramBusinessAccountId}/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink,timestamp,like_count,comments_count&limit=50&access_token=${accessToken}`;
+    // Fetch ALL user's media with pagination (not just first 50)
+    console.log('Fetching media from Instagram API with pagination...');
+    let allMedia: any[] = [];
+    let url = `https://graph.facebook.com/v21.0/${instagramBusinessAccountId}/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink,timestamp,like_count,comments_count&limit=50&access_token=${accessToken}`;
     
-    const mediaResponse = await fetch(mediaUrl);
-    if (!mediaResponse.ok) {
-      const errorText = await mediaResponse.text();
-      console.error('Media fetch failed:', mediaResponse.status, errorText);
-      throw new Error(`Failed to fetch media: ${errorText}`);
-    }
+    while (url) {
+      const mediaResponse = await fetch(url);
+      if (!mediaResponse.ok) {
+        const errorText = await mediaResponse.text();
+        console.error('Media fetch failed:', mediaResponse.status, errorText);
+        throw new Error(`Failed to fetch media: ${errorText}`);
+      }
 
-    const mediaData = await mediaResponse.json();
-    console.log(`Found ${mediaData.data?.length || 0} posts`);
+      const mediaData = await mediaResponse.json();
+      allMedia = allMedia.concat(mediaData.data || []);
+      url = mediaData.paging?.next || null;
+      
+      console.log(`Fetched ${mediaData.data?.length || 0} posts, total so far: ${allMedia.length}`);
+      
+      // Safety limit: max 200 posts to avoid infinite loops
+      if (allMedia.length >= 200) {
+        console.log('Reached 200 posts limit, stopping pagination');
+        break;
+      }
+    }
+    
+    console.log(`✅ Total media fetched: ${allMedia.length}`);
+    
+    // Log first 5 posts with timestamps for debugging
+    if (allMedia.length > 0) {
+      console.log('First 5 media from API:', allMedia.slice(0, 5).map(m => ({
+        id: m.id,
+        timestamp: m.timestamp,
+        caption: m.caption?.substring(0, 50)
+      })));
+      
+      const timestamps = allMedia.map(m => new Date(m.timestamp));
+      const oldestPost = new Date(Math.min(...timestamps.map(t => t.getTime())));
+      const newestPost = new Date(Math.max(...timestamps.map(t => t.getTime())));
+      console.log(`📅 Date range: ${oldestPost.toISOString()} to ${newestPost.toISOString()}`);
+    }
+    
+    const mediaData = { data: allMedia };
 
     if (!mediaData.data || mediaData.data.length === 0) {
       console.log('No posts found, returning empty metrics');
@@ -99,17 +129,21 @@ Deno.serve(async (req) => {
     const postsWithInsights = [];
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    
+    const postsInLastWeek = mediaData.data.filter(p => new Date(p.timestamp) >= oneWeekAgo);
+    console.log(`📊 Posts in last 7 days: ${postsInLastWeek.length}`);
 
     for (const post of mediaData.data) {
-      console.log(`Fetching insights for post ${post.id} (type: ${post.media_type})`);
+      const isRecent = new Date(post.timestamp) >= oneWeekAgo;
+      console.log(`Fetching insights for post ${post.id} (type: ${post.media_type}, ${isRecent ? 'RECENT' : 'old'})`);
       
       try {
-        // Different metrics for different media types
-        let metricsToFetch = 'impressions,reach,engagement,saved';
+        // Use proper metrics per media type (no "engagement" - use total_interactions instead)
+        let metricsToFetch = 'impressions,reach,saved,total_interactions';
         
-        // For reels, use compatible metrics
+        // For VIDEO/REELS, add video_views
         if (post.media_type === 'VIDEO' || post.media_type === 'REELS') {
-          metricsToFetch = 'reach,saved';
+          metricsToFetch = 'impressions,reach,saved,total_interactions,video_views';
         }
         
         const insightsUrl = `https://graph.facebook.com/v21.0/${post.id}/insights?metric=${metricsToFetch}&access_token=${accessToken}`;
@@ -120,19 +154,32 @@ Deno.serve(async (req) => {
           reach: 0,
           engagement: 0,
           saved: 0,
+          total_interactions: 0,
+          video_views: 0,
         };
         
         if (insightsResponse.ok) {
           const insightsData = await insightsResponse.json();
-          console.log(`Insights for ${post.id}:`, JSON.stringify(insightsData));
-
+          
           if (insightsData.data) {
             for (const metric of insightsData.data) {
               if (metric.name === 'impressions') insights.impressions = metric.values?.[0]?.value || 0;
               if (metric.name === 'reach') insights.reach = metric.values?.[0]?.value || 0;
-              if (metric.name === 'engagement') insights.engagement = metric.values?.[0]?.value || 0;
+              if (metric.name === 'total_interactions') insights.total_interactions = metric.values?.[0]?.value || 0;
               if (metric.name === 'saved') insights.saved = metric.values?.[0]?.value || 0;
+              if (metric.name === 'video_views') insights.video_views = metric.values?.[0]?.value || 0;
             }
+            
+            // Calculate engagement from total_interactions or fallback to like_count + comments_count
+            insights.engagement = insights.total_interactions || (post.like_count + post.comments_count) || 0;
+            
+            console.log(`✅ Insights for ${post.id}:`, {
+              impressions: insights.impressions,
+              reach: insights.reach,
+              engagement: insights.engagement,
+              saved: insights.saved,
+              video_views: insights.video_views
+            });
           }
         } else {
           const errorText = await insightsResponse.text();
