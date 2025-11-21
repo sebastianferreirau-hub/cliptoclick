@@ -17,8 +17,7 @@ serve(async (req) => {
 
   try {
     const url = new URL(req.url);
-    const state = url.searchParams.get('state');
-    
+
     // Handle data deletion callback (required by Facebook/Instagram)
     const hub_mode = url.searchParams.get('hub.mode');
     if (hub_mode === 'subscribe') {
@@ -26,61 +25,52 @@ serve(async (req) => {
       return new Response(hub_challenge, { status: 200 });
     }
 
-    // Handle user cancellation
-    const error = url.searchParams.get('error');
-    const error_reason = url.searchParams.get('error_reason');
-    if (error === 'access_denied') {
-      console.log('User cancelled Instagram OAuth:', error_reason);
-      return new Response(null, {
-        status: 302,
-        headers: {
-          ...corsHeaders,
-          'Location': 'https://cliptoclick.lovable.app/dashboard?instagram_error=user_denied',
-        },
-      });
-    }
-
-    // Get authorization code
+    const state = url.searchParams.get('state');
     const code = url.searchParams.get('code');
-    if (!code) {
-      console.error('No authorization code received');
+    const oauthError = url.searchParams.get('error');
+
+    if (oauthError) {
       return new Response(null, {
         status: 302,
         headers: {
           ...corsHeaders,
-          'Location': 'https://cliptoclick.lovable.app/dashboard?instagram_error=no_code',
+          'Location': `https://cliptoclick.lovable.app/dashboard?error=${encodeURIComponent(oauthError)}`,
         },
       });
     }
 
-    if (!state) {
-      console.error('No state parameter received');
+    if (!state || !code) {
+      console.error('Missing state or code parameter');
       return new Response(null, {
         status: 302,
         headers: {
           ...corsHeaders,
-          'Location': 'https://cliptoclick.lovable.app/dashboard?instagram_error=invalid_state',
+          'Location': 'https://cliptoclick.lovable.app/dashboard?error=missing_parameters',
         },
       });
     }
 
-    // Decode state parameter to get user_id
+    // Decode state to get user_id
     let userId: string;
     try {
       const stateData = JSON.parse(atob(state));
       userId = stateData.user_id;
       
-      // Validate timestamp (state should be used within 10 minutes)
-      if (Date.now() - stateData.timestamp > 10 * 60 * 1000) {
+      if (!userId) {
+        throw new Error('No user_id in state');
+      }
+
+      // Optional: validate timestamp (state should be used within 10 minutes)
+      if (stateData.timestamp && Date.now() - stateData.timestamp > 10 * 60 * 1000) {
         throw new Error('State expired');
       }
     } catch (error) {
-      console.error('Invalid state parameter:', error);
+      console.error('State decode/validation error:', error);
       return new Response(null, {
         status: 302,
         headers: {
           ...corsHeaders,
-          'Location': 'https://cliptoclick.lovable.app/dashboard?instagram_error=invalid_state',
+          'Location': 'https://cliptoclick.lovable.app/dashboard?error=invalid_state',
         },
       });
     }
