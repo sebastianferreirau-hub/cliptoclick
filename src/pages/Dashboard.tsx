@@ -20,8 +20,10 @@ import {
   CheckCircle2,
   Instagram,
   Music,
-  Camera
+  Camera,
+  RefreshCw
 } from "lucide-react";
+import { useInstagramMetrics } from "@/hooks/useInstagramMetrics";
 import { BRAND, PRICING } from "@/lib/constants";
 import { SetupInstructionsModal } from "@/components/SetupInstructionsModal";
 import {
@@ -50,6 +52,7 @@ const Dashboard = () => {
   const [instagramAccounts, setInstagramAccounts] = useState<any[]>([]);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { metrics, isLoading: igMetricsLoading, refreshMetrics, isRefreshing } = useInstagramMetrics();
 
   // Load user profile and data
   useEffect(() => {
@@ -401,13 +404,26 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-purple-50 py-8 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Hola, {userName} 👋
-          </h1>
-          <p className="text-gray-600">
-            Tu centro operativo. Velocidad &gt; Complejidad.
-          </p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Hola, {userName} 👋
+            </h1>
+            <p className="text-gray-600">
+              Tu centro operativo. Velocidad &gt; Complejidad.
+            </p>
+          </div>
+          {metrics && (
+            <Button
+              onClick={() => refreshMetrics()}
+              disabled={isRefreshing}
+              variant="outline"
+              size="sm"
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+              Actualizar métricas
+            </Button>
+          )}
         </div>
 
         {/* Trial Banner */}
@@ -605,14 +621,21 @@ const Dashboard = () => {
               <TrendingUp className="w-4 h-4 text-gray-600" />
             </CardHeader>
             <CardContent>
-              {metricsLoading ? (
+              {igMetricsLoading ? (
                 <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+              ) : metrics ? (
+                <>
+                  <div className="text-3xl font-bold text-gray-900">{metrics.posts_this_week}</div>
+                  <p className="text-xs text-gray-600 mt-2">
+                    posts publicados (últimos 7 días)
+                  </p>
+                </>
               ) : (
                 <>
                   <div className="text-3xl font-bold text-gray-900">{weeklyOutput} / 14</div>
                   <p className="text-xs text-gray-600 mt-2">
                     {weeklyOutput === 0 
-                      ? "Aún no has publicado esta semana" 
+                      ? "Conecta Instagram para ver métricas" 
                       : `Clips publicados esta semana (meta: 14)`
                     }
                   </p>
@@ -629,8 +652,17 @@ const Dashboard = () => {
               <Target className="w-4 h-4 text-gray-600" />
             </CardHeader>
             <CardContent>
-              {metricsLoading ? (
+              {igMetricsLoading ? (
                 <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+              ) : metrics ? (
+                <>
+                  <div className="text-3xl font-bold text-gray-900">
+                    {metrics.total_impressions.toLocaleString()}
+                  </div>
+                  <p className="text-xs text-gray-600 mt-2">
+                    última actualización: {new Date(metrics.last_updated).toLocaleDateString()}
+                  </p>
+                </>
               ) : (
                 <>
                   <div className="text-3xl font-bold text-gray-900">
@@ -655,8 +687,15 @@ const Dashboard = () => {
               <Clock className="w-4 h-4 text-gray-600" />
             </CardHeader>
             <CardContent>
-              {metricsLoading ? (
+              {igMetricsLoading ? (
                 <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+              ) : metrics ? (
+                <>
+                  <div className="text-3xl font-bold text-gray-900">{metrics.engagement_rate.toFixed(1)}%</div>
+                  <p className="text-xs text-gray-600 mt-2">
+                    promedio de tus posts
+                  </p>
+                </>
               ) : (
                 <>
                   <div className="text-3xl font-bold text-gray-900">{engagementRate}%</div>
