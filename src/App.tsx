@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import DomainRedirect from "@/components/DomainRedirect";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
@@ -34,30 +35,36 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/onboarding" element={<Onboarding />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/analytics" element={<Analytics />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/thanks" element={<Thanks />} />
-          <Route path="/offers" element={<Offers />} />
-          <Route path="/payouts" element={<Payouts />} />
-          <Route path="/campaigns" element={<Campaigns />} />
-          <Route path="/trust" element={<Trust />} />
-          <Route path="/ops/queue" element={<OpsQueue />} />
-          <Route path="/curso" element={<Course />} />
-          <Route path="/curso/:slug" element={<Lesson />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/access-denied" element={<AccessDenied />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/refund-policy" element={<RefundPolicy />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <DomainRedirect>
+          <Routes>
+            {/* Marketing routes (cliptoclick.com) */}
+            <Route path="/" element={<Index />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/thanks" element={<Thanks />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/refund-policy" element={<RefundPolicy />} />
+            
+            {/* App routes (cliptoclick.app) */}
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/onboarding" element={<Onboarding />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/analytics" element={<Analytics />} />
+            <Route path="/offers" element={<Offers />} />
+            <Route path="/payouts" element={<Payouts />} />
+            <Route path="/campaigns" element={<Campaigns />} />
+            <Route path="/trust" element={<Trust />} />
+            <Route path="/ops/queue" element={<OpsQueue />} />
+            <Route path="/curso" element={<Course />} />
+            <Route path="/curso/:slug" element={<Lesson />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/access-denied" element={<AccessDenied />} />
+            
+            {/* Catch-all */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </DomainRedirect>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

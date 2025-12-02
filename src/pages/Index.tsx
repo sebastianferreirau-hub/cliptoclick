@@ -2,8 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { CheckCircle2, XCircle, Clock, Shield, TrendingUp, GraduationCap, Sparkles, LayoutDashboard, PlayCircle, Zap, Calendar, FileText, Users as UsersIcon } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, Shield, TrendingUp, GraduationCap, Sparkles, LayoutDashboard, PlayCircle, Zap, Calendar, FileText, Users as UsersIcon, LogIn } from "lucide-react";
 import { BRAND, PRICING, COPY } from "@/lib/constants";
+import { getAppUrl } from "@/lib/subdomain";
 import Hero from "@/components/landing/Hero";
 import SocialProof from "@/components/landing/SocialProof";
 import HowItWorks from "@/components/landing/HowItWorks";
@@ -15,8 +16,26 @@ import FAQ from "@/components/landing/FAQ";
 import FinalCTA from "@/components/landing/FinalCTA";
 const Index = () => {
   return <div className="min-h-screen bg-gradient-to-b from-background via-muted/20 to-background">
+      {/* Navigation Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-xl font-heading gradient-text">{BRAND.name}</span>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-primary/30 hover:border-primary"
+            onClick={() => window.location.href = getAppUrl("/auth")}
+          >
+            <LogIn className="w-4 h-4 mr-2" />
+            Iniciar sesión
+          </Button>
+        </div>
+      </header>
+
       {/* Hero Section */}
-      <section className="relative px-4 py-16 md:py-24">
+      <section className="relative px-4 py-16 md:py-24 pt-24 md:pt-32">
         <div className="max-w-5xl mx-auto text-center">
           <div className="mb-8">
             <h1 className="text-3xl md:text-4xl font-heading gradient-text mb-2">
