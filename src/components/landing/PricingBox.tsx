@@ -20,8 +20,12 @@ const PricingBox = () => {
 
         <Card className="glass-card p-8 md:p-12">
           <div className="bg-gradient-primary text-white rounded-xl p-6 mb-8 text-center">
-            <div className="text-4xl md:text-5xl font-bold mb-2">USD {PRICING.course.price}</div>
-            <div className="text-sm opacity-90">Pago único · Acceso de por vida</div>
+            <div className="text-lg line-through opacity-70 mb-1">USD {PRICING.course.price}</div>
+            <div className="text-4xl md:text-5xl font-bold mb-2">USD 199</div>
+            <div className="text-sm opacity-90">Pre-Venta · Pago único · Acceso de por vida</div>
+            <div className="mt-3 bg-white/20 rounded-lg px-3 py-1.5 inline-block">
+              <span className="text-sm font-medium">Código: PRESALE199</span>
+            </div>
           </div>
 
           <div className="space-y-4 mb-8">
