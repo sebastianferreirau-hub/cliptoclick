@@ -23,7 +23,14 @@ const Checkout = () => {
   const finalPrice = basePrice - discount;
 
   const handleApplyCoupon = () => {
-    if (couponCode.toUpperCase() === "LATAM30") {
+    const code = couponCode.toUpperCase();
+    
+    if (code === "PRESALE199") {
+      // $297 - $98 = $199
+      setDiscount(98);
+      setAppliedCoupon("PRESALE199");
+      alert("🎉 ¡Código de pre-venta aplicado! Precio especial: $199");
+    } else if (code === "LATAM30") {
       setDiscount(Math.round(basePrice * 0.3));
       setAppliedCoupon("LATAM30");
       alert("✅ Beca LATAM aplicada - 30% de descuento");
@@ -60,6 +67,16 @@ const Checkout = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-purple-50 py-12 px-4">
       <div className="max-w-5xl mx-auto">
+        {/* Pre-Sale Banner */}
+        {!appliedCoupon && (
+          <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl p-4 mb-8 text-center">
+            <p className="font-bold text-lg">🔥 Pre-Venta Exclusiva</p>
+            <p className="text-sm opacity-90">
+              Usa el código <strong className="bg-white/20 px-2 py-1 rounded">PRESALE199</strong> para obtener acceso completo por solo <strong>$199 USD</strong> (regular $297)
+            </p>
+          </div>
+        )}
+
         {/* Header */}
         <div className="text-center mb-12">
           <div className="mb-6">
