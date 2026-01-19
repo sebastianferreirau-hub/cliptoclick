@@ -1,9 +1,10 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { CheckCircle2, XCircle, Clock, Shield, TrendingUp, GraduationCap, Sparkles, LayoutDashboard, PlayCircle, Zap, Calendar, FileText, Users as UsersIcon, LogIn } from "lucide-react";
-import { BRAND, PRICING, COPY } from "@/lib/constants";
+import { CheckCircle2, XCircle, Clock, Shield, TrendingUp, GraduationCap, Sparkles, LayoutDashboard, PlayCircle, Zap, Calendar, FileText, Users as UsersIcon, LogIn, Rocket } from "lucide-react";
+import { BRAND, PRICING, COPY, getCurrentTier, FULL_PRICE } from "@/lib/constants";
 import { getAppUrl } from "@/lib/subdomain";
 import Hero from "@/components/landing/Hero";
 import SocialProof from "@/components/landing/SocialProof";
@@ -15,6 +16,16 @@ import GuaranteeBox from "@/components/landing/GuaranteeBox";
 import FAQ from "@/components/landing/FAQ";
 import FinalCTA from "@/components/landing/FinalCTA";
 const Index = () => {
+  const [tier, setTier] = useState(getCurrentTier());
+
+  // Update tier every minute
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTier(getCurrentTier());
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
   return <div className="min-h-screen bg-gradient-to-b from-background via-muted/20 to-background">
       {/* Navigation Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
@@ -70,8 +81,15 @@ const Index = () => {
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
-            <Button size="lg" className="bg-gradient-primary hover:opacity-90 text-white px-10 py-6 text-lg font-semibold shadow-glow w-full sm:w-auto" onClick={() => window.location.href = "/checkout"}>
-              {COPY.cta.primary}
+            <Button size="lg" className={`px-10 py-6 text-lg font-semibold shadow-glow w-full sm:w-auto text-white ${
+              tier.isLaunched
+                ? "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                : "bg-gradient-primary hover:opacity-90"
+            }`} onClick={() => window.location.href = "/checkout"}>
+              {tier.isLaunched
+                ? `Activar mi sistema — $${tier.price}`
+                : `Conseguir acceso — $${tier.price}`
+              }
             </Button>
             <Button size="lg" variant="outline" className="border-2 px-10 py-6 text-lg font-semibold w-full sm:w-auto" onClick={() => document.getElementById('how-it-works')?.scrollIntoView({
             behavior: 'smooth'
@@ -80,13 +98,25 @@ const Index = () => {
             </Button>
           </div>
 
-          {/* Urgency */}
-          <div className="inline-flex items-center gap-2 bg-warning/10 border border-warning/30 rounded-full px-5 py-2.5">
-            <Clock className="w-4 h-4 text-warning" />
-            <span className="text-sm text-warning font-medium">
-              {COPY.cta.primaryUrgency}
-            </span>
-          </div>
+          {/* Dynamic Tier Badge */}
+          {tier.isLaunched ? (
+            <div className="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/30 rounded-full px-5 py-2.5">
+              <Rocket className="w-4 h-4 text-blue-600" />
+              <span className="text-sm text-blue-600 font-medium">
+                Sistema LIVE · Únete a 150+ creadores
+              </span>
+            </div>
+          ) : (
+            <div className="inline-flex items-center gap-2 bg-warning/10 border border-warning/30 rounded-full px-5 py-2.5">
+              <Clock className="w-4 h-4 text-warning" />
+              <span className="text-sm text-warning font-medium">
+                {tier.daysLeft > 0
+                  ? `${tier.daysLeft}d ${tier.hoursLeft}h a $${tier.price} · Después $${FULL_PRICE}`
+                  : `${tier.hoursLeft}h a $${tier.price} · Después $${FULL_PRICE}`
+                }
+              </span>
+            </div>
+          )}
 
           {/* Founder Quote */}
           <blockquote className="mt-16 border-l-4 border-primary pl-6 italic text-left max-w-3xl mx-auto bg-card rounded-r-lg p-6 shadow-card">
@@ -289,18 +319,35 @@ const Index = () => {
           </div>
 
           {/* Total Value */}
-          <div className="mt-16 text-center bg-gradient-to-r from-primary/5 to-secondary/5 rounded-2xl p-8 border-2 border-primary/20">
+          <div className={`mt-16 text-center rounded-2xl p-8 border-2 ${
+            tier.isLaunched
+              ? "bg-gradient-to-r from-blue-500/5 to-indigo-500/5 border-blue-500/20"
+              : "bg-gradient-to-r from-primary/5 to-secondary/5 border-primary/20"
+          }`}>
             <p className="text-foreground/80 text-lg mb-2">Valor total si compras todo por separado:</p>
             <p className="text-4xl font-bold text-muted-foreground/40 mb-3 line-through">
               $1,294
             </p>
-            <p className="text-foreground/80 text-lg mb-3">Tu inversión hoy:</p>
-            <p className="text-6xl font-bold gradient-text mb-3">
-              ${PRICING.course.price}
+            <p className="text-foreground/80 text-lg mb-3">
+              {tier.isLaunched ? "Tu inversión:" : "Tu inversión hoy:"}
+            </p>
+            <p className={`text-6xl font-bold mb-3 ${tier.isLaunched ? "text-blue-600" : "gradient-text"}`}>
+              ${tier.price}
             </p>
             <p className="text-muted-foreground">
-              Ahorro de <strong className="text-success">$997</strong>. Pago único. Sin renovaciones ocultas.
+              Ahorro de <strong className="text-success">${1294 - tier.price}</strong>. Pago único. Sin renovaciones ocultas.
             </p>
+            {!tier.isLaunched && tier.tierEndDate && (
+              <div className="mt-4 inline-flex items-center gap-2 bg-warning/10 border border-warning/30 rounded-full px-4 py-2">
+                <Clock className="w-4 h-4 text-warning" />
+                <span className="text-sm text-warning font-medium">
+                  {tier.daysLeft > 0
+                    ? `${tier.daysLeft}d ${tier.hoursLeft}h restantes a este precio`
+                    : `${tier.hoursLeft}h restantes a este precio`
+                  }
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -454,17 +501,36 @@ const Index = () => {
                     </div>)}
                 </div>
                 
-                <Button size="lg" className="w-full bg-gradient-primary hover:opacity-90 text-white py-6 text-lg font-semibold shadow-glow" onClick={() => window.location.href = "/checkout"}>
-                  {COPY.finalCTA.option2.cta}
+                <Button size="lg" className={`w-full py-6 text-lg font-semibold shadow-glow text-white ${
+                  tier.isLaunched
+                    ? "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                    : "bg-gradient-primary hover:opacity-90"
+                }`} onClick={() => window.location.href = "/checkout"}>
+                  {tier.isLaunched
+                    ? `Activar mi sistema — $${tier.price}`
+                    : `Conseguir acceso — $${tier.price}`
+                  }
                 </Button>
 
                 <div className="text-center">
-                  <div className="inline-flex items-center gap-2 bg-warning/10 border border-warning/30 rounded-full px-4 py-2">
-                    <Clock className="w-4 h-4 text-warning" />
-                    <span className="text-sm text-warning font-medium">
-                      {COPY.finalCTA.option2.urgency}
-                    </span>
-                  </div>
+                  {tier.isLaunched ? (
+                    <div className="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/30 rounded-full px-4 py-2">
+                      <Rocket className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm text-blue-600 font-medium">
+                        Sistema LIVE · 150+ creadores activos
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="inline-flex items-center gap-2 bg-warning/10 border border-warning/30 rounded-full px-4 py-2">
+                      <Clock className="w-4 h-4 text-warning" />
+                      <span className="text-sm text-warning font-medium">
+                        {tier.daysLeft > 0
+                          ? `${tier.daysLeft}d ${tier.hoursLeft}h restantes`
+                          : `${tier.hoursLeft}h restantes`
+                        }
+                      </span>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
