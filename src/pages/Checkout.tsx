@@ -1,57 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { 
-  Shield, 
-  CheckCircle2, 
-  Sparkles, 
+import {
+  Shield,
+  CheckCircle2,
+  Sparkles,
   Lock,
-  CreditCard
+  CreditCard,
+  Clock,
+  Rocket,
+  Users
 } from "lucide-react";
-import { BRAND, PRICING } from "@/lib/constants";
+import { BRAND, FULL_PRICE, getCurrentTier } from "@/lib/constants";
 import { supabase } from "@/integrations/supabase/client";
 
 const Checkout = () => {
-  const [couponCode, setCouponCode] = useState("");
-  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
-  const [discount, setDiscount] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [tier, setTier] = useState(getCurrentTier());
 
-  const basePrice = PRICING.course.price;
-  const finalPrice = basePrice - discount;
-
-  const handleApplyCoupon = () => {
-    const code = couponCode.toUpperCase();
-    
-    if (code === "PRESALE199") {
-      // $297 - $98 = $199
-      setDiscount(98);
-      setAppliedCoupon("PRESALE199");
-      alert("🎉 ¡Código de pre-venta aplicado! Precio especial: $199");
-    } else if (code === "LATAM30") {
-      setDiscount(Math.round(basePrice * 0.3));
-      setAppliedCoupon("LATAM30");
-      alert("✅ Beca LATAM aplicada - 30% de descuento");
-    } else {
-      alert("❌ Código inválido");
-    }
-  };
+  // Update tier every minute
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTier(getCurrentTier());
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleCheckout = async () => {
     setLoading(true);
-    
+
     try {
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
         body: {
           plan: 'one_time',
-          promo_code: appliedCoupon || undefined
+          tier_id: tier.id,
+          tier_price: tier.price
         }
       });
 
       if (error) throw error;
-      
+
       if (data?.url) {
         window.location.href = data.url;
       } else {
@@ -67,13 +56,34 @@ const Checkout = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-purple-50 py-12 px-4">
       <div className="max-w-5xl mx-auto">
-        {/* Pre-Sale Banner */}
-        {!appliedCoupon && (
+        {/* Dynamic Tier Banner */}
+        {tier.isLaunched ? (
+          /* Tier 4 - Launch Price (Authority/Proof based) */
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl p-4 mb-8 text-center">
+            <div className="flex items-center justify-center gap-2 mb-1">
+              <Rocket className="w-5 h-5" />
+              <p className="font-bold text-lg">Sistema LIVE</p>
+            </div>
+            <div className="flex items-center justify-center gap-2 text-sm opacity-90">
+              <Users className="w-4 h-4" />
+              <span>Únete a 150+ creadores que ya están usando el sistema</span>
+            </div>
+          </div>
+        ) : (
+          /* Pre-sale Tiers (1-3) - Urgency/Scarcity based */
           <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl p-4 mb-8 text-center">
-            <p className="font-bold text-lg">🔥 Pre-Venta Exclusiva</p>
-            <p className="text-sm opacity-90">
-              Usa el código <strong className="bg-white/20 px-2 py-1 rounded">PRESALE199</strong> para obtener acceso completo por solo <strong>$199 USD</strong> (regular $297)
-            </p>
+            <p className="font-bold text-lg">{tier.label}</p>
+            {tier.tierEndDate && (
+              <div className="flex items-center justify-center gap-2 text-sm opacity-90">
+                <Clock className="w-4 h-4" />
+                <span>
+                  {tier.daysLeft > 0
+                    ? `${tier.daysLeft}d ${tier.hoursLeft}h restantes a $${tier.price}`
+                    : `${tier.hoursLeft}h restantes a $${tier.price}`
+                  } · Después sube a ${FULL_PRICE}
+                </span>
+              </div>
+            )}
           </div>
         )}
 
@@ -114,8 +124,13 @@ const Checkout = () => {
                     </p>
                   </div>
                   <div className="text-right">
+                    {!tier.isLaunched && (
+                      <div className="text-lg text-gray-400 line-through mb-1">
+                        ${FULL_PRICE}
+                      </div>
+                    )}
                     <div className="text-4xl font-bold text-purple-600">
-                      ${basePrice}
+                      ${tier.price}
                     </div>
                     <p className="text-sm text-gray-600">Pago único</p>
                   </div>
@@ -156,41 +171,6 @@ const Checkout = () => {
                     o usar solo el curso + Notion gratis.
                   </p>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Coupon */}
-            <Card className="border-2 border-gray-200">
-              <CardHeader>
-                <CardTitle className="text-lg text-gray-900 flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-purple-600" />
-                  ¿Tienes un código promocional?
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex gap-3">
-                  <Input 
-                    type="text"
-                    placeholder="Ingresa tu código"
-                    value={couponCode}
-                    onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                    className="flex-1"
-                    disabled={appliedCoupon !== null}
-                  />
-                  <Button 
-                    onClick={handleApplyCoupon}
-                    disabled={appliedCoupon !== null || !couponCode}
-                    variant={appliedCoupon ? "secondary" : "default"}
-                  >
-                    {appliedCoupon ? "Aplicado ✓" : "Aplicar"}
-                  </Button>
-                </div>
-                {appliedCoupon && (
-                  <div className="mt-3 flex items-center gap-2 text-green-700 text-sm">
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span>Código <strong>{appliedCoupon}</strong> aplicado exitosamente</span>
-                  </div>
-                )}
               </CardContent>
             </Card>
 
@@ -237,27 +217,33 @@ const Checkout = () => {
                   </div>
 
                   <div className="border-t border-gray-200 pt-4 space-y-3">
-                    <div className="flex justify-between text-gray-700">
-                      <span>Subtotal</span>
-                      <span className="font-medium">${basePrice}</span>
-                    </div>
+                    {!tier.isLaunched && (
+                      <div className="flex justify-between text-gray-500">
+                        <span>Precio regular</span>
+                        <span className="line-through">${FULL_PRICE}</span>
+                      </div>
+                    )}
 
-                    {discount > 0 && (
+                    {!tier.isLaunched && (
                       <div className="flex justify-between text-green-600">
-                        <span>Descuento ({appliedCoupon})</span>
-                        <span className="font-medium">-${discount}</span>
+                        <span>{tier.label}</span>
+                        <span className="font-medium">-${FULL_PRICE - tier.price}</span>
                       </div>
                     )}
 
                     <div className="flex justify-between text-lg font-bold text-gray-900 pt-3 border-t border-gray-200">
                       <span>Total</span>
-                      <span className="text-purple-600">${finalPrice}</span>
+                      <span className="text-purple-600">${tier.price}</span>
                     </div>
                   </div>
 
                   <Button
                     size="lg"
-                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-6 text-lg font-semibold shadow-lg"
+                    className={`w-full py-6 text-lg font-semibold shadow-lg text-white ${
+                      tier.isLaunched
+                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                        : "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                    }`}
                     onClick={handleCheckout}
                     disabled={loading}
                   >
@@ -269,7 +255,10 @@ const Checkout = () => {
                     ) : (
                       <>
                         <Lock className="w-5 h-5 mr-2" />
-                        Proceder al pago seguro
+                        {tier.isLaunched
+                          ? `Activar mi sistema — $${tier.price}`
+                          : `Proceder al pago — $${tier.price}`
+                        }
                       </>
                     )}
                   </Button>

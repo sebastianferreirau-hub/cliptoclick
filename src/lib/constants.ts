@@ -19,6 +19,104 @@ export const BRAND = {
 // Export design system
 export { TYPOGRAPHY, SPACING, CARD_STYLES, BUTTON_STYLES } from './design-system';
 
+// Tier system for launch pricing
+export const TIER_DATES = {
+  tier_1_end: new Date('2025-01-10T23:59:59-05:00'),
+  tier_2_end: new Date('2025-01-15T23:59:59-05:00'),
+  tier_3_end: new Date('2025-01-22T23:59:59-05:00'),
+} as const;
+
+export const TIERS = {
+  1: { id: 'tier_1', price: 97, label: 'Fundadores del Sistema', labelEn: 'System Founders', labelPt: 'Fundadores do Sistema' },
+  2: { id: 'tier_2', price: 147, label: 'Early Builders', labelEn: 'Early Builders', labelPt: 'Early Builders' },
+  3: { id: 'tier_3', price: 197, label: 'Acceso Completo', labelEn: 'Full Access', labelPt: 'Acesso Completo' },
+  4: { id: 'launch', price: 297, label: 'Precio de Lanzamiento', labelEn: 'Launch Price', labelPt: 'Preço de Lançamento' },
+} as const;
+
+export const FULL_PRICE = 297;
+
+export type TierInfo = {
+  tierNum: number;
+  price: number;
+  label: string;
+  id: string;
+  tierEndDate: Date | null;
+  daysLeft: number;
+  hoursLeft: number;
+  isLaunched: boolean;
+};
+
+export const getCurrentTier = (): TierInfo => {
+  const now = new Date();
+
+  // After tier 3 ends → Tier 4 (Launch Price)
+  if (now >= TIER_DATES.tier_3_end) {
+    const tierData = TIERS[4];
+    return {
+      tierNum: 4,
+      price: tierData.price,
+      label: tierData.label,
+      id: tierData.id,
+      tierEndDate: null,
+      daysLeft: 0,
+      hoursLeft: 0,
+      isLaunched: true,
+    };
+  }
+
+  // Tier 3: After tier 2 ends
+  if (now >= TIER_DATES.tier_2_end) {
+    const tierData = TIERS[3];
+    const timeLeft = TIER_DATES.tier_3_end.getTime() - now.getTime();
+    const daysLeft = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+    const hoursLeft = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    return {
+      tierNum: 3,
+      price: tierData.price,
+      label: tierData.label,
+      id: tierData.id,
+      tierEndDate: TIER_DATES.tier_3_end,
+      daysLeft,
+      hoursLeft,
+      isLaunched: false,
+    };
+  }
+
+  // Tier 2: After tier 1 ends
+  if (now >= TIER_DATES.tier_1_end) {
+    const tierData = TIERS[2];
+    const timeLeft = TIER_DATES.tier_2_end.getTime() - now.getTime();
+    const daysLeft = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+    const hoursLeft = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    return {
+      tierNum: 2,
+      price: tierData.price,
+      label: tierData.label,
+      id: tierData.id,
+      tierEndDate: TIER_DATES.tier_2_end,
+      daysLeft,
+      hoursLeft,
+      isLaunched: false,
+    };
+  }
+
+  // Tier 1: Default (before tier 1 ends)
+  const tierData = TIERS[1];
+  const timeLeft = TIER_DATES.tier_1_end.getTime() - now.getTime();
+  const daysLeft = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+  const hoursLeft = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  return {
+    tierNum: 1,
+    price: tierData.price,
+    label: tierData.label,
+    id: tierData.id,
+    tierEndDate: TIER_DATES.tier_1_end,
+    daysLeft,
+    hoursLeft,
+    isLaunched: false,
+  };
+};
+
 export const PRICING = {
   course: {
     price: 297,
