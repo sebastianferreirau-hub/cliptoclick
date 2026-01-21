@@ -42,6 +42,7 @@ const Dashboard = () => {
   const [notionModalOpen, setNotionModalOpen] = useState(false);
   const [driveModalOpen, setDriveModalOpen] = useState(false);
   const [trialDetailsOpen, setTrialDetailsOpen] = useState(false);
+  const [instagramComingSoonOpen, setInstagramComingSoonOpen] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [planText, setPlanText] = useState("");
   const [weeklyOutput, setWeeklyOutput] = useState(0);
@@ -220,11 +221,17 @@ const Dashboard = () => {
     : 0;
 
   const handleConnectInstagram = async () => {
+    // Feature gate: Check if user is an Instagram tester
+    if (!profile?.is_instagram_tester) {
+      setInstagramComingSoonOpen(true);
+      return;
+    }
+
     setIsConnecting(true);
-    
+
     try {
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      
+
       if (sessionError || !session?.user) {
         toast({
           title: "Autenticación requerida",
@@ -234,16 +241,16 @@ const Dashboard = () => {
         setIsConnecting(false);
         return;
       }
-  
+
       const stateData = {
         user_id: session.user.id,
         timestamp: Date.now(),
         nonce: crypto.randomUUID()
       };
-      
+
       const state = btoa(JSON.stringify(stateData));
       const connectUrl = `https://fkyzmwpkdrorocyosbyh.supabase.co/functions/v1/instagram-connect?state=${encodeURIComponent(state)}`;
-      
+
       window.location.href = connectUrl;
     } catch (error) {
       console.error('Instagram connect error:', error);
@@ -1038,6 +1045,43 @@ const Dashboard = () => {
               className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
             >
               Ver planes de pago
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Instagram Coming Soon Modal */}
+      <Dialog open={instagramComingSoonOpen} onOpenChange={setInstagramComingSoonOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Instagram className="w-5 h-5 text-pink-500" />
+              Instagram Integration
+            </DialogTitle>
+            <DialogDescription>
+              Coming Soon!
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-4 rounded-lg border border-purple-200">
+              <p className="text-sm text-gray-700">
+                We're putting the finishing touches on our Instagram integration.
+                You'll be able to connect your account and import your analytics very soon.
+              </p>
+            </div>
+            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+              <h4 className="font-semibold text-gray-900 mb-2">What's coming:</h4>
+              <ul className="text-sm text-gray-700 space-y-1">
+                <li>• Import your Instagram analytics</li>
+                <li>• Track posts, impressions & engagement</li>
+                <li>• Sync metrics automatically</li>
+              </ul>
+            </div>
+            <Button
+              onClick={() => setInstagramComingSoonOpen(false)}
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+            >
+              Got it!
             </Button>
           </div>
         </DialogContent>

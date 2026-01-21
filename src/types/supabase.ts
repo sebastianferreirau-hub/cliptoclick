@@ -24,6 +24,7 @@ export interface Profile {
   google_drive_connected?: boolean;
   facebook_connected?: boolean;
   notion_connected?: boolean;
+  is_instagram_tester?: boolean;
 }
 
 export interface ContentCore {
